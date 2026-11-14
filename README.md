@@ -157,6 +157,7 @@ mount a worker schema directly.
 | Java | Tested with JDK 21 and 27 |
 | Apache Calcite | 1.42.0 |
 | VGI Java SDK | 0.48.0 |
+| VGI RPC Java SDK | 0.33.4 |
 | VGI protocol | `vgi.v3`, version 3.3.0 |
 
 VGI v2 workers are not supported. Build dependencies are available from Maven
