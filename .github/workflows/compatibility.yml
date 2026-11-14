@@ -1,0 +1,82 @@
+name: compatibility survey
+on:
+  workflow_dispatch:
+    inputs:
+      baseline_ref:
+        description: Connector commit or branch to compare with this workflow's ref
+        default: main
+        required: true
+  # Validate changes to this workflow before it lands on the default branch.
+  push:
+    branches-ignore: [main]
+    paths: [.github/workflows/compatibility.yml]
+permissions:
+  contents: read
+jobs:
+  collect:
+    name: collect (${{ matrix.variant }}, ${{ matrix.transport }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [baseline, candidate]
+        transport: [tcp, http]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.variant == 'baseline' && (inputs.baseline_ref || 'main') || github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: Query-farm/vgi
+          ref: e75482339d07244105e4a040f998a7092b7402a5
+          path: .conformance/upstream
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: conformance/requirements.txt
+      - run: python -m pip install -r conformance/requirements.txt
+      - run: ./mvnw --batch-mode -DskipTests package
+      - name: Collect all table-function results
+        env:
+          SURVEY_TRANSPORT: ${{ matrix.transport }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          transport = os.environ['SURVEY_TRANSPORT']
+          suites = [('table', ['--suite', '.conformance/upstream/test/sql', '--include', 'integration/table/*.test'])]
+          if pathlib.Path('conformance/surveys/numeric_overflow.test').exists():
+              suites.append(('overflow', ['--suite', 'conformance/surveys', '--include', 'numeric_overflow.test']))
+          for name, options in suites:
+              directory = pathlib.Path('target/conformance') / name
+              directory.mkdir(parents=True, exist_ok=True)
+              command = [sys.executable, 'conformance/run.py', *options, '--transport', transport,
+                         '--report', str(directory / 'report.json')]
+              with (directory / 'runner.log').open('w') as log:
+                  completed = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
+              report = json.loads((directory / 'report.json').read_text())
+              lines = (directory / 'runner.log').read_text().splitlines()
+              # A normal run ends by printing its counts. A crashed/interrupted
+              # runner must fail this job even if it left a partial JSON report.
+              assert completed.returncode in (0, 1), completed.returncode
+              assert json.loads(lines[-1]) == report['counts'], lines[-1:]
+              selected = [v for v in report['results'].values() if v['path'] in report['selected_files']]
+              counts = {s: sum(v['status'] == s for v in selected) for s in ['pass','fail','unsupported','not_run']}
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+                  summary.write(f'### {name}: {transport}\n\nSource: `{report["connector_revision"]}`\n\n')
+                  summary.write(f'Selected record counts: `{json.dumps(counts)}`\n\n')
+                  summary.write('This job collects known failures. Completion is not a compatibility pass.\n\n')
+              (directory / 'execution.json').write_text(json.dumps({'command': command, 'exit_code': completed.returncode,
+                  'selected_counts': counts, 'completed': True}, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compatibility-${{ matrix.variant }}-${{ matrix.transport }}
+          path: target/conformance/
