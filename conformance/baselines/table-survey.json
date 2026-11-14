@@ -1,0 +1,463 @@
+{
+  "description": "Static SQLLogicTest record counts for the full integration/table directory; failures include engine-specific expectations and harness limitations, not just connector defects.",
+  "started_at": "2026-11-14T16:19:50.238691+00:00",
+  "connector_revision": "ae3aab666a78c7ecd88fef03f8ee492befa70909",
+  "suite_revision": "86036b699c533ab87d9ddf44c2b477d7c9675951",
+  "transport": "tcp",
+  "worker_packages": {
+    "vgi-python": "0.51.1",
+    "vgi-rpc": "0.53.1",
+    "pyarrow": "26.0.1"
+  },
+  "sqlglot_version": "30.31.0",
+  "calcite_properties": {
+    "caseSensitive": false,
+    "timeZone": "UTC",
+    "conformance": "BABEL",
+    "typeSystem": "farm.query.vgicalcite.VgiTypeSystem"
+  },
+  "inventory_records": 7211,
+  "selected_records": 1480,
+  "selected_counts": {
+    "pass": 609,
+    "fail": 836,
+    "unsupported": 3,
+    "not_run": 32
+  },
+  "unselected_records": 5731,
+  "files": {
+    "integration/table/arg_validation.test": {
+      "sha256": "1c750b2e99d30ae4a2ec754224ff03553a50eb7dcc5cfff5d19928921ca912db",
+      "counts": {
+        "pass": 11,
+        "fail": 3
+      }
+    },
+    "integration/table/batch_index.test": {
+      "sha256": "a2068f0fa2dc9d5c82a53a894e54d8f45735e6f47eba12fde7b406481b80b264",
+      "counts": {
+        "pass": 28,
+        "fail": 16
+      }
+    },
+    "integration/table/batch_index_contract.test": {
+      "sha256": "e6ef0acfa77df5a485abd8be94aec31717ac83545d9824e9d4273e7ef1fc3faf",
+      "counts": {
+        "pass": 2,
+        "fail": 3
+      }
+    },
+    "integration/table/batch_index_pushdown.test": {
+      "sha256": "f03355bc58bb24234538e3f94ac7bd223d3d1a6d9be0d51dbb28eef00077f9b0",
+      "counts": {
+        "pass": 7,
+        "fail": 12
+      }
+    },
+    "integration/table/column_statistics.test": {
+      "sha256": "cc455bca19e1b0a2cda7acc9a0960b9c4ff37f3726d8102a9132fb5cd4dac3b6",
+      "counts": {
+        "pass": 10,
+        "fail": 64
+      }
+    },
+    "integration/table/comments.test": {
+      "sha256": "50892a3b8fd40ec3ddbb5c9639906ab6f12ce1f2d2d476c9cdf4472d5247b13e",
+      "counts": {
+        "pass": 2,
+        "fail": 11
+      }
+    },
+    "integration/table/constant_columns.test": {
+      "sha256": "03eec6a4cf6190ff00dbb2acd83958612736f792a734bb1ba0ab7d475a367e8c",
+      "counts": {
+        "pass": 2,
+        "fail": 127
+      }
+    },
+    "integration/table/constant_columns_types.test": {
+      "sha256": "fed2c523bd518deaf19d43b9104c258770a2b1ca1ea2275af742fa77029f8ca9",
+      "counts": {
+        "fail": 67,
+        "pass": 2
+      }
+    },
+    "integration/table/constraints.test": {
+      "sha256": "eee609abf1024a0046026b01cdd94b7404f16c429ce1434a5bd8466944d92bbb",
+      "counts": {
+        "pass": 6,
+        "fail": 13
+      }
+    },
+    "integration/table/constraints_time_travel.test": {
+      "sha256": "61db3ccfa11bc4132b6e7da42841b53592dead8bbf208cf9ea2c8b7b929bb154",
+      "counts": {
+        "pass": 4,
+        "fail": 10
+      }
+    },
+    "integration/table/database_tags.test": {
+      "sha256": "118afabcb7f7a06f8df4c8e2201da6d0f129333d3ce46835d2734c221433cd13",
+      "counts": {
+        "pass": 2,
+        "fail": 3
+      }
+    },
+    "integration/table/defaults.test": {
+      "sha256": "e910f20f04462d8cec3816fffe5226db5e6903380e415e9b1926075f838aa00e",
+      "counts": {
+        "pass": 3,
+        "fail": 4
+      }
+    },
+    "integration/table/double_sequence.test": {
+      "sha256": "50f89d1ef4208b2d0daed113dba7683b2b78de40afda53d59c235ad9189af68b",
+      "counts": {
+        "pass": 85
+      }
+    },
+    "integration/table/dynamic_filter.test": {
+      "sha256": "d15b74bf216dea697810f5eb8318f72dd1f13c4b41170f892ba744bfae3d0cd0",
+      "counts": {
+        "pass": 15,
+        "fail": 8
+      }
+    },
+    "integration/table/dynamic_to_string.test": {
+      "sha256": "780f9fe0e2f9a4c2814c5e0243652a75f3753940df338f3bb617440f1d13f4db",
+      "counts": {
+        "pass": 2,
+        "fail": 19
+      }
+    },
+    "integration/table/expression_filter.test": {
+      "sha256": "7cfa754ec6c777aacfd652bb7537682bc0a1142dd2708d021cb46e5fa600c63f",
+      "counts": {
+        "pass": 3,
+        "fail": 21
+      }
+    },
+    "integration/table/filter_echo.test": {
+      "sha256": "597d061eb2fe5e61d33f2475bca142167d3db5eeef9a6c197a2d55cf9ecec2fe",
+      "counts": {
+        "pass": 28,
+        "fail": 5
+      }
+    },
+    "integration/table/filter_echo_partitioned.test": {
+      "sha256": "de8044ed6925379ce4fb7ee2204dd47ef980abf593209d18ef16427547da7dfa",
+      "counts": {
+        "pass": 17,
+        "fail": 6
+      }
+    },
+    "integration/table/filter_pushdown.test": {
+      "sha256": "849b2e2ba4dbf7c034f76b6eab08c7ac6e4a03de67ef9b896c4a55cf295e487d",
+      "counts": {
+        "pass": 36,
+        "fail": 24
+      }
+    },
+    "integration/table/filter_pushdown_through_view.test": {
+      "sha256": "019025fc2c5534e390c3527b710e5d81273141847d52208bd4c0bde9d90eeb32",
+      "counts": {
+        "pass": 6,
+        "fail": 33
+      }
+    },
+    "integration/table/filtered_columns_pushdown.test": {
+      "sha256": "49fce3b01d8a575766b5f2527bf7dd0e17d1096ded4c15f59da000d6d6818240",
+      "counts": {
+        "pass": 7,
+        "fail": 1
+      }
+    },
+    "integration/table/function_registration.test": {
+      "sha256": "f9748cfd7c09eb76d8dd735b0a60a3325649132508590d1629f3005df0368e05",
+      "counts": {
+        "pass": 2,
+        "fail": 22
+      }
+    },
+    "integration/table/generated_columns.test": {
+      "sha256": "165df1b336de43c008e0dc29adee4cb47ab4a0411d1c926b612bfa93686091a3",
+      "counts": {
+        "pass": 2,
+        "fail": 6
+      }
+    },
+    "integration/table/generator_exception.test": {
+      "sha256": "29a3b76c185eb41a34e194f82c2e7b1b164fa10e8f99ad701ffe1e3f73a52056",
+      "counts": {
+        "pass": 5
+      }
+    },
+    "integration/table/inlined_cardinality.test": {
+      "sha256": "492648dc615e6439dfc0ba9064779d61a15001912088e57041d417a5b0cbe597",
+      "counts": {
+        "pass": 1,
+        "fail": 8
+      }
+    },
+    "integration/table/inlined_scan_function.test": {
+      "sha256": "4d03ea88cd9414e40f156ec4600224c92cbf353dab8b22eed70fa75d4b744a9e",
+      "counts": {
+        "pass": 3,
+        "fail": 7
+      }
+    },
+    "integration/table/join_keys_pushdown.test": {
+      "sha256": "86dec07b48a608425afa2cc1e441571ecce2d4167d8f5bbe7bf5f1deb6089b95",
+      "counts": {
+        "pass": 2,
+        "fail": 21
+      }
+    },
+    "integration/table/joins.test": {
+      "sha256": "6430c90d2aa5ba56d69c7d0604b7d9eb0a458ebc4f63657f0df7478e0c316c97",
+      "counts": {
+        "pass": 4,
+        "fail": 20
+      }
+    },
+    "integration/table/late_materialization.test": {
+      "sha256": "8cdfb5b9d5103b2904f7444bbd11f8b20c914dfa5c3ac3f63ec192d16d2b403c",
+      "counts": {
+        "pass": 1,
+        "fail": 48,
+        "unsupported": 1,
+        "not_run": 3
+      }
+    },
+    "integration/table/logging_generator.test": {
+      "sha256": "a9bcaa92941af6d589d4b69a6a89453f918085a7c7b0f31607a0103ad2cb2b07",
+      "counts": {
+        "pass": 3,
+        "fail": 9
+      }
+    },
+    "integration/table/malformed_worker_batches.test": {
+      "sha256": "80d4d2541f64c7190d99baf0968bc46ef957c0fbbebbe4ad6800c64cd2567406",
+      "counts": {
+        "unsupported": 1,
+        "not_run": 15
+      }
+    },
+    "integration/table/named_params.test": {
+      "sha256": "ab519ddbebf1f4e99b7b3b99fe6def313960479b18c71a7b731b44232b175896",
+      "counts": {
+        "pass": 10,
+        "fail": 10
+      }
+    },
+    "integration/table/order_preservation_modes.test": {
+      "sha256": "f12e0eaf89044ab6fece4c438c3a9dc4fbab9fa5124e88307f9956217a10b6ec",
+      "counts": {
+        "pass": 5,
+        "fail": 8
+      }
+    },
+    "integration/table/order_pushdown.test": {
+      "sha256": "97db651ec527f20a9d8018b837a13a1f4c302b030bd6a918dd3e566a9217b5b8",
+      "counts": {
+        "pass": 7,
+        "fail": 11
+      }
+    },
+    "integration/table/partition_columns.test": {
+      "sha256": "31c7aecbafd47e1d45f42fbaececa3d323f4d0815c7dc252ac982671ae602776",
+      "counts": {
+        "pass": 17,
+        "fail": 15
+      }
+    },
+    "integration/table/partition_columns_contract.test": {
+      "sha256": "0468a9ccd4ad951b4d7bffd9f2ee1079007d797aeac258b6d7ea8c03fd33897d",
+      "counts": {
+        "pass": 4,
+        "fail": 2
+      }
+    },
+    "integration/table/partitioned_sequence.test": {
+      "sha256": "7a6c897cb6efac279fed6fc82bef34b858980b2e02b3e86ff8d91101bcd3b021",
+      "counts": {
+        "pass": 43,
+        "fail": 13
+      }
+    },
+    "integration/table/positional_args.test": {
+      "sha256": "dae0bc73face116da67ac464f3fefd9ed0e950d6449c3ac8f7b648539e3db1e2",
+      "counts": {
+        "pass": 4
+      }
+    },
+    "integration/table/projected_data.test": {
+      "sha256": "46d8476d2fa45baf3265df37f9899083c67c482d5790e0468005672a95302a83",
+      "counts": {
+        "pass": 25,
+        "fail": 10
+      }
+    },
+    "integration/table/projection_info.test": {
+      "sha256": "5785b1de9ab229837f6ca591e7ff868181391cd652c020ca9e3c884ae8a7c8d2",
+      "counts": {
+        "pass": 8,
+        "fail": 3
+      }
+    },
+    "integration/table/required_filters_above_get.test": {
+      "sha256": "34300a09fd3c3a36592f03b0f2bfa6a6a44fad4802bd92cbb52195fcba634b44",
+      "counts": {
+        "pass": 2,
+        "fail": 3
+      }
+    },
+    "integration/table/required_filters_basic.test": {
+      "sha256": "d38ed3c054b09c7cc814dc0dc1871770aa400f79fbdb06b21b9006401684a567",
+      "counts": {
+        "pass": 4,
+        "fail": 8
+      }
+    },
+    "integration/table/required_filters_complex.test": {
+      "sha256": "f1515a3ac04818c79952300ae8f869fb130456156bae5db0f1b13a52741ef91a",
+      "counts": {
+        "pass": 2,
+        "fail": 13
+      }
+    },
+    "integration/table/required_filters_disjunction_null.test": {
+      "sha256": "a778a8d418d2e35323833e8570fd42bf98f63ce7fc28ccf58dc15a1128788936",
+      "counts": {
+        "pass": 2,
+        "fail": 5
+      }
+    },
+    "integration/table/required_filters_native.test": {
+      "sha256": "ffa9ef0c47bcf46182b7da99b7010e16a7da8dc1fb1f025674eead8a1e47888f",
+      "counts": {
+        "fail": 21,
+        "pass": 2
+      }
+    },
+    "integration/table/required_filters_or_group.test": {
+      "sha256": "7f7a01027d9f72517464b58a2ac45b534b3b06d568795869ca0d5eea87615237",
+      "counts": {
+        "pass": 2,
+        "fail": 4
+      }
+    },
+    "integration/table/required_filters_prefix.test": {
+      "sha256": "23faae5c44f8466c9dd40f111214ff502dc61db56a2947d9895734127e00685c",
+      "counts": {
+        "pass": 2,
+        "fail": 3
+      }
+    },
+    "integration/table/required_filters_rowid.test": {
+      "sha256": "415b863dea3967ff232f15a3758b6a26ab4dd9f75f45151dcf9cc15c949b54f2",
+      "counts": {
+        "pass": 2,
+        "fail": 4
+      }
+    },
+    "integration/table/required_filters_struct.test": {
+      "sha256": "f97cf3815fa2531ed9407ac260785920b8b27cdd4250254ec5fc49f8713503d8",
+      "counts": {
+        "pass": 2,
+        "fail": 8
+      }
+    },
+    "integration/table/rowid.test": {
+      "sha256": "6f89653b071e91bdad6e56c9e9da4a914ffdd1126a834e72ba24e48e4584e713",
+      "counts": {
+        "pass": 3,
+        "fail": 13
+      }
+    },
+    "integration/table/rowid_constraint_metadata.test": {
+      "sha256": "5048edd94ac8e107a82cf213f28516eb997d01a89773d1b453830ab8fd7693ec",
+      "counts": {
+        "unsupported": 1,
+        "not_run": 14
+      }
+    },
+    "integration/table/same_name_schemas.test": {
+      "sha256": "b9b2d614e2addf46576e9f7032c29d3e0132d99f744116143624e231753da5ad",
+      "counts": {
+        "pass": 5,
+        "fail": 1
+      }
+    },
+    "integration/table/sequence.test": {
+      "sha256": "6726d66312fa70caaa92cdf9ad36cd4bdd7536a3e4efd4d12ab4f48307ffb2ad",
+      "counts": {
+        "pass": 100,
+        "fail": 3
+      }
+    },
+    "integration/table/set_operations_and_subqueries.test": {
+      "sha256": "45f16db0f059d9785070320a89d982736b0194cb0dad68b0b4863a541c5c4b8b",
+      "counts": {
+        "pass": 15,
+        "fail": 8
+      }
+    },
+    "integration/table/table_function_statistics.test": {
+      "sha256": "fa07c76d4ee0e8260d38f6b3f250b601e7490fc350c20b264c40c46e550561d5",
+      "counts": {
+        "pass": 4,
+        "fail": 13
+      }
+    },
+    "integration/table/tablesample.test": {
+      "sha256": "e6e9e6603e1a059699071a8be5de5cb4f1fa73b5a98b59119daa71e68fe79925",
+      "counts": {
+        "pass": 3,
+        "fail": 7
+      }
+    },
+    "integration/table/time_travel.test": {
+      "sha256": "41806912627221a5c8ac74d60ab8ffaf4b15c45f2b2d18c04629f54699efddc5",
+      "counts": {
+        "pass": 2,
+        "fail": 18
+      }
+    },
+    "integration/table/time_travel_pushdown.test": {
+      "sha256": "85fd806da78825dfd0bde2ad49af19dce04c6215fc3359d4f98a144cc0c013ec",
+      "counts": {
+        "pass": 4,
+        "fail": 17
+      }
+    },
+    "integration/table/transaction_storage.test": {
+      "sha256": "f64e4a6cd476fe1dd0ac45ade7c3924cff3b6fe9452c6c11be22bfd48991c1cd",
+      "counts": {
+        "pass": 10,
+        "fail": 13
+      }
+    },
+    "integration/table/typed_probe.test": {
+      "sha256": "a5d51942aeae8e9a329c798bd01d631a1577048cb1f8549326ebf50242327adf",
+      "counts": {
+        "pass": 2,
+        "fail": 4
+      }
+    },
+    "integration/table/union_varargs.test": {
+      "sha256": "226364e70ff1db3492235b934fc73b3ad720656275d45fa97e3e3f8859712018",
+      "counts": {
+        "pass": 2,
+        "fail": 6
+      }
+    },
+    "integration/table/value_prune.test": {
+      "sha256": "fcb4bd32f87719ceec5f6a6ca2c6c6fe10637ccfaf036e7a27c9d2d3def31198",
+      "counts": {
+        "pass": 15,
+        "fail": 1
+      }
+    }
+  }
+}

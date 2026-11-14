@@ -18,7 +18,6 @@ Python worker then exposed three defects that those tests missed:
    join and union operators expected scalars. The adapter now converts the
    physical rows. Three regression tests reproduced the failure before the
    fix and passed afterward, including nullable and empty results.
-
 3. Canonical catalog constraints can make a column non-nullable even when its
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
@@ -47,6 +46,24 @@ The worker was released `vgi-python 0.51.1` with `vgi-rpc 0.53.1`, protocol
 dependencies. The CI suite revision is separately pinned to the public commit
 `e75482339d07244105e4a040f998a7092b7402a5`; its two selected test files match the
 development suite above.
+
+The subsequent **full table-directory survey** ran against connector commit
+`ae3aab666a78c7ecd88fef03f8ee492befa70909` and the same development suite and
+released Python worker. Its 62 selected files contain 1,480 static records:
+
+| Status | Records |
+| --- | ---: |
+| Passed | 609 |
+| Failed | 836 |
+| Unsupported by the harness | 3 |
+| Not run after an unavailable setup | 32 |
+
+The remaining 5,731 records outside that directory were not selected. These
+counts include DuckDB-specific expectations and harness limitations as well as
+connector failures; they are not a count of independent connector bugs. They
+also do not support a claim that the connector passes most table tests. The
+[recorded baseline](../conformance/baselines/table-survey.json) includes per-file
+counts and source hashes for comparison with future runs.
 
 ## Remaining qualification work
 
