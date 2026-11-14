@@ -7,7 +7,6 @@ import farm.query.vgi.protocol.CatalogAttachResult;
 import farm.query.vgirpc.RpcConnection;
 import farm.query.vgirpc.http.HttpRpcConnection;
 import farm.query.vgirpc.transport.RpcTransport;
-import farm.query.vgirpc.transport.SubprocessTransport;
 import farm.query.vgirpc.transport.TcpSocketTransport;
 import farm.query.vgirpc.transport.UnixSocketTransport;
 
@@ -15,9 +14,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.StandardProtocolFamily;
 import java.net.URI;
-import java.net.UnixDomainSocketAddress;
+import java.net.http.HttpClient;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.nio.channels.SocketChannel;
 
 /** One lockstep RPC connection; never shared by concurrent enumerators. */
@@ -26,11 +26,13 @@ final class VgiSession implements AutoCloseable {
     final CatalogAttachResult attachment;
     final farm.query.vgi.protocol.CatalogCapabilities selectedCatalogCapabilities;
     private final AutoCloseable connection;
+    private final Runnable abort;
     private boolean closed;
     private boolean detached;
 
-    private VgiSession(AutoCloseable connection, VgiService service, VgiConfig config, long catalogVersion) {
+    private VgiSession(AutoCloseable connection, Runnable abort, VgiService service, VgiConfig config, long catalogVersion) {
         this.connection = connection;
+        this.abort = abort;
         this.service = service;
         boolean attached = false;
         try {
@@ -61,6 +63,10 @@ final class VgiSession implements AutoCloseable {
     }
 
     static VgiSession open(VgiConfig config, long catalogVersion) {
+        return open(config, catalogVersion, null);
+    }
+
+    static VgiSession open(VgiConfig config, long catalogVersion, VgiCancellation cancellation) {
         String location = config.location();
         if (location != null && (location.startsWith("http://") || location.startsWith("https://"))) {
             var builder = HttpRpcConnection.builder(location);
@@ -71,15 +77,41 @@ final class VgiSession implements AutoCloseable {
                 }
                 builder.bearerToken(token);
             }
-            var connection = builder.build();
-            return new VgiSession(connection, connection.proxy(VgiService.class), config, catalogVersion);
+            // Own the HTTP client so cancellation can abort in-flight requests.
+            // HttpRpcConnection.close() otherwise waits for them to finish.
+            var http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+            Runnable abort = http::shutdownNow;
+            if (cancellation != null) cancellation.onAbort(abort);
+            try {
+                var connection = builder.httpClient(http).build();
+                return new VgiSession(connection, abort, connection.proxy(VgiService.class), config, catalogVersion);
+            } catch (RuntimeException | Error e) { abort.run(); throw e; }
         }
-        var connection = new RpcConnection(transport(config));
-        return new VgiSession(connection, connection.proxy(VgiService.class), config, catalogVersion);
+        Transport transport = transport(config, cancellation);
+        var connection = new RpcConnection(transport.rpc());
+        return new VgiSession(connection, transport.abort(), connection.proxy(VgiService.class), config, catalogVersion);
     }
 
-    private static RpcTransport transport(VgiConfig config) {
-        if (!config.command().isEmpty()) return new SubprocessTransport(config.command());
+    private record Transport(RpcTransport rpc, Runnable abort) {}
+
+    private static Transport transport(VgiConfig config, VgiCancellation cancellation) {
+        if (!config.command().isEmpty()) {
+            try {
+                Process process = new ProcessBuilder(config.command()).redirectError(ProcessBuilder.Redirect.INHERIT).start();
+                Runnable abort = () -> process.destroyForcibly();
+                if (cancellation != null) cancellation.onAbort(abort);
+                RpcTransport rpc = new RpcTransport() {
+                    @Override public java.io.InputStream reader() { return process.getInputStream(); }
+                    @Override public java.io.OutputStream writer() { return process.getOutputStream(); }
+                    @Override public void close() {
+                        process.destroyForcibly();
+                        try { process.getOutputStream().close(); } catch (IOException ignored) {}
+                        try { process.getInputStream().close(); } catch (IOException ignored) {}
+                    }
+                };
+                return new Transport(rpc, abort);
+            } catch (IOException e) { throw new UncheckedIOException("Unable to start VGI worker", e); }
+        }
         URI uri = URI.create(config.location());
         try {
             if (uri.getScheme().equals("tcp")) {
@@ -87,10 +119,12 @@ final class VgiSession implements AutoCloseable {
                     throw new IllegalArgumentException("TCP location requires a host and port");
                 }
                 Socket socket = new Socket();
+                Runnable abort = () -> closeTransport(socket);
+                if (cancellation != null) cancellation.onAbort(abort);
                 try {
                     socket.connect(new InetSocketAddress(uri.getHost(), uri.getPort()), 10_000);
                     socket.setSoTimeout(60_000);
-                    return new TcpSocketTransport(socket);
+                    return new Transport(new TcpSocketTransport(socket), abort);
                 } catch (IOException | RuntimeException e) {
                     socket.close();
                     throw e;
@@ -99,10 +133,11 @@ final class VgiSession implements AutoCloseable {
             if (uri.getAuthority() != null || uri.getPath() == null || uri.getPath().isBlank()) {
                 throw new IllegalArgumentException("Unix location must be unix:///absolute/path");
             }
-            SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX);
+            SocketChannel channel = connectUnix(Path.of(uri.getPath()), cancellation);
+            Runnable abort = () -> closeTransport(channel);
+            if (cancellation != null) cancellation.onAbort(abort);
             try {
-                channel.connect(UnixDomainSocketAddress.of(uri.getPath()));
-                return new UnixSocketTransport(channel);
+                return new Transport(new UnixSocketTransport(channel), abort);
             } catch (IOException | RuntimeException e) {
                 channel.close();
                 throw e;
@@ -111,6 +146,29 @@ final class VgiSession implements AutoCloseable {
             throw new UncheckedIOException("Unable to connect to VGI worker", e);
         }
     }
+
+    private static void closeTransport(AutoCloseable transport) {
+        try { transport.close(); } catch (Exception e) { throw new IllegalStateException("Unable to abort VGI transport", e); }
+    }
+
+    private static SocketChannel connectUnix(Path path, VgiCancellation cancellation) throws IOException {
+        if (cancellation == null) return UnixSocketTransport.connectChannel(path, Duration.ofSeconds(10));
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+        while (true) {
+            cancellation.check();
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) throw new java.net.SocketTimeoutException("Timed out connecting to VGI Unix socket");
+            try {
+                return UnixSocketTransport.connectChannel(path,
+                        Duration.ofNanos(Math.min(remaining, java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(250))));
+            } catch (java.net.SocketTimeoutException busy) {
+                // A full Unix accept queue must also observe JDBC cancellation.
+            }
+        }
+    }
+
+    /** Close the raw transport first, without flushing or acquiring stream locks. */
+    void abort() { abort.run(); }
 
     byte[] handle() { return attachment.attach_opaque_data(); }
 
@@ -147,7 +205,7 @@ final class VgiSession implements AutoCloseable {
         if (closed) return;
         closed = true;
         try {
-            connection.close();
+            try { abort(); } finally { connection.close(); }
         } catch (Exception e) {
             throw new IllegalStateException("Unable to close VGI connection", e);
         }

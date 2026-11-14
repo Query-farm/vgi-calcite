@@ -15,8 +15,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Retains only the current Arrow batch and copies each returned row's Java values. */
 final class VgiEnumerator implements Enumerator<Object[]> {
@@ -24,7 +22,7 @@ final class VgiEnumerator implements Enumerator<Object[]> {
     private final int[] projects;
     private final DataContext context;
     private final List<RexNode> filters;
-    private final AtomicBoolean cancelled;
+    private VgiCancellation cancellation;
     private final org.apache.calcite.rel.type.RelDataTypeFactory typeFactory;
     private VgiSession session;
     private Iterator<VgiTable.Invocation> branches;
@@ -42,7 +40,6 @@ final class VgiEnumerator implements Enumerator<Object[]> {
         this.projects = projects;
         this.context = context;
         this.filters = filters;
-        this.cancelled = DataContext.Variable.CANCEL_FLAG.get(context);
         this.typeFactory = context.getTypeFactory();
     }
 
@@ -54,13 +51,13 @@ final class VgiEnumerator implements Enumerator<Object[]> {
     @Override public boolean moveNext() {
         if (closed) return false;
         current = null;
+        if (cancellation == null) cancellation = new VgiCancellation(context);
         try {
+            cancellation.enter();
             while (true) {
-                if (cancelled != null && cancelled.get() || Thread.currentThread().isInterrupted()) {
-                    throw new CancellationException("VGI scan cancelled");
-                }
+                cancellation.check();
                 if (session == null) {
-                    session = VgiSession.open(table.config, table.catalogVersion);
+                    session = VgiSession.open(table.config, table.catalogVersion, cancellation);
                     branches = table.resolve(session, VgiFilters.translate(filters, table.columns, context)).iterator();
                     session.verifyCatalogVersion();
                 }
@@ -95,8 +92,13 @@ final class VgiEnumerator implements Enumerator<Object[]> {
             }
         } catch (RuntimeException | Error e) {
             failed = true;
-            try { close(); } catch (RuntimeException closing) { e.addSuppressed(closing); }
-            throw e;
+            Throwable failure = e instanceof RuntimeException && cancellation.failure() != null ? cancellation.failure() : e;
+            if (failure != e) failure.addSuppressed(e);
+            try { close(); } catch (RuntimeException closing) { failure.addSuppressed(closing); }
+            if (failure instanceof Error error) throw error;
+            throw (RuntimeException) failure;
+        } finally {
+            cancellation.exit();
         }
     }
 
@@ -156,12 +158,14 @@ final class VgiEnumerator implements Enumerator<Object[]> {
         current = null;
         batch = null;
         try {
+            if (session != null && (failed || cancellation != null && cancellation.failure() != null)) session.abort();
             // Cancellation is protocol-aware: stop producing rather than drain the full relation.
             if (stream != null) stream.cancel();
             if (!failed && session != null) session.detach();
         } finally {
             stream = null;
-            if (session != null) session.close();
+            try { if (session != null) session.close(); }
+            finally { if (cancellation != null) cancellation.close(); }
         }
     }
 }

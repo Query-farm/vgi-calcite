@@ -50,6 +50,8 @@ These tables and functions are available in the included demo below.
   indices before Calcite reads worker results.
 - **Detect stale catalog metadata.** Reject changed known catalog versions
   when binding or starting a scan, with instructions to reconnect.
+- **Stop stalled scans.** Use JDBC cancellation and query timeouts over HTTP,
+  TCP, Unix sockets, and subprocess connections.
 
 This adapter is **read-only**. Compatible workers receive supported filters;
 Calcite rechecks the results and evaluates unsupported expressions. Joins,

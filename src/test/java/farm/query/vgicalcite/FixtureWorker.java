@@ -74,6 +74,7 @@ public final class FixtureWorker {
                 .registerTable("main", new Sequence("foreign_profile", true, true, false))
                 .registerTable("main", new ScanStats())
                 .registerTable("main", new Echo())
+                .registerTable("main", new Blocking())
                 .registerCatalogTable(CatalogTable.builder("data", "numbers", schema)
                         .scanFunction("sequence", List.of(10L), Map.of("batch_size", 3L))
                         .exposeScan(true).cardinality(10, 10).build())
@@ -333,6 +334,43 @@ public final class FixtureWorker {
             state.b = (Long) params.arguments().positionalAt(1);
             state.c = params.arguments().named().containsKey("c") ? (Long) params.arguments().named().get("c") : Long.valueOf(99);
             return state;
+        }
+    }
+
+    public static final class Blocking extends SimpleTableFunction {
+        @Override public String name() { return "blocking"; }
+        @Override public FunctionMetadata metadata() { return FunctionMetadata.describe("Stalled producer fixture"); }
+        @Override public List<ArgSpec> argumentSpecs() {
+            return List.of(new ArgSpec("marker", 0, Schemas.UTF8, false));
+        }
+        @Override protected Schema outputSchema() { return Schemas.of(Schemas.nullable("id", Schemas.INT64)); }
+        @Override public TableProducerState createProducer(TableInitParams params) {
+            BlockingState state = new BlockingState();
+            state.marker = (String) params.arguments().positionalAt(0);
+            return state;
+        }
+    }
+
+    public static final class BlockingState extends TableProducerState {
+        public String marker;
+        public boolean done;
+        public BlockingState() {}
+        @Override public void produceTick(OutputCollector out, CallContext ctx) {
+            if (done) { out.finish(); return; }
+            done = true;
+            try {
+                java.nio.file.Files.writeString(java.nio.file.Path.of(marker + ".entered"), "ready");
+                long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(30);
+                while (!java.nio.file.Files.exists(java.nio.file.Path.of(marker + ".release"))) {
+                    if (System.nanoTime() >= deadline) throw new IllegalStateException("Fixture release timed out");
+                    Thread.sleep(10);
+                }
+            } catch (Exception e) { throw new IllegalStateException(e); }
+            var root = VectorSchemaRoot.create(new Blocking().outputSchema(), Allocators.root());
+            root.allocateNew();
+            ((BigIntVector) root.getVector(0)).setSafe(0, 1);
+            root.setRowCount(1);
+            out.emit(root);
         }
     }
     public static final class EchoState extends TableProducerState {

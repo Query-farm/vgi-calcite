@@ -269,9 +269,25 @@ native formats or relational query pushdown.
 ### Timeouts and cancellation
 
 TCP connections have a 10-second connect timeout and a 60-second socket read
-timeout. HTTP uses the SDK's timeouts. Subprocess and Unix-socket reads have no
-adapter deadline.
+timeout. Unix-socket connects wait at most 10 seconds for a busy listener.
+HTTP uses the SDK's request timeout and a 10-second connect timeout.
 
-Cancellation is checked between rows and batches. Closing a scan early sends
-the SDK's stream cancellation signal and closes the transport; cancellation
-does not interrupt a blocked subprocess read.
+Set an execution timeout through JDBC before executing the statement:
+
+```java
+statement.setQueryTimeout(30); // seconds; zero leaves this deadline disabled
+```
+
+Call `statement.cancel()` from another thread to cancel an executing query.
+The adapter observes cancellation and the execution deadline while a scan is
+blocked in network or subprocess I/O. It closes that scan's underlying
+connection, or terminates its owned subprocess, and fails the query. Other
+statements use independent RPC sessions. Keep closing result sets and statements
+with try-with-resources so local buffers are released.
+
+Normal early closure sends the SDK's stream cancellation signal. A forced
+transport abort cannot guarantee that remote worker code immediately stops;
+server cleanup depends on worker cooperation and, for HTTP state, token expiry.
+Discovery and SQL preparation do not yet share the scan execution monitor.
+Without a JDBC timeout, subprocess and Unix-socket reads have no adapter
+deadline.

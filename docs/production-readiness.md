@@ -22,7 +22,7 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 61 tests. The Python interoperability gate runs 100
+The Java suite now has 69 tests. The Python interoperability gate runs 100
 upstream records, 14 adapter-specific records and 8 malformed-worker checks
 over TCP and HTTP. The
 adapter checks include worker-echoed filters, retained local expressions and
@@ -150,6 +150,36 @@ Version `0` means unknown and cannot provide this consistency check. These
 checks do not provide a transactional snapshot, prevent changes after the last
 check, or automatically pin resolved data and implementation versions.
 
+## Cancellation and resource lifetime
+
+Eight SQL regressions exercise explicit JDBC cancellation and one-second query
+timeouts over TCP, HTTP, Unix sockets and subprocesses. A marker confirms that
+the worker is stalled before the test requests cancellation; the client must
+fail within three seconds without releasing the worker. All eight cases failed
+before the transport abort path was implemented and pass afterward. The tests
+also exercise another statement while a scan is blocked and a fresh query after
+cancellation. These are regression bounds, not a production latency guarantee.
+
+The scan monitor closes the underlying connection without waiting for a blocked
+RPC response. Arrow cleanup remains on the scan thread. This does not prove
+that remote worker computation stops immediately, or qualify cancellation
+during metadata discovery and SQL preparation.
+
+A separate repeated-scan regression found that the published RPC SDK retains
+client Arrow buffers after successful byte-stream scans: ten completed scans
+added 2,560 bytes in the measured fixture. SDK PR #3 now also closes the stream
+reader and frees dictionary buffers on failure. Seven SDK resource regressions
+pass alongside the 698-test core suite and 21-test FFM suite (three and two
+platform-dependent skips, respectively). Cross-platform SDK CI was restarted
+for this additional fix; the previous green run predates it.
+
+The connector's SDK release candidate includes the SQL memory regression. With
+the private `0.33.4-calcite-v3-SNAPSHOT` build, all 70 Java tests and all 122
+selected Python-worker records per transport pass. The release candidate must
+pin the published fixed SDK before merging; the main branch still uses 0.33.3.
+Production readiness remains blocked on that dependency fix as well as the
+broader compatibility and operational work below.
+
 ## Remaining qualification work
 
 - **Broader query coverage.** Triage the full inventory's remaining failures and
@@ -163,9 +193,9 @@ check, or automatically pin resolved data and implementation versions.
 - **Pushdown coverage.** Validate more types and expression combinations with
   the standard worker, including required filters and filtered scan planning.
   Join, aggregate, sort and limit pushdown remain unsupported.
-- **Operational behavior.** Qualify cancellation during blocked I/O, timeout
-  behavior, connection and attachment cleanup under failures, concurrent
-  queries, memory bounds and long-running scans. Each scan currently attaches
+- **Operational behavior.** Extend cancellation coverage to discovery and
+  preparation; qualify remote attachment cleanup after forced disconnects,
+  concurrent load, memory bounds and long-running scans. Each scan currently attaches
   independently; there is no connection pool.
 - **Catalog behavior.** Qualify unknown versions, changes during a running query,
   resolved data/implementation versions and broader catalog metadata.
