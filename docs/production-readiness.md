@@ -22,10 +22,9 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 69 tests. The Python interoperability gate runs 100
+The Java suite now has 70 tests. The Python interoperability gate runs 100
 upstream records, 14 adapter-specific records and 8 malformed-worker checks
-over TCP and HTTP. The
-adapter checks include worker-echoed filters, retained local expressions and
+over TCP and HTTP. The adapter checks include worker-echoed filters, retained local expressions and
 catalog-table reads. See the [conformance instructions](../conformance/README.md)
 and [CI workflow](../.github/workflows/ci.yml) for reproducible commands and
 report artifacts.
@@ -102,14 +101,12 @@ by residual conditions. Queries with no referenced columns preserve row counts.
 The adapter validates decoded batches before reading rows, including count-only
 queries. The upstream malformed-batch fixture tests corrupt offsets, invalid
 UTF-8 and out-of-range dictionary indices over TCP and HTTP. CI exposed a gap:
-the RPC dependency's Arrow loader expands a malformed list's child vector
-before adapter validation can see its original length. The list rejection test
-currently fails with published RPC versions through 0.33.3.
-[SDK PR #3](https://github.com/Query-farm/vgi-rpc-java/pull/3) fixes the reader.
-With a locally built copy of that patch, all 122 selected SQL records pass on
-both TCP and HTTP. The public CI gate remains failing until a patched SDK is
-published and the connector pins it. These local runs record the patched
-runtime JAR's hash; they are not results for the published dependency.
+the RPC dependency's Arrow loader expanded a malformed list's child vector
+before adapter validation could see its original length. RPC versions through
+0.33.3 fail that rejection check. The adapter now pins
+[RPC SDK 0.33.4](https://github.com/Query-farm/vgi-rpc-java/releases/tag/v0.33.4),
+which fixes the reader. All 122 selected SQL records pass on both TCP and HTTP
+with the published dependency, including the eight malformed-worker checks.
 Repeating the full table survey with the revised reader produced the same
 623 passes and 822 failures, with no record-status changes. The
 [SDK qualification record](../conformance/baselines/sdk-reader-validation.json)
@@ -153,38 +150,40 @@ check, or automatically pin resolved data and implementation versions.
 ## Cancellation and resource lifetime
 
 Eight SQL regressions exercise explicit JDBC cancellation and one-second query
-timeouts over TCP, HTTP, Unix sockets and subprocesses. A marker confirms that
-the worker is stalled before the test requests cancellation; the client must
-fail within three seconds without releasing the worker. All eight cases failed
-before the transport abort path was implemented and pass afterward. The tests
-also exercise another statement while a scan is blocked and a fresh query after
-cancellation. These are regression bounds, not a production latency guarantee.
+timeouts over TCP, HTTP, Unix sockets and subprocesses. Explicit cancellation
+waits for a marker proving that the worker is stalled, then requires the client
+to fail within three seconds without releasing the worker. Query timeouts must
+fail within three seconds of submission, including when the deadline expires
+during subprocess startup. The timeout cases require a SQLTimeoutException in
+the cause chain. The tests also exercise another statement while a scan is
+blocked and a fresh query after cancellation. These are regression bounds,
+not a production latency guarantee; fixture startup and SQL preparation have a
+separate overall test budget.
 
 The scan monitor closes the underlying connection without waiting for a blocked
 RPC response. Arrow cleanup remains on the scan thread. This does not prove
 that remote worker computation stops immediately, or qualify cancellation
 during metadata discovery and SQL preparation.
 
-A separate repeated-scan regression found that the published RPC SDK retains
-client Arrow buffers after successful byte-stream scans: ten completed scans
-added 2,560 bytes in the measured fixture. SDK PR #3 now also closes the stream
+A separate repeated-scan regression found that RPC SDK versions through 0.33.3
+retained client Arrow buffers after successful byte-stream scans: ten completed scans
+added 2,560 bytes in the measured fixture. RPC SDK 0.33.4 closes the stream
 reader and frees dictionary buffers on failure. Seven SDK resource regressions
 pass alongside the 698-test core suite and 21-test FFM suite (three and two
 platform-dependent skips, respectively). All ten cross-platform SDK CI jobs
 also pass for [the exact cleanup commit](https://github.com/Query-farm/vgi-rpc-java/actions/runs/43625838307).
 
-The connector's SDK release candidate includes the SQL memory regression. With
-the private `0.33.4-calcite-v3-SNAPSHOT` build, all 70 Java tests and all 122
-selected Python-worker records per transport pass. The release candidate must
-pin the published fixed SDK before merging; the main branch still uses 0.33.3.
-Production readiness remains blocked on that dependency fix as well as the
-broader compatibility and operational work below.
+The connector includes the SQL memory regression. All 70 Java tests and all
+122 selected Python-worker records per transport pass with published RPC SDK
+0.33.4. This resolves the dependency defects found by these checks. The broader
+compatibility and operational work below remains incomplete.
 
 The [lifecycle qualification record](../conformance/baselines/lifecycle-sdk-validation.json)
 identifies the exact connector and SDK source, private runtime artifact, SQL
 reports and Java results. Its source hashes were checked against the recorded
-connector commit. These are pre-publication results; the published dependency
-must still be verified after release.
+connector commit. That record covers the private build used before publication;
+the [published-release record](../conformance/baselines/rpc-0.33.4-release.json)
+records the subsequent checks against Maven Central artifacts.
 
 ## Remaining qualification work
 

@@ -16,7 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Timeout(60)
+// Process startup and SQL preparation are outside the cancellation bound below.
+@Timeout(120)
 class CancellationIntegrationTest {
     @ParameterizedTest @ValueSource(strings = {"tcp", "http", "unix", "subprocess"})
     void statementCancelInterruptsAStalledWorker(String transport) throws Exception {
@@ -24,7 +25,7 @@ class CancellationIntegrationTest {
     }
 
     @ParameterizedTest @ValueSource(strings = {"tcp", "http", "unix", "subprocess"})
-    void queryTimeoutInterruptsAStalledWorker(String transport) throws Exception {
+    void queryTimeoutBoundsExecutionIncludingWorkerStartup(String transport) throws Exception {
         verify(transport, true);
     }
 
@@ -36,7 +37,9 @@ class CancellationIntegrationTest {
         try (var worker = WorkerProcess.start(transport, directory);
              var connection = CalciteIntegrationTest.open(worker.operand)) {
             String marker = directory.resolve("scan").toString().replace("'", "''");
-            try (var statement = connection.prepareStatement("select count(*) from table(vgi.main.blocking('" + marker + "'))")) {
+            try (var statement = connection.prepareStatement("select count(*) from table(vgi.main.blocking('" + marker + "'))");
+                 var other = connection.prepareStatement("select sum(id) from table(vgi.main.sequence(10))");
+                 var next = connection.prepareStatement("select count(*) from table(vgi.main.sequence(3))")) {
                 if (timeout) statement.setQueryTimeout(1);
                 var pending = executor.submit(() -> {
                     try (var result = statement.executeQuery()) {
@@ -45,26 +48,33 @@ class CancellationIntegrationTest {
                     } catch (Exception failure) { return failure; }
                 });
                 try {
-                    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
-                    while (!Files.exists(entered) && !pending.isDone() && System.nanoTime() < deadline) Thread.sleep(10);
-                    assertTrue(Files.exists(entered), "Worker must enter the stalled producer before cancellation");
                     if (!timeout) {
+                        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+                        while (!Files.exists(entered) && !pending.isDone() && System.nanoTime() < deadline) Thread.sleep(10);
+                        assertTrue(Files.exists(entered), "Worker must enter the stalled producer before cancellation");
                         // A blocked scan must not monopolize the connection or
                         // abort a different statement's independent RPC session.
-                        try (var other = connection.createStatement();
-                             var rows = other.executeQuery("select sum(id) from table(vgi.main.sequence(10))")) {
+                        try (var rows = other.executeQuery()) {
                             assertTrue(rows.next()); assertEquals(45, rows.getInt(1));
                         }
                         statement.cancel();
                     }
+                    // A query timeout also covers starting a subprocess. It may
+                    // correctly expire before that worker reaches produceTick.
+                    // Wait from submission for timeouts, or from cancel() for
+                    // explicit cancellation; both must finish within 3 seconds.
                     Exception failure = pending.get(3, TimeUnit.SECONDS);
                     assertNotNull(failure, "Cancellation must fail the query, not return a partial result");
                     StringBuilder causes = new StringBuilder();
-                    for (Throwable cause = failure; cause != null; cause = cause.getCause()) causes.append(cause).append('\n');
-                    assertTrue(causes.toString().toLowerCase(java.util.Locale.ROOT).contains(timeout ? "tim" : "cancel"), causes.toString());
+                    boolean timedOut = false;
+                    for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+                        causes.append(cause).append('\n');
+                        timedOut |= cause instanceof java.sql.SQLTimeoutException;
+                    }
+                    if (timeout) assertTrue(timedOut, causes.toString());
+                    else assertTrue(causes.toString().toLowerCase(java.util.Locale.ROOT).contains("cancel"), causes.toString());
                     assertFalse(Files.exists(release), "The query must stop before the worker is released");
-                    try (var next = connection.createStatement();
-                         var rows = next.executeQuery("select count(*) from table(vgi.main.sequence(3))")) {
+                    try (var rows = next.executeQuery()) {
                         assertTrue(rows.next()); assertEquals(3, rows.getInt(1));
                     }
                 } finally {
