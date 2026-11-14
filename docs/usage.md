@@ -141,6 +141,65 @@ FROM TABLE(vgi.main.sequence("count" => 7, "batch_size" => 2));
 
 Prepared statements containing literal table-function arguments can be executed
 repeatedly. Dynamic prepared parameters (`?`) in those calls are not supported.
+Parameters in `WHERE` clauses are supported and eligible for predicate pushdown.
+
+## Predicate pushdown
+
+The adapter sends supported predicates to catalog-table scan functions and
+public table functions that advertise filter pushdown with the
+`vgi.duckdb.standard.v1` semantic profile. It uses VGI filter encoding v2 and
+advertises that encoding when attaching to a catalog.
+
+For example, the demo worker includes a function that applies filters before
+emitting Arrow batches:
+
+```sql
+SELECT id, label
+FROM vgi.data.filtered_sequence
+WHERE id BETWEEN 4 AND 7;
+
+SELECT id
+FROM TABLE(vgi.main.filtered_sequence(1000))
+WHERE id IN (4, 7, 42);
+```
+
+Supported predicates include comparisons (`=`, `<>`, `<`, `<=`, `>`, `>=`),
+ranges, `IN` and `NOT IN` lists, NULL checks, Boolean tests, and conjunctions.
+Disjunctions can be pushed when every branch is supported and refers to the
+same column. Unsupported disjunctions remain intact in Calcite.
+
+| Column type | Pushed comparisons |
+| --- | --- |
+| Signed and unsigned integers | Comparisons with exactly representable constants |
+| Decimal128 | Comparisons with constants that fit the column's precision and scale |
+| Boolean | Equality, inequality, and Boolean tests |
+| Strings | Equality and inequality without a locale-sensitive collation |
+| Binary | Equality and inequality |
+| Dates, times, and timestamps without a time zone | Comparisons that preserve the adapter's millisecond precision |
+
+NULL checks are also supported on floating-point and zoned timestamp columns.
+Floating-point comparisons, string ordering, nested fields, dictionary-encoded
+columns, casts that can change values, arithmetic, and arbitrary SQL functions
+remain in Calcite. Lossless widening casts of integers and decimals are
+supported. Constants that would overflow or require rounding are not pushed.
+Prepared `WHERE` parameters are resolved separately for each execution;
+numeric, Boolean, string, and binary parameters can be pushed.
+
+For microsecond and nanosecond timestamps, an equality comparison on the
+Calcite value becomes a range on the worker's value. This preserves all values
+that round down to the same millisecond, including values before the Unix epoch.
+
+Calcite retains and rechecks **all original predicates**. A worker can return
+extra rows, and unsupported parts of a conjunction are evaluated locally.
+Column identities in pushed filters refer to the full bind schema, including
+when the query selects columns in a different order or the catalog renames them.
+
+Tables with `scan_planning = "filtered"` receive supported predicates during
+branch discovery. Their planners may return no branches when nothing can match.
+Tables with required filters are supported when each required group has a
+translatable filter on at least one of its top-level column paths and the
+filters can be delivered to the planner or scan function. Missing or unsupported
+required filters fail explicitly.
 
 ## Types and execution limits
 
@@ -177,9 +236,9 @@ Distributed split planning and native-file scan delegation are not supported.
 
 ### Worker features
 
-The adapter supports column selection on catalog-table scans when the backing
-function advertises it. Calcite handles other projections, filters, joins,
-aggregates, sorts, and limits.
+The adapter supports column selection on catalog-table scans and predicate
+pushdown as described above. Calcite handles other projections, residual
+filters, joins, aggregates, sorts, and limits.
 
 The following worker features are not supported:
 
@@ -187,13 +246,14 @@ The following worker features are not supported:
   macros written in the worker's SQL dialect.
 - Table, `any`, or variadic function arguments, required session settings,
   and secrets requested during binding.
-- Required-filter tables, filtered scan planning, and SQL `branch_filter`
-  clauses.
+- SQL `branch_filter` clauses returned by a worker. These are distinct from
+  the structured predicates sent by the adapter.
 - Format or native scan delegation, such as `read_parquet`, companion catalogs,
   and scans requiring engine extensions.
 
 Unsupported scan requirements are rejected rather than approximated with a
-partial scan. The adapter advertises no advanced execution capabilities.
+partial scan. The adapter advertises streaming and filter encoding v2, but no
+native formats or relational query pushdown.
 
 ### Timeouts and cancellation
 

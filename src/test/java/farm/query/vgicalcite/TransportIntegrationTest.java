@@ -72,6 +72,12 @@ class TransportIntegrationTest {
             try (var result = statement.executeQuery("select count(*) from vgi.data.numbers")) {
                 assertTrue(result.next()); assertEquals(10L, result.getLong(1));
             }
+            try (var result = statement.executeQuery("select id from vgi.data.filtered_sequence where id = 4")) {
+                assertTrue(result.next()); assertEquals(4L, result.getLong(1)); assertFalse(result.next());
+            }
+            try (var result = statement.executeQuery("select * from table(vgi.main.scan_stats(false))")) {
+                assertTrue(result.next()); assertEquals(1L, result.getLong(1)); assertEquals(1L, result.getLong(2));
+            }
         }
     }
 

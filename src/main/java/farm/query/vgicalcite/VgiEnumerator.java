@@ -9,6 +9,7 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.rex.RexNode;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -21,6 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 final class VgiEnumerator implements Enumerator<Object[]> {
     private final VgiTable table;
     private final int[] projects;
+    private final DataContext context;
+    private final List<RexNode> filters;
     private final AtomicBoolean cancelled;
     private final org.apache.calcite.rel.type.RelDataTypeFactory typeFactory;
     private VgiSession session;
@@ -34,9 +37,11 @@ final class VgiEnumerator implements Enumerator<Object[]> {
     private boolean closed;
     private boolean failed;
 
-    VgiEnumerator(VgiTable table, DataContext context, int[] projects) {
+    VgiEnumerator(VgiTable table, DataContext context, int[] projects, List<RexNode> filters) {
         this.table = table;
         this.projects = projects;
+        this.context = context;
+        this.filters = filters;
         this.cancelled = DataContext.Variable.CANCEL_FLAG.get(context);
         this.typeFactory = context.getTypeFactory();
     }
@@ -56,7 +61,7 @@ final class VgiEnumerator implements Enumerator<Object[]> {
                 }
                 if (session == null) {
                     session = VgiSession.open(table.config);
-                    branches = table.resolve(session).iterator();
+                    branches = table.resolve(session, VgiFilters.translate(filters, table.columns, context)).iterator();
                 }
                 if (batch != null && row < batch.getRowCount()) {
                     Object[] values = new Object[projects.length];
@@ -112,6 +117,11 @@ final class VgiEnumerator implements Enumerator<Object[]> {
                 throw new IllegalStateException("VGI output type changed at column " + i + "; reconnect to refresh metadata");
             }
         }
+        // Encode against the full bind schema: catalog aliases and projected positions
+        // are not the function's wire column identities.
+        VgiFilters translated = VgiFilters.translate(filters, actual, context);
+        table.requireFilterDelivery(invocation, translated);
+        byte[] pushedFilters = invocation.filtering() ? translated.encode() : null;
         // Empty projection (COUNT(*)) still needs rows. Some workers interpret [] as no rows.
         List<Integer> projection = invocation.projection() && projects.length > 0
                 ? Arrays.stream(projects).distinct().sorted().boxed().toList() : null;
@@ -119,7 +129,7 @@ final class VgiEnumerator implements Enumerator<Object[]> {
         sourceColumns = new int[projects.length];
         for (int i = 0; i < projects.length; i++) sourceColumns[i] = projection == null ? projects[i] : projection.indexOf(projects[i]);
         stream = session.service.init(new InitRequest(RecordCodec.serializeToBytes(VgiTable.request(session, invocation)),
-                bound.output_schema(), bound.opaque_data(), projection, null, null, null, null, null,
+                bound.output_schema(), bound.opaque_data(), projection, pushedFilters, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null), null);
     }
 

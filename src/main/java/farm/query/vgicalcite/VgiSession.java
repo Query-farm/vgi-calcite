@@ -32,9 +32,12 @@ final class VgiSession implements AutoCloseable {
         this.connection = connection;
         this.service = service;
         try {
-            attachment = service.catalog_attach(CatalogAttachRequest.of(config.catalog(),
+            attachment = service.catalog_attach(new CatalogAttachRequest(config.catalog(),
                     config.attachOptions().isEmpty() ? null : SettingsEncoder.of(config.attachOptions()),
-                    config.dataVersion(), config.implementationVersion()), null);
+                    config.dataVersion(), config.implementationVersion(),
+                    farm.query.vgirpc.marshal.RecordCodec.serializeToBytes(
+                            new farm.query.vgi.protocol.ClientCapabilities("calcite", java.util.List.of(),
+                                    java.util.List.of(), true, java.util.List.of(VgiFilters.ENCODING)))), null);
             if (!attachment.attach_catalogs().isEmpty()) {
                 throw new UnsupportedOperationException("VGI companion catalogs are not supported by this adapter");
             }

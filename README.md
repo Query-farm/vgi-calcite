@@ -38,13 +38,17 @@ These tables and functions are available in the included demo below.
   arguments, and omit optional arguments to use the worker's defaults.
 - **Use familiar SQL operations.** Filter, join, aggregate, sort, and limit
   results through Calcite.
+- **Filter at the source.** Push supported predicates into compatible workers
+  for catalog tables and table functions, including parameters in prepared
+  `WHERE` clauses.
 - **Choose a connection.** Connect over HTTP(S), TCP, or a Unix socket, or run a
   worker as a subprocess.
 - **Stream Arrow data.** Read results in batches, with column selection sent to
   catalog-table scan functions that support it.
 
-This initial version is **read-only**. Calcite evaluates filters, joins,
-aggregates, sorts, and limits; those operations are not pushed down to the worker.
+This adapter is **read-only**. Compatible workers receive supported filters;
+Calcite rechecks the results and evaluates unsupported expressions. Joins,
+aggregates, sorts, and limits run in Calcite.
 
 ## Quickstart
 
@@ -153,8 +157,10 @@ another project, [install it locally and add the Maven dependency](docs/usage.md
   table-in/out transforms are not exposed; Calcite's own SQL aggregates work.
 - Table-function arguments must be literals. Dynamic prepared parameters
   (`?`) in table-function calls are not supported.
-- Worker-side predicate, join, aggregate, sort, and limit pushdown, distributed
-  splits, and native-file scans are not implemented.
+- Predicate pushdown covers a defined subset of expressions and types; see
+  [supported filters](docs/usage.md#predicate-pushdown). Worker-side join,
+  aggregate, sort, and limit pushdown, distributed splits, and native-file scans
+  are not implemented.
 - Each scan uses an independent connection. Catalog metadata is loaded once;
   reconnect to refresh it.
 - Time and timestamp values have millisecond precision.

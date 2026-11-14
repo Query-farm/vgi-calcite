@@ -90,7 +90,7 @@ final class VgiTableMacro implements TableMacro {
             else encoder.positional(scalar);
         }
         VgiTable.Invocation invocation = new VgiTable.Invocation(function.name(), function.schema_path(),
-                encoder.encode(), Boolean.TRUE.equals(function.projection_pushdown()));
+                encoder.encode(), Boolean.TRUE.equals(function.projection_pushdown()), VgiFilters.supported(function));
         try (VgiSession session = VgiSession.open(config)) {
             var binding = VgiTable.bind(session, invocation);
             var table = VgiTable.function(config, invocation, SchemaUtil.deserializeSchema(binding.output_schema()));

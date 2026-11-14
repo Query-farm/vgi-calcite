@@ -19,6 +19,7 @@ flowchart LR
 | --- | --- |
 | [VgiSchemaFactory](../src/main/java/farm/query/vgicalcite/VgiSchemaFactory.java) and [VgiSchema](../src/main/java/farm/query/vgicalcite/VgiSchema.java) | Load a metadata snapshot and register worker tables, nested schemas, and table functions. |
 | [VgiTable](../src/main/java/farm/query/vgicalcite/VgiTable.java) | Expose catalog tables through `ProjectableFilterableTable`, with supported column selection delegated to the worker. |
+| [VgiFilters](../src/main/java/farm/query/vgicalcite/VgiFilters.java) | Translate compatible Calcite predicates into typed VGI filters while retaining all originals in Calcite. |
 | [VgiTableMacro](../src/main/java/farm/query/vgicalcite/VgiTableMacro.java) and [VgiFunctionScan](../src/main/java/farm/query/vgicalcite/VgiFunctionScan.java) | Bind literal function arguments, discover the result schema, and retain each invocation in the prepared query. |
 | [VgiSession](../src/main/java/farm/query/vgicalcite/VgiSession.java) and [VgiEnumerator](../src/main/java/farm/query/vgicalcite/VgiEnumerator.java) | Own each scan's connection and batches, convert rows, and clean up resources. |
 | [ArrowTypes](../src/main/java/farm/query/vgicalcite/ArrowTypes.java) and [VgiTypeSystem](../src/main/java/farm/query/vgicalcite/VgiTypeSystem.java) | Map Arrow values to Calcite types and support decimal precision up to 38 digits. |
@@ -35,10 +36,25 @@ Function arguments are part of the function operator's planner identity. This
 keeps calls with different arguments distinct during optimization. A dedicated
 operator preserves that identity through planning and execution.
 
-Column selection is the only operation currently pushed down to the worker.
-Calcite evaluates residual predicates and other relational operations. Using
-Calcite's schema interfaces provides an integration point for applications that
-combine VGI with other Calcite adapters.
+Catalog scans receive predicates through `ProjectableFilterableTable`.
+Function scans use rules for Calcite Filter and Calc operators to carry
+predicates into the bound invocation without removing the enclosing condition.
+The scan's planner identity includes both arguments and filters.
+
+`VgiFilters` expands Calcite SEARCH expressions into comparisons and Boolean
+combinations. It pushes independent supported conjuncts, but only pushes a
+disjunction when every branch translates on the same column. Constants are
+encoded with the column's Arrow type and checked for overflow and rounding.
+Temporal bounds account for the adapter's millisecond flooring.
+
+Workers must advertise filter pushdown and the standard semantic profile to
+receive init-time filters. Filtered catalog planners receive advisory predicates
+against table column identities; scan functions receive predicates against their
+actual, unprojected bind schema. Each scan branch gets its own filters.
+
+Calcite rechecks all predicates and evaluates other relational operations.
+Using Calcite's schema interfaces provides an integration point for applications
+that combine VGI with other Calcite adapters.
 
 ## Dependencies
 
@@ -68,11 +84,15 @@ nested schemas; empty and multiple batches; projection fallback; SQL
 operations; NULL and default arguments; multiple scan branches; distinct
 function calls; repeated prepared statements; worker errors; and early
 `LIMIT`. Type tests cover unsigned boundaries, temporal precision, numeric
-carriers, and dictionaries.
+carriers, and dictionaries. Pushdown tests compare results with an unfiltered
+scan and inspect counters in the worker process to verify that filters arrived
+and fewer rows were emitted. They cover catalog and function scans, prepared
+parameters, fallback behavior, renamed columns, required filters, filtered
+planning, and empty branch lists.
 
-The initial implementation passed all 24 tests with no skips on macOS ARM64
-with both JDK 21 and JDK 27. A separate packaged-JAR check of
-`COUNT(*), SUM(id)` over `sequence(17)` returned `17, 136`.
+The suite is verified on macOS ARM64 with JDK 21 and JDK 27.
+Separate packaged-JAR checks exercise both the demo query and predicate
+pushdown over HTTP, using worker counters to measure emitted rows.
 [GitHub Actions](https://github.com/Query-farm/vgi-calcite/actions/workflows/ci.yml)
 runs the suite on Linux and macOS with JDK 21.
 
@@ -80,9 +100,9 @@ runs the suite on Linux and macOS with JDK 21.
 
 These are proposed next steps, not features of the current adapter:
 
-1. Translate Calcite predicates into VGI v3 filters, negotiate semantic
-   profiles, and preserve residual predicates. This would enable required-filter
-   tables and reduce data transfer.
+1. Extend predicate translation to additional expressions and types with
+   verified semantic equivalence, and use exact-application capabilities where
+   they allow Calcite to eliminate redundant filtering.
 2. Add planner rules for broader relational pushdown, distributed split
    planning, and cancellation deadlines.
 3. Design batched scalar and table-in/out operators that preserve VGI's

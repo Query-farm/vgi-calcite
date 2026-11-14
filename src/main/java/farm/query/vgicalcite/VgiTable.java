@@ -29,9 +29,9 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Read-only VGI table; filtering stays in Calcite and projection may cross the wire. */
+/** Read-only VGI table with capability-gated projection and predicate pushdown. */
 public final class VgiTable extends AbstractTable implements ProjectableFilterableTable, TranslatableTable {
-    record Invocation(String function, List<String> path, byte[] arguments, boolean projection) {}
+    record Invocation(String function, List<String> path, byte[] arguments, boolean projection, boolean filtering) {}
     final VgiConfig config;
     final Schema columns;
     private final TableInfo table;
@@ -62,12 +62,20 @@ public final class VgiTable extends AbstractTable implements ProjectableFilterab
     }
 
     @Override public RelNode toRel(RelOptTable.ToRelContext context, RelOptTable relOptTable) {
-        if (invocation != null) return new VgiFunctionScan(context.getCluster(), relOptTable, this);
+        if (invocation != null) {
+            VgiFunctionScan.registerRules(context.getCluster().getPlanner());
+            return new VgiFunctionScan(context.getCluster(), relOptTable, this);
+        }
         return LogicalTableScan.create(context.getCluster(), relOptTable, context.getTableHints());
     }
 
     /** Runtime entry point used by generated Calcite code for a bound table macro. */
     public Enumerable<Object[]> scanAll(DataContext context) { return scan(context, new ArrayList<>(), null); }
+
+    /** Runtime entry point for function scans; their enclosing Calcite operator rechecks the filters. */
+    public Enumerable<Object[]> scanFiltered(DataContext context, List<RexNode> filters) {
+        return scan(context, filters, null);
+    }
 
     String invocationKey() {
         try {
@@ -78,30 +86,33 @@ public final class VgiTable extends AbstractTable implements ProjectableFilterab
     }
 
     @Override public Enumerable<Object[]> scan(DataContext context, List<RexNode> filters, int[] projects) {
-        // Leave every predicate in the list: Calcite must evaluate it. Sending an incomplete
-        // predicate to a worker can remove valid rows even when Calcite rechecks the remainder.
+        // Retain all originals for Calcite to recheck, including advisory scan-planning filters.
+        List<RexNode> predicates = List.copyOf(filters);
         int[] projection = projects == null ? java.util.stream.IntStream.range(0, columns.getFields().size()).toArray()
                 : projects.clone();
         return new AbstractEnumerable<>() {
-            @Override public Enumerator<Object[]> enumerator() { return new VgiEnumerator(VgiTable.this, context, projection); }
+            @Override public Enumerator<Object[]> enumerator() {
+                return new VgiEnumerator(VgiTable.this, context, projection, predicates);
+            }
         };
     }
 
-    List<Invocation> resolve(VgiSession session) {
+    List<Invocation> resolve(VgiSession session, VgiFilters filters) {
         if (invocation != null) return List.of(invocation);
-        if (!table.required_filters().isEmpty() || TableInfo.SCAN_PLANNING_FILTERED.equals(table.scan_planning())) {
-            throw new UnsupportedOperationException("Table " + table.name()
-                    + " requires worker-side filter planning; predicate pushdown is not implemented");
-        }
+        requireFilters(filters);
+        boolean filteredPlanning = TableInfo.SCAN_PLANNING_FILTERED.equals(table.scan_planning());
         if (table.scan_function() != null && table.scan_function().length != 0) {
             var scan = RecordCodec.deserializeFromBytes(table.scan_function(), TableScanFunctionGetResponse.class);
             requireNoExtensions(scan.required_extensions());
             return List.of(invocation(scan.function_name(), scan.schema_path(), scan.arguments()));
         }
         var branches = ScanBranchesDecoder.decode(session.service.catalog_table_scan_branches_get(
-                session.handle(), table.schema_path(), table.name(), null, null, null, null, null));
+                session.handle(), table.schema_path(), table.name(), null, null, null,
+                filteredPlanning ? filters.encode() : null, null));
         requireNoExtensions(branches.requiredExtensions());
-        if (branches.branches().isEmpty()) throw new IllegalStateException("Bind-time VGI table has no scan branches: " + table.name());
+        if (branches.branches().isEmpty() && !filteredPlanning) {
+            throw new IllegalStateException("Bind-time VGI table has no scan branches: " + table.name());
+        }
         List<Invocation> result = new ArrayList<>();
         for (var branch : branches.branches()) {
             if (branch.branchFilter() != null && !branch.branchFilter().isBlank()) {
@@ -115,12 +126,37 @@ public final class VgiTable extends AbstractTable implements ProjectableFilterab
         return result;
     }
 
+    private void requireFilters(VgiFilters filters) {
+        if (table == null) return;
+        for (List<List<String>> alternatives : table.required_filters()) {
+            if (alternatives.stream().noneMatch(filters::covers)) {
+                throw new IllegalArgumentException("Table " + table.name()
+                        + " requires a supported filter on one of " + alternatives);
+            }
+        }
+    }
+
+    void requireFilterDelivery(Invocation branch, VgiFilters filters) {
+        // A filtered planner has already received the table predicates. Bind-time
+        // tables must instead deliver each required group to the actual scan.
+        if (table == null || table.required_filters().isEmpty()
+                || TableInfo.SCAN_PLANNING_FILTERED.equals(table.scan_planning())) return;
+        List<String> names = columns.getFields().stream().map(org.apache.arrow.vector.types.pojo.Field::getName).toList();
+        boolean delivered = branch.filtering() && table.required_filters().stream().allMatch(group ->
+                group.stream().anyMatch(path -> path.size() == 1 && filters.coversIndex(names.indexOf(path.getFirst()))));
+        if (!delivered) {
+            throw new UnsupportedOperationException("Table " + table.name()
+                    + " requires filters that cannot be delivered through compatible filter pushdown");
+        }
+    }
+
     private Invocation invocation(String name, List<String> path, byte[] arguments) {
         List<FunctionInfo> matches = functions.stream().filter(f -> f.name().equals(name)
                 && (path == null || path.equals(f.schema_path()))).toList();
         // A path-less dispatch is legal, but guessing capability flags across overloads is not.
         boolean projection = matches.size() == 1 && Boolean.TRUE.equals(matches.getFirst().projection_pushdown());
-        return new Invocation(name, path, ScanFunctionArguments.toBindArguments(arguments), projection);
+        boolean filtering = matches.size() == 1 && VgiFilters.supported(matches.getFirst());
+        return new Invocation(name, path, ScanFunctionArguments.toBindArguments(arguments), projection, filtering);
     }
 
     private static void requireNoExtensions(List<String> extensions) {
