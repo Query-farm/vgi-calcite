@@ -170,8 +170,8 @@ client Arrow buffers after successful byte-stream scans: ten completed scans
 added 2,560 bytes in the measured fixture. SDK PR #3 now also closes the stream
 reader and frees dictionary buffers on failure. Seven SDK resource regressions
 pass alongside the 698-test core suite and 21-test FFM suite (three and two
-platform-dependent skips, respectively). Cross-platform SDK CI was restarted
-for this additional fix; the previous green run predates it.
+platform-dependent skips, respectively). All ten cross-platform SDK CI jobs
+also pass for [the exact cleanup commit](https://github.com/Query-farm/vgi-rpc-java/actions/runs/43625838307).
 
 The connector's SDK release candidate includes the SQL memory regression. With
 the private `0.33.4-calcite-v3-SNAPSHOT` build, all 70 Java tests and all 122
@@ -180,6 +180,12 @@ RPC SDK 0.33.4 and must verify the published artifact before merging; the main
 branch still uses 0.33.3.
 Production readiness remains blocked on that dependency fix as well as the
 broader compatibility and operational work below.
+
+The [lifecycle qualification record](../conformance/baselines/lifecycle-sdk-validation.json)
+identifies the exact connector and SDK source, private runtime artifact, SQL
+reports and Java results. Its source hashes were checked against the recorded
+connector commit. These are pre-publication results; the published dependency
+must still be verified after release.
 
 ## Remaining qualification work
 
