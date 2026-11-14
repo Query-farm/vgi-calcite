@@ -18,16 +18,18 @@ import java.util.List;
 /** Bind-time TABLE(...) macro, so a worker may choose output columns from literal arguments. */
 final class VgiTableMacro implements TableMacro {
     private final VgiConfig config;
+    private final long catalogVersion;
     private final FunctionInfo function;
     private final List<Field> arguments;
 
-    private VgiTableMacro(VgiConfig config, FunctionInfo function, List<Field> arguments) {
+    private VgiTableMacro(VgiConfig config, long catalogVersion, FunctionInfo function, List<Field> arguments) {
         this.config = config;
+        this.catalogVersion = catalogVersion;
         this.function = function;
         this.arguments = List.copyOf(arguments);
     }
 
-    static List<VgiTableMacro> create(VgiConfig config, FunctionInfo function) {
+    static List<VgiTableMacro> create(VgiConfig config, long catalogVersion, FunctionInfo function) {
         if (!"TABLE".equals(function.function_type()) || function.has_finalize()
                 || function.input_from_args() || !function.required_secrets().isEmpty()
                 || !function.required_settings().isEmpty()) {
@@ -49,7 +51,7 @@ final class VgiTableMacro implements TableMacro {
         List<VgiTableMacro> result = new ArrayList<>();
         int arity = fields.size();
         while (true) {
-            result.add(new VgiTableMacro(config, function, fields.subList(0, arity)));
+            result.add(new VgiTableMacro(config, catalogVersion, function, fields.subList(0, arity)));
             if (arity == 0 || !fields.get(arity - 1).getMetadata().containsKey("vgi_default")) break;
             arity--;
         }
@@ -91,9 +93,10 @@ final class VgiTableMacro implements TableMacro {
         }
         VgiTable.Invocation invocation = new VgiTable.Invocation(function.name(), function.schema_path(),
                 encoder.encode(), Boolean.TRUE.equals(function.projection_pushdown()), VgiFilters.supported(function));
-        try (VgiSession session = VgiSession.open(config)) {
+        try (VgiSession session = VgiSession.open(config, catalogVersion)) {
             var binding = VgiTable.bind(session, invocation);
-            var table = VgiTable.function(config, invocation, SchemaUtil.deserializeSchema(binding.output_schema()));
+            var table = VgiTable.function(config, catalogVersion, invocation, SchemaUtil.deserializeSchema(binding.output_schema()));
+            session.verifyCatalogVersion();
             session.detach();
             return table;
         }

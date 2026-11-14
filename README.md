@@ -48,6 +48,8 @@ These tables and functions are available in the included demo below.
   and expressions.
 - **Validate Arrow batches.** Check schemas, buffers, text, and dictionary
   indices before Calcite reads worker results.
+- **Detect stale catalog metadata.** Reject changed known catalog versions
+  when binding or starting a scan, with instructions to reconnect.
 
 This adapter is **read-only**. Compatible workers receive supported filters;
 Calcite rechecks the results and evaluates unsupported expressions. Joins,

@@ -135,6 +135,42 @@ class CalciteIntegrationTest {
         assertEquals(List.of(List.of(7L)), query("select count(*) from table(vgi.main.sequence(\"count\" => 7, \"batch_size\" => 2))"));
     }
 
+    @Test void preparedQueriesRejectChangedCatalogVersionsAndReconnectRefreshesMetadata() throws Exception {
+        connection.close();
+        connection = open(Map.of("location", location, "catalog", "versioned_demo"));
+        try (var prepared = connection.prepareStatement("select count(*) from table(vgi.main.versioned_sequence(3))")) {
+            try (var rows = prepared.executeQuery()) { assertTrue(rows.next()); assertEquals(3L, rows.getLong(1)); }
+            assertEquals(List.of(List.of(0L)), query("select count(*) from table(vgi.main.change_version(0))"));
+            Exception failure = assertThrows(Exception.class, () -> {
+                try (var rows = prepared.executeQuery()) { while (rows.next()) rows.getObject(1); }
+            });
+            assertTrue(failure.toString().contains("catalog metadata changed"), failure.toString());
+            Exception planningFailure = assertThrows(Exception.class,
+                    () -> query("select count(*) from table(vgi.main.versioned_sequence(2))"));
+            Throwable cause = planningFailure;
+            while (cause.getCause() != null) cause = cause.getCause();
+            assertTrue(cause.toString().contains("catalog metadata changed"), cause.toString());
+        }
+        connection.close();
+        connection = open(Map.of("location", location, "catalog", "versioned_demo"));
+        assertEquals(List.of(List.of(3L)), query("select count(*) from table(vgi.main.versioned_sequence(3))"));
+    }
+
+    @Test void rejectsCatalogChangesDuringDiscovery() {
+        Exception failure = assertThrows(Exception.class, () -> {
+            try (var ignored = open(Map.of("location", location, "catalog", "changing_discovery"))) {}
+        });
+        Throwable cause = failure;
+        while (cause.getCause() != null) cause = cause.getCause();
+        assertTrue(cause.toString().contains("catalog metadata changed"), cause.toString());
+    }
+
+    @Test void unknownCatalogVersionRemainsUsableWithoutAConsistencyGuarantee() throws Exception {
+        connection.close();
+        connection = open(Map.of("location", location, "catalog", "unknown_version"));
+        assertEquals(List.of(List.of(3L)), query("select count(*) from table(vgi.main.versioned_sequence(3))"));
+    }
+
     @Test void explicitNullDoesNotOmitOrShiftArguments() throws Exception {
         assertEquals(List.of(Arrays.asList(null, 7L, 99L)), query("select * from table(vgi.main.echo(cast(null as bigint), 7))"));
         assertEquals(List.of(Arrays.asList(2L, 7L, null)), query("select * from table(vgi.main.echo(2, 7, cast(null as bigint)))"));

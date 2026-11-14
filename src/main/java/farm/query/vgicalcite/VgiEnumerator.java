@@ -60,8 +60,9 @@ final class VgiEnumerator implements Enumerator<Object[]> {
                     throw new CancellationException("VGI scan cancelled");
                 }
                 if (session == null) {
-                    session = VgiSession.open(table.config);
+                    session = VgiSession.open(table.config, table.catalogVersion);
                     branches = table.resolve(session, VgiFilters.translate(filters, table.columns, context)).iterator();
+                    session.verifyCatalogVersion();
                 }
                 if (batch != null && row < batch.getRowCount()) {
                     Object[] values = new Object[projects.length];
@@ -103,6 +104,7 @@ final class VgiEnumerator implements Enumerator<Object[]> {
 
     private void start(VgiTable.Invocation invocation) {
         var bound = VgiTable.bind(session, invocation);
+        session.verifyCatalogVersion();
         Schema actual = SchemaUtil.deserializeSchema(bound.output_schema());
         if (actual.getFields().size() != table.columns.getFields().size()) {
             throw new IllegalStateException("VGI output schema changed since planning; reconnect to refresh metadata");

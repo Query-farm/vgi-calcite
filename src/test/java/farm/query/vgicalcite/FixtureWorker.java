@@ -38,6 +38,7 @@ public final class FixtureWorker {
     static final AtomicLong FILTERED_INITS = new AtomicLong();
     static final AtomicLong EMITTED_ROWS = new AtomicLong();
     static final AtomicLong PLANNED_SCANS = new AtomicLong();
+    static final AtomicLong CATALOG_VERSION = new AtomicLong(1);
     static final java.util.concurrent.atomic.AtomicReference<String> LAST_PROJECTION =
             new java.util.concurrent.atomic.AtomicReference<>("");
     static final Schema COLUMNS = Schemas.of(
@@ -140,10 +141,37 @@ public final class FixtureWorker {
                         ? List.of(CatalogInterface.functionInfoFor(nested, path, "public")) : List.of();
             }
         }).registerExtraCatalogTableFunction("nested_demo", List.of("nested", "deep"), nested);
+        for (String catalog : List.of("versioned_demo", "changing_discovery", "unknown_version")) {
+            AtomicLong version = catalog.equals("versioned_demo") ? CATALOG_VERSION : new AtomicLong(1);
+            Sequence versioned = new Sequence("versioned_sequence", true);
+            Sequence changeVersion = new Sequence("change_version", true) {
+                @Override public TableProducerState createProducer(TableInitParams params) {
+                    version.incrementAndGet();
+                    return super.createProducer(params);
+                }
+            };
+            worker.registerCatalog(new CatalogInterface() {
+                @Override public String name() { return catalog; }
+                @Override public AttachInfo attach(byte[] id, CatalogAttachRequest request) {
+                    return new AttachInfo("main", null, Map.of(), false, false);
+                }
+                @Override public long version(byte[] id) { return catalog.equals("unknown_version") ? 0 : version.get(); }
+                @Override public List<SchemaInfo> schemas(byte[] id) {
+                    return List.of(new SchemaInfo(null, Map.of(), List.of("main"), null));
+                }
+                @Override public List<FunctionInfo> functions(byte[] id, List<String> path) {
+                    if (!path.equals(List.of("main"))) return List.of();
+                    if (catalog.equals("changing_discovery")) version.incrementAndGet();
+                    return List.of(CatalogInterface.functionInfoFor(versioned, path, "public"),
+                            CatalogInterface.functionInfoFor(changeVersion, path, "public"));
+                }
+            }).registerExtraCatalogTableFunction(catalog, List.of("main"), versioned)
+                    .registerExtraCatalogTableFunction(catalog, List.of("main"), changeVersion);
+        }
         worker.runFromArgs(args);
     }
 
-    public static final class Sequence extends CountdownTableFunction {
+    public static class Sequence extends CountdownTableFunction {
         private final String name;
         private final boolean projection;
         private final boolean filtering;

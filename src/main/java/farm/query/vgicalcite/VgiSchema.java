@@ -29,6 +29,7 @@ public final class VgiSchema extends AbstractSchema {
     public static VgiSchema connect(VgiConfig config) {
         VgiSchema root = new VgiSchema();
         try (VgiSession session = VgiSession.open(config)) {
+            long catalogVersion = session.attachment.catalog_version();
             List<SchemaInfo> paths = session.service.catalog_schemas(session.handle(), null, null).items().stream()
                     .map(item -> RecordCodec.deserializeFromBytes(item, SchemaInfo.class)).toList();
             // Functions can back a table in a different schema. Keep all dispatch coordinates.
@@ -58,7 +59,7 @@ public final class VgiSchema extends AbstractSchema {
                     if (!table.schema_path().equals(info.path())) continue;
                     VgiCatalogMetadata.validate(table, session.selectedCatalogCapabilities,
                             (path, name) -> allTables.get(tableKey(path, name)));
-                    tables.put(table.name(), VgiTable.catalog(config, table, allFunctions));
+                    tables.put(table.name(), VgiTable.catalog(config, catalogVersion, table, allFunctions));
                 }
                 schema.tables = Collections.unmodifiableMap(tables);
             }
@@ -70,7 +71,7 @@ public final class VgiSchema extends AbstractSchema {
                 VgiSchema schema = root.path(fn.schema_path());
                 var functions = builders.computeIfAbsent(schema, ignored -> ImmutableMultimap.builder());
                 try {
-                    for (VgiTableMacro macro : VgiTableMacro.create(config, fn)) functions.put(fn.name(), macro);
+                    for (VgiTableMacro macro : VgiTableMacro.create(config, catalogVersion, fn)) functions.put(fn.name(), macro);
                 } catch (UnsupportedOperationException e) {
                     String reason = String.join(".", fn.schema_path()) + "." + fn.name() + ": " + e.getMessage();
                     schema.unsupportedFunctions.add(reason);
@@ -78,6 +79,7 @@ public final class VgiSchema extends AbstractSchema {
                 }
             }
             builders.forEach((schema, builder) -> schema.functions = builder.build());
+            session.verifyCatalogVersion();
             session.detach();
         }
         return root;

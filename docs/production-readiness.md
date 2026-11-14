@@ -22,7 +22,7 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 58 tests. The Python interoperability gate runs 100
+The Java suite now has 61 tests. The Python interoperability gate runs 100
 upstream records, 14 adapter-specific records and 8 malformed-worker checks
 over TCP and HTTP. The
 adapter checks include worker-echoed filters, retained local expressions and
@@ -69,6 +69,29 @@ previous survey's 609 passes and 836 failures; none of its passing records
 regressed. The run began before its source was committed, so the baseline also
 records the worktree's base revision and the verified source hashes.
 
+The **full inventory survey** subsequently attempted all 417 files against
+connector commit `2b5e5e93d392205f4bbdb7eb30dad76331338335`, using the same
+released Python worker over TCP and the private SDK reader build described
+below:
+
+| Status | Records |
+| --- | ---: |
+| Passed | 1,408 |
+| Failed | 4,444 |
+| Unsupported by the harness | 227 |
+| Not run after a setup or bridge failure | 1,132 |
+
+The [full baseline](../conformance/baselines/full-survey.json) records per-file
+counts, exact source and dependency hashes, and reproducible classification
+rules. Of the failed records, 767 contain engine control statements and 601
+reference engine utilities such as DuckDB logs or cache inspection. A further
+164 have mismatched expected error text; the remaining 2,912 need individual
+review. These are textual observations, not root-cause diagnoses. Unsupported
+scalar, aggregate and table-in/table-out functions account for additional
+failures, but their directory names alone do not establish each failure's cause.
+Passing setup statements also contribute to the pass count. This run predates
+the returned-column NULL checks and catalog-version guard below.
+
 ## Function projection and batch validation
 
 Producer table functions now receive column selections as well as supported
@@ -113,10 +136,24 @@ independent DuckDB calculation both return the latter. The original upstream
 assertion remains a failure in the report; the adapter suite separately checks
 the correct result. This file is not part of the all-passing CI gate.
 
+## Catalog-version checks
+
+Discovery retains the worker's catalog version. Subsequent function binding
+and scans compare their new attachment's version with that snapshot, including
+repeated execution of a prepared statement. Known mutable versions are also
+checked after metadata discovery, scan planning and binding. A mismatch fails
+with an instruction to reconnect, which obtains fresh metadata. Regression
+tests reproduce changes during discovery and between prepared executions;
+both cases previously proceeded with stale metadata.
+
+Version `0` means unknown and cannot provide this consistency check. These
+checks do not provide a transactional snapshot, prevent changes after the last
+check, or automatically pin resolved data and implementation versions.
+
 ## Remaining qualification work
 
-- **Broader query coverage.** Run the full inventory and distinguish connector
-  defects, unimplemented harness controls, and DuckDB-specific expectations.
+- **Broader query coverage.** Triage the full inventory's remaining failures and
+  distinguish connector defects, harness controls, and DuckDB-specific expectations.
   The remaining 39 selected failures include named arguments that omit an
   earlier default, integer `AVG` result types, engine-specific SQL and settings,
   and equivalent predicate strings printed differently by the workers.
@@ -130,8 +167,9 @@ the correct result. This file is not part of the all-passing CI gate.
   behavior, connection and attachment cleanup under failures, concurrent
   queries, memory bounds and long-running scans. Each scan currently attaches
   independently; there is no connection pool.
-- **Catalog behavior.** Qualify schema changes, version consistency and broader
-  catalog metadata. Discovery is a snapshot. Constraint CHECK expressions use
+- **Catalog behavior.** Qualify unknown versions, changes during a running query,
+  resolved data/implementation versions and broader catalog metadata.
+  Discovery is a snapshot. Constraint CHECK expressions use
   the pinned SDK's restricted numeric grammar and evaluation context.
 - **Release criteria.** Publish a scoped compatibility matrix, reproducible
   conformance reports and performance measurements before describing this

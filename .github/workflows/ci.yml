@@ -42,7 +42,8 @@ jobs:
           cache-dependency-path: conformance/requirements.txt
       - run: python -m pip install -r conformance/requirements.txt
       - run: python -m unittest discover -s conformance -v
-      - run: ./mvnw --batch-mode -DskipTests package
+      - id: build
+        run: ./mvnw --batch-mode -DskipTests package
       - name: Reject malformed worker batches
         run: >-
           python conformance/run.py --suite conformance/malformed
@@ -50,11 +51,13 @@ jobs:
           --transport ${{ matrix.transport }}
           --report target/conformance/malformed/report.json
       - name: Adapter checks against the Python worker
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: >-
           python conformance/run.py --suite conformance/sql
           --transport ${{ matrix.transport }}
           --report target/conformance/adapter/report.json
       - name: Upstream table-function regression gate
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: >-
           python conformance/run.py --suite .conformance/upstream/test/sql
           --include integration/table/double_sequence.test

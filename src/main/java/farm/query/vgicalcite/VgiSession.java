@@ -29,9 +29,10 @@ final class VgiSession implements AutoCloseable {
     private boolean closed;
     private boolean detached;
 
-    private VgiSession(AutoCloseable connection, VgiService service, VgiConfig config) {
+    private VgiSession(AutoCloseable connection, VgiService service, VgiConfig config, long catalogVersion) {
         this.connection = connection;
         this.service = service;
+        boolean attached = false;
         try {
             attachment = service.catalog_attach(new CatalogAttachRequest(config.catalog(),
                     config.attachOptions().isEmpty() ? null : SettingsEncoder.of(config.attachOptions()),
@@ -40,17 +41,26 @@ final class VgiSession implements AutoCloseable {
                             new farm.query.vgi.protocol.ClientCapabilities("calcite", java.util.List.of(),
                                     java.util.List.of(), true, java.util.List.of(VgiFilters.ENCODING),
                                     farm.query.vgi.CatalogProfiles.encode(VgiCatalogMetadata.OFFER)))), null);
+            attached = true;
             selectedCatalogCapabilities = VgiCatalogMetadata.selected(attachment.selected_capabilities());
             if (!attachment.attach_catalogs().isEmpty()) {
                 throw new UnsupportedOperationException("VGI companion catalogs are not supported by this adapter");
             }
+            requireCatalogVersion(catalogVersion, attachment.catalog_version());
         } catch (RuntimeException | Error e) {
+            if (attached) {
+                try { detach(); } catch (RuntimeException detaching) { e.addSuppressed(detaching); }
+            }
             try { close(); } catch (RuntimeException closing) { e.addSuppressed(closing); }
             throw e;
         }
     }
 
     static VgiSession open(VgiConfig config) {
+        return open(config, 0);
+    }
+
+    static VgiSession open(VgiConfig config, long catalogVersion) {
         String location = config.location();
         if (location != null && (location.startsWith("http://") || location.startsWith("https://"))) {
             var builder = HttpRpcConnection.builder(location);
@@ -62,10 +72,10 @@ final class VgiSession implements AutoCloseable {
                 builder.bearerToken(token);
             }
             var connection = builder.build();
-            return new VgiSession(connection, connection.proxy(VgiService.class), config);
+            return new VgiSession(connection, connection.proxy(VgiService.class), config, catalogVersion);
         }
         var connection = new RpcConnection(transport(config));
-        return new VgiSession(connection, connection.proxy(VgiService.class), config);
+        return new VgiSession(connection, connection.proxy(VgiService.class), config, catalogVersion);
     }
 
     private static RpcTransport transport(VgiConfig config) {
@@ -103,6 +113,27 @@ final class VgiSession implements AutoCloseable {
     }
 
     byte[] handle() { return attachment.attach_opaque_data(); }
+
+    /** Recheck mutable metadata after discovery or binding, while no stream is active. */
+    void verifyCatalogVersion() {
+        long expected = attachment.catalog_version();
+        // Protocol version 0 is unknown, not an immutable version identifier.
+        if (expected == 0 || attachment.catalog_version_frozen()) return;
+        long actual = service.catalog_version(handle(), null, null).version();
+        try {
+            requireCatalogVersion(expected, actual);
+        } catch (IllegalStateException changed) {
+            try { detach(); } catch (RuntimeException detaching) { changed.addSuppressed(detaching); }
+            throw changed;
+        }
+    }
+
+    private static void requireCatalogVersion(long expected, long actual) {
+        if (expected != 0 && actual != expected) {
+            throw new IllegalStateException("VGI catalog metadata changed from version " + expected
+                    + " to " + actual + "; reconnect to refresh metadata");
+        }
+    }
 
     /** Only on a completed/metadata connection, never while a stream is active. */
     void detach() {

@@ -1,0 +1,2562 @@
+{
+  "description": "All 417 upstream .test files attempted with the released Python worker and a private build of SDK PR #3. Counts include setup statements, engine-specific expectations, unsupported features, and connector defects; they do not measure independent bugs or production readiness.",
+  "started_at": "2026-11-14T17:39:26.844508+00:00",
+  "connector_revision": "2b5e5e93d392205f4bbdb7eb30dad76331338335",
+  "connector_source_sha256": {
+    "conformance/run.py": "f7361756561d8e2bd98524b7dd106aa9862fe2cfadad8945c6c174f921a9457f",
+    "conformance/test_runner.py": "197b6e00f0e10fe81a34505acb46bcc625e582dcb95845826e3161fb0732dc66",
+    "pom.xml": "52a55207dae7972b1be45a0f649b7a7cbbfab9535376cb508853ebfd28591c47",
+    "src/main/java/farm/query/vgicalcite/ArrowTypes.java": "6d23fd964ae150e96839c9ff4479e5ca8dc8e3eb005d0f1843c4975ff98f9863",
+    "src/main/java/farm/query/vgicalcite/Main.java": "0b1d7406f39edec24b6ba72e6fb8e8f978a5d922a780ad4984d496b3c384d8b6",
+    "src/main/java/farm/query/vgicalcite/VgiBatchValidation.java": "4b2092ea672e4bffd72078bf8eb61a104702bbef64ac34ea41549932225c4655",
+    "src/main/java/farm/query/vgicalcite/VgiCatalogMetadata.java": "346de1f1be8d17705456773cf6ea672e91b38b3353350be53d9d43dd5165a91d",
+    "src/main/java/farm/query/vgicalcite/VgiConfig.java": "e61fc0f904f165f59937507b169da159e1697dfbf3c9f198f0edcffa9904419b",
+    "src/main/java/farm/query/vgicalcite/VgiEnumerator.java": "10d8ecae027b504f8acc3767542e1c4bf897a7183ed9c9806885444154abe907",
+    "src/main/java/farm/query/vgicalcite/VgiFilters.java": "a25d00ae96aeef2e778ef2682287e8fb2a890a8eb2c3c5a66d1e09437781584f",
+    "src/main/java/farm/query/vgicalcite/VgiFunctionScan.java": "d3d9f599868dac423e40bbe03cf61ff60546ac722f02d2d8e2049ee1ea1fe25a",
+    "src/main/java/farm/query/vgicalcite/VgiSchema.java": "f91db8bf1b95888b4f92b3378a521ab801dc9b82bed6e0e3662c9f4a73c39dc6",
+    "src/main/java/farm/query/vgicalcite/VgiSchemaFactory.java": "2a07122a7464f4d0463aff99a55bb18cdd237e4b38a85ace41b811cb57f50ba0",
+    "src/main/java/farm/query/vgicalcite/VgiSession.java": "d2580facec7186e3fa924da79dd3988365cc17771b7af43896b5abfff23d8ccd",
+    "src/main/java/farm/query/vgicalcite/VgiTable.java": "36fb9db0724501a53cafc2c469b87e64a8d0c2a0c41810cc214c3ade8e76c186",
+    "src/main/java/farm/query/vgicalcite/VgiTableMacro.java": "6c2dad603e7ae3e7a6b9e1aae760d099240e0aa36fc43a2dfc28f7940b67d62c",
+    "src/main/java/farm/query/vgicalcite/VgiTypeSystem.java": "d72ce583f500b562b6df0cd8e448971245592dc22fdf5d268a5a224c09313029",
+    "src/test/java/farm/query/vgicalcite/ArrowTypesTest.java": "fbd76b9bdd058a31cdcf045179b9f61ee1b1077a69719bb15d84e3a7a59f4877",
+    "src/test/java/farm/query/vgicalcite/CalciteIntegrationTest.java": "968fc015c6571e637493beeef1d22c1434abc17b66acaed1a555655637fd480a",
+    "src/test/java/farm/query/vgicalcite/FixtureWorker.java": "7c2af076c021231ffe1cd594b9d5e961e51a6562c961102c4a07c8f9f8a1c611",
+    "src/test/java/farm/query/vgicalcite/SqlLogicBridge.java": "80e212ad27e3b237953b36df97992a9c8b7baf3368abf7c50ea55fc40ffcae0d",
+    "src/test/java/farm/query/vgicalcite/TransportIntegrationTest.java": "6bea11f87d64d6e7160195827c696c300ed2b82553332129c453a7a654b203f2",
+    "src/test/java/farm/query/vgicalcite/VgiBatchValidationTest.java": "afd0dc70221ef29b9e3372937a52c842ce2675a6f35570f98693afe372bfddb8",
+    "src/test/java/farm/query/vgicalcite/VgiCatalogMetadataTest.java": "5404fb56115885ddf6ea8f25e1a81d0b703e31a9df65d684195047540cef99ed"
+  },
+  "runtime_artifacts_sha256": {
+    "accessors-smart-2.6.0.jar": "222c9f547bb20a99fc486403a398352d1306fb671b38abd7ecab6401df170e61",
+    "aggdesigner-algorithm-6.1.jar": "572364e03acf44b3fb336e4e36ea41b8a5baeb771c14c8df36bbee2c46ffc22e",
+    "apiguardian-api-1.1.2.jar": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+    "arrow-format-19.0.0.jar": "e805ea51ba8b517ec6c18a96ea83bef5cda5172a2b74419d4b48fb3584ce4504",
+    "arrow-memory-core-19.0.0.jar": "0d3646cc2fa9ae94e95dc8b3e0ed5a51e1df15b59dc548f359e941023471884d",
+    "arrow-memory-netty-19.0.0.jar": "e882e201a9a8de25f450e697491a3fb4689fb7cba9883c3323a966087fcf8c84",
+    "arrow-memory-netty-buffer-patch-19.0.0.jar": "47a8d7d1c9df06b3b84a0e49815615dad86c8c91afddf5b9817ed3e777784557",
+    "arrow-vector-19.0.0.jar": "113e70317945e780050f13d17027d862d4c5d1cebe06c9fd8a5e922945bb2f8c",
+    "asm-9.7.1.jar": "8cadd43ac5eb6d09de05faecca38b917a040bb9139c7edeb4cc81c740b713281",
+    "avatica-core-1.28.0.jar": "59d279a2175b148ac9f73218aba1dd302fc2536bee40cf6f01fe441f886f66a2",
+    "avatica-metrics-1.28.0.jar": "ea64431d3c7cb229df4fb8f35ad0f69de900c9142dfe421222b0f15824bf78fe",
+    "calcite-core-1.42.0.jar": "2ed5489201baab842001c95f939a0829849cf3cdaed9cdbf4b9078633c35792b",
+    "calcite-linq4j-1.42.0.jar": "6f54fa9f24a07ad961e0e1af499a58cfc2374a93ee280283beafe9035de3fa45",
+    "checker-qual-3.10.0.jar": "a4dc882ca6aac496d33381e5e5eb0604c45483b004bc3eac9368f1bb17cb2512",
+    "commons-codec-1.16.0.jar": "56595fb20b0b85bc91d0d503dad50bb7f1b9afc0eed5dffa6cbb25929000484d",
+    "commons-compiler-3.1.12.jar": "17ea25d860225f4b59d0a512b4995f2e4711bdae5e15736cbcd5f6ce4dda8f7c",
+    "commons-dbcp2-2.11.0.jar": "58d144d6327b4a054ca0e71a4438456bd66c0ca8d0c1aa799f59dcfb0ec599cc",
+    "commons-io-2.15.0.jar": "a328dad730921d197b6a9b195dffa00e41c974c2dac8fe37e84d31706bca7792",
+    "commons-lang3-3.1.jar": "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
+    "commons-logging-1.3.5.jar": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+    "commons-math3-3.6.1.jar": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308",
+    "commons-pool2-2.12.0.jar": "6d3bd18df8410f3e31b031aca582cc109342358a62a2759ebd0c4cdf30d06f8b",
+    "commons-text-1.11.0.jar": "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
+    "error_prone_annotations-2.36.0.jar": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+    "failureaccess-1.0.3.jar": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
+    "flatbuffers-java-25.2.10.jar": "587bd6c31cda747587493a113bec8602d3a0b0ca579b2b1b838ef71b19e6525d",
+    "gson-2.14.0.jar": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f",
+    "guava-33.4.8-jre.jar": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+    "httpclient5-5.5.jar": "496b4b0e8d5f3a8139a5d2638486d304758bac3a9c39d76989f663cfd9354fc9",
+    "httpcore5-5.3.5.jar": "34ce80396dcf2927406ddcd7c1c9063879220952ad0a2121c10103d3ad2cc3a4",
+    "httpcore5-h2-5.3.4.jar": "1fb4f34e4b612e7c127ad693335583587850b17ce9b1c366f9de1ca49fe2c781",
+    "j2objc-annotations-3.0.0.jar": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64",
+    "jackson-annotations-2.21.jar": "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b",
+    "jackson-core-2.21.0.jar": "e22604bcd9b24e462d5df102007cb06e1ed811e86f1ce6081ca62f385f2db87b",
+    "jackson-databind-2.21.0.jar": "0057817ee40bc71544072dc2a3ba575ef91dce53a2d87489bde91c05f3a22621",
+    "jackson-dataformat-cbor-2.21.0.jar": "79a579275cb0dd5847406930a58ce8a49d06db7815bba38a0d4a6ae1db3fb043",
+    "jackson-dataformat-yaml-2.21.0.jar": "5d184579144780c38962a5f475ed2485e8a29f36cc59ca237135b19e9b642420",
+    "jackson-datatype-jsr310-2.21.0.jar": "b350169a3b2cc53d781541fe1bfbc0f00c978d185884da79b8330be8fb7aefeb",
+    "jakarta.servlet-api-6.0.0.jar": "c034eb1afb158987dbb53a5fea0cadf611c8dae8daadd59c44d9d5ab70129cef",
+    "jakarta.transaction-api-1.3.3.jar": "0b02a194dd04ee2e192dc9da9579e10955dd6e8ac707adfc91d92f119b0e67ab",
+    "janino-3.1.12.jar": "5699878c31e71c9a94cf472f95a2dad52ca7b0449c099276b8bd7e992a43595b",
+    "jetty-alpn-client-12.0.16.jar": "28ff9568536483af9844b06a840af90ff21ad4549aee284070ec614060305531",
+    "jetty-client-12.0.16.jar": "0d5375c83a60362f2225ae06d4837463942f39c5bc6bd83172b4ad2aef28df29",
+    "jetty-ee10-servlet-12.0.16.jar": "18a6c41074061a0ff440d618b43e7ab328e81226ec21c4d6a4d53b90b2c94a55",
+    "jetty-http-12.0.16.jar": "b0751b3dd9a8abc79ba0c5061613843dba1d2ce231057f53ad3d038ca888dfb0",
+    "jetty-io-12.0.16.jar": "c8dfd2d88d34be5461417f2256be0cc868865c45815f7ee0e409ddd872f0e84f",
+    "jetty-security-12.0.16.jar": "7a6d5b2d0edb1b5012b5510a80411c7fb4b9844b3879938d3b6e9ace3b9b6876",
+    "jetty-server-12.0.16.jar": "9e3f17ca732154ee2c67cc2bc340f322b29335f74d65f7cc0104c2e9cdc6640e",
+    "jetty-session-12.0.16.jar": "5d7dfd24c94472c368441488791412a31ea476ad4f1d9286b4f5802c5d85514b",
+    "jetty-util-12.0.16.jar": "a03d43c194993ebb4d51fbfe7fe29134d7863b28708380eeedd11797c83543cf",
+    "joou-java-6-0.9.5.jar": "17abe9a61051bcb8f591213858d5ef60eb56b0ebda00ad249672f8c4d359c13a",
+    "json-path-2.10.0.jar": "890daa95dd3892d34d9fabc27cd5153656e6f369358625c88f4dc7b79cbd6c5a",
+    "json-simple-1.1.1.jar": "4e69696892b88b41c55d49ab2fdcc21eead92bf54acc588c0050596c3b75199c",
+    "json-smart-2.6.0.jar": "1ae4b561458afb540be8ec5c6dbb4f2e715a319a7ae64854998aaf924770d61b",
+    "jspecify-1.0.0.jar": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+    "jts-core-1.19.0.jar": "dbb8644cf324123d06c27aa982f570811e10b4cb1f2aef893b00de237d33efc0",
+    "jts-io-common-1.19.0.jar": "e0f0c62024d4282f5f905de1abd2cc96f975a51d9e8d98254234fa14b16bbe9b",
+    "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+    "memory-0.9.0.jar": "c7d22ca0298753de7a5c85edc9b926892936e978595fe44375159b8ada15fdfc",
+    "netty-buffer-4.2.9.Final.jar": "d013a96acea4889bc01ee03738d53c2e4a05e3faec14c25a92b4224c77d7a408",
+    "netty-common-4.2.9.Final.jar": "99d965d507b09599ab2d215e940c690d4f7ce8cd97ff13776aa17eb4e0d90b8a",
+    "proj4j-1.2.2.jar": "e6fb89b55a6466aff5cc8497079e9d08c160122f4b433e8061acc37f81d7f802",
+    "protobuf-java-3.25.8.jar": "72bdb32eb38cafb7dcd288262c29a34d57cba2e19101af9685155ba8c0a56008",
+    "sketches-core-0.9.0.jar": "672a7973eae372d9f6ad9dab5904292ab38a1be2b7445521a0d820a59f2ae13c",
+    "slf4j-api-2.0.17.jar": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832",
+    "snakeyaml-2.4.jar": "ef779af5d29a9dde8cc70ce0341f5c6f7735e23edff9685ceaa9d35359b7bb7f",
+    "sqlite-jdbc-3.49.1.0.jar": "5c8609d2ca341deb8c6f71778974b5ba4995c7d32d7c7c89d9392a3e72c39291",
+    "uzaygezen-core-0.2.jar": "29aabe951d220f03b3789332f9f455ca2eba953c91ecef8aa06f76f458cedc4e",
+    "vgi-0.48.0.jar": "1fcf01e4d9cb30e99159634e7be077b0e57d8abdf419d9617aa948b2e202b54a",
+    "vgirpc-0.33.4-calcite-v2-SNAPSHOT.jar": "5b44b8c45678c55d2200a0916ac49bae6941e449ff2484d63216876d74dfce7e",
+    "zstd-jni-1.5.6-8.jar": "57081e5c898cff772f97f5d96f5e74c7d8370797520e652b5d2a33b98e3cfc96"
+  },
+  "suite_revision": "86036b699c533ab87d9ddf44c2b477d7c9675951",
+  "file_sha256": {
+    "duckdb2/column_paths.test": "80651a4fc67afcfcd8fd32c3f689404b658e88a5d6adcc58ae8e8c1f0cc12b02",
+    "duckdb2/default_schema.test": "6cd1f02b3e7ad698e8bd25b976e29124612f0bb8002aec47daed6d004e491347",
+    "duckdb2/required_filter_paths.test": "005fe22cc05a1fd4de9e32cf94ad9651b563c8ccb9175371d4e6bba216ca2e12",
+    "duckdb2/schema_dependencies.test": "e1b956f4e9c28e6e57f2ef57f614b29fbd90594f3f742a333f54e335f95dabc8",
+    "duckdb2/view_alias_metadata.test": "ff21a921c2dfcb517af45551b8a7cb51ab849f194b7d1baf25cb53b21d094058",
+    "engine_features/correlated_named_args.test": "822f7b2e9ff5f1c5128d0cc508142c2b594390af2c40e1ba8a7d5e85055c1f15",
+    "engine_features/correlated_named_args_absent.test": "28d36b5954cdce45af1d469e0f1c768b141a9f48f07359dd5019ea709d40f054",
+    "engine_features/delete_returning_virtual_columns.test": "22df5e180afc9064bd70d3d05e1dcd7b0fa64fbce2f0af9911f3624eda743c82",
+    "engine_features/delete_returning_virtual_columns_absent.test": "a5845fcb73c86845aa0f01ba72c71a5bf2aaec2e6125f37273d1c0d28f13b82f",
+    "github/latest.test": "ed53205b484bdbe7d767167991ba079afc00b1413262c1d27a8ab3adccf64de0",
+    "github/latest_download.test": "c8ea438a45597663ad7a42b1dda0e54c6f0c6d326ade6f3bdd2c105b8bd2c6cc",
+    "integration/accumulate/attach_scope.test": "ecea2093e229c06252ef155fb9b8bdae37506b257fca12a6cdabb788f25c2997",
+    "integration/accumulate/basic.test": "8c2ecd34adcb7cea1c18e90829c81bb04f004e096f288fb8648162a5569cb659",
+    "integration/accumulate/catalog.test": "c83b289fbb92b3933121f22cad67acd3716e1606985e260d05f4f6215445ee03",
+    "integration/accumulate/errors.test": "b402cf0ee2ee2502ceadb938a81ba7552d46904d52d657ef185b3b6ca771c3fc",
+    "integration/accumulate/eviction.test": "6762aafc9a2ad8d34ec66f38f2d6ac9c97d5879520b74f877bdffdf951586749",
+    "integration/accumulate/result_modes.test": "5fa61f337d008411415db2263cbbd279182a7d4b7dfc5494e3bc1cd9652e612e",
+    "integration/aggregate/advanced.test": "b65b6fd5a3a1eda2e51c82dfd780e499984e2a2391d2fbde0dafd7b48da611e0",
+    "integration/aggregate/any_type.test": "0219a41fa8ac5bc0447fc6b6463088d355f084d0bd1016ece3a53471a13e8454",
+    "integration/aggregate/basic.test": "300aa2f4790c62b9f67445bbe14c4c2ae84c7031893dd478de813d3ac673ab54",
+    "integration/aggregate/const_param.test": "c5e0c2693a8267a027409fb2bbd29f6985416ba1d9ac226c85d5491f14caaaa2",
+    "integration/aggregate/dynamic.test": "e9040c866d551ce57a17836429f7ecc414532a617aeb64b7800fb3ed8bcd30e9",
+    "integration/aggregate/function_registration.test": "1b4e85749e08c76f2b2ee404c31e1894211fbe2f9aacdb4ccd8fbfe0a14160b5",
+    "integration/aggregate/function_registration_dynamic.test": "4361f8d22b0bbd6a2cb0acdd4d4ab5ec05349979abff19ef23764758f8c14aee",
+    "integration/aggregate/grouped.test": "bd29663217a87905eb9796252d1d5bcff29230cce871e66facfa0f3cb6bfe807",
+    "integration/aggregate/high_cardinality_10k.test": "b370f6c14a24e2f5cea32673dc636519496af30132ba471581f3161a30c2acc4",
+    "integration/aggregate/high_cardinality_1k.test": "644b53d3d9102562da2f9b0941ac39ec61c369131ff7e0ff9bea6ff2e94c2d43",
+    "integration/aggregate/large_ungrouped.test": "506d3f7e8f93c95c78e8c0703fb08d0c540e8b0b66d8fe2f422481fe1ec5515c",
+    "integration/aggregate/listagg.test": "4976bba1632f182ab0dbcf9edc88ae96e9a89f0ccf01d06c29bf7d20b5e84f16",
+    "integration/aggregate/nest_tensor.test": "2ee4792ac163594299e6e45c66a42106dbd7ccaaedae2d6031607672916aa2d2",
+    "integration/aggregate/parallel.test": "d4515c64093f2faa3f8b3522be743f81fc1a3080c3a1c8a68498505a2f8db86a",
+    "integration/aggregate/same_name_schemas.test": "060e1f0d605b622217446497542ce3b9671bcf63636ecfc8598778025c257b68",
+    "integration/aggregate/streaming.test": "05787ef0d6f088c70a8a5f4a7d3720db42887824099d01a2554f3f27b9b5b12a",
+    "integration/aggregate/varargs.test": "6ac2e265b31980c92bb52bc20ce35999ee1d789d8184220e58144c1fd9edaf3b",
+    "integration/aggregate/window.test": "8d394bd669a919bec744f08bd08e3c0ff5363ce8cec00adc8158366e34a6fd5f",
+    "integration/aggregate/window_dynamic.test": "cbed76d16de5ad2e837c4e86f9fdfc0e82696d7e7f13fd24d2a3c9fc493ae20d",
+    "integration/attach/attach_options_echo.test": "01db238fa19b8cb30616bdab4b48b1b973310f7a8cebb8563cdf8b71665af55d",
+    "integration/attach/attach_options_required.test": "64eec11922ee46bb2b6550014c79fd6f4ee148b4444824a36811ac4fc62b7a53",
+    "integration/attach/ddl_wire_contract.test": "6573996927e7450ee130df52a38b235e6ad27331b9de49dab1a99bac052b6a85",
+    "integration/attach/opaque_data_logging.test": "9234cf30d3c2ad345ad7d5349630aaac69a0b814663920e4833ffe56f7c43220",
+    "integration/attach/versioned_tables.test": "797f0b590f03e86f01b8d54b9c13c7d37be838c50c2f3605c0e2c1746359bd62",
+    "integration/attach/versioned_tables_http.test": "c328d46b57594093c672e8da442447d8350e8b55bb29937cdedbd8f5a67366d2",
+    "integration/attach/versioned_tables_impl.test": "9805fcb1142d24465f36524617d42ea69479a15e08d551b94c3f6ff5acb918fa",
+    "integration/attach/versioned_tables_impl_http.test": "5ec9e33443095f85a91679887798945a36b7cd80c004692de7ec11681c5e6dba",
+    "integration/attach/versioned_tables_resolved.test": "d4e7ad5061a42a229d9c3f75006f6b4d923ef3a75e4742c7cc7482cfbdb20de6",
+    "integration/attach/versioned_tables_resolved_http.test": "8329b296dad66e37f2665c7f0e89bca65d93223c5f73cde36a9526e8c8575e33",
+    "integration/attach/versioned_tables_spec.test": "21e19b4370ddb60ae59e0bb5f2ad776be6c590d153b0fa23ca5db2995d555255",
+    "integration/attach/versioned_tables_spec_http.test": "3195ea54f58dc958e742a679bdf0f8fc4c6cf39a4af7f72a327628ba878b1f7e",
+    "integration/attach/versioning.test": "1e1ba155a8e0bd5624b410a77ffaf6f6c858eec18a972751fb19528e18767769",
+    "integration/attach/versioning_http.test": "15a6875dd9deb6377c1b1770757557e95641d5571dc0911987f274b57fbd23fc",
+    "integration/attach_ticket/round_trip.test": "3c516e21c7401795ba0fca3aa26fdb3df9663ba7fae5971e831db1fd091bb7cf",
+    "integration/attach_ticket/unsupported.test": "56f63836b21790f73dd67e6b9f702f8ac25d4cdeff7c61a3542a992e682b04b7",
+    "integration/bad_enum.test": "09283423e783ffabc40dffdfb92ab093c50c3f2fe81aeafc5711949b5357a474",
+    "integration/bearer_auth/bearer_token.test": "52be7ed59b7688b416d0b01c66899e5e20b443430e89a8b68d8e783dc3fe0942",
+    "integration/bearer_auth/catalog_discovery.test": "cbd23aae529e854690721f206f470936d525d4fbdd0dec542a54af106a204352",
+    "integration/cache/at_isolation.test": "374e84b72a5a8f00dfd10efd3e48a3652cbe2ad08205818f1e0df35869b9e40f",
+    "integration/cache/basic.test": "1a8591a99eda89ef899db738e8b036ea3e0cfead020f60e01e6b2cb2c44ff928",
+    "integration/cache/cap_matrix.test": "2c103db6d4c0d9d7b069f35b92341da62bfd5dcac5d419a11ddf95f3f42003eb",
+    "integration/cache/cleanup.test": "7e02234ab3c888f3996ed494dc3e213eedd921b76878c39b38782fca078d218b",
+    "integration/cache/compression.test": "f711fab5c56008cbc3fb0cca09c68d5fd1f63d5ee8c8c103851f57977dbd71fa",
+    "integration/cache/coverage.test": "717885196ec8c20fa3828b697d3b4ff76518505035efa63353f8b3fec62003c1",
+    "integration/cache/diagnostics.test": "9472f0f7be54a84d0afd9dca4cce0748feeaffb54ed457d4ca525f5d8f89cba9",
+    "integration/cache/disk.test": "7b9763974896b35e4d6edb4d87897f986fa03a6cced0f8aa7aadc95f73311873",
+    "integration/cache/disk_streaming.test": "12c84022dd690ddc4ba69651fe7471757800b14fba62e3b01b944e1ace5ecb2b",
+    "integration/cache/entry_cap.test": "c7180a0bd9f6004a0d0fb7097257199de2e3d34d28a376b8d406eb8a5a1d1079",
+    "integration/cache/exchange_buffered.test": "5525dd8ab279231575659f7964b6e75a11dcfecfea44005cc4bf26d0adfa0f3b",
+    "integration/cache/exchange_lateral.test": "c6236f6c22e4dc95a646156159d290a0282fab1d4c7769f85e5b70c7b939bde8",
+    "integration/cache/exchange_lateral_disk.test": "a3d38ffcacd013d2f4628cb2c6e4dd2795cfebe905cd1ba98e33e6a558726f42",
+    "integration/cache/exchange_revalidate.test": "805b65ce91588f6ec8c234ec124164b8d565097448b06602b369563df99cd8b7",
+    "integration/cache/exchange_streaming.test": "1fa2deb88b9cf859c9dca943a8015109f605492bb359ba8f97f0baadca20d3b0",
+    "integration/cache/explain.test": "01873986dc34063f494329c538d2b787ed57f86b3d647c157fd0db83ed9c530b",
+    "integration/cache/explain_stats.test": "c409252254a85cfbb62f099929e606f6b3f214f15f078eee1d26a69e4a5cb68c",
+    "integration/cache/filter_pushdown_keys.test": "1b634b821b200ad6e600467733d29c077b4d1a812361ba25232c3ac30fa27f22",
+    "integration/cache/http_symmetry.test": "8b14aa11d8325569eee695d8b13867f94e809c5b5b59dbb19ee2e636f1864deb",
+    "integration/cache/identity_isolation.test": "b1725ec757c6c592547b4495af5bbafe306172d82ea9a533c6149fc65a3d0748",
+    "integration/cache/ineligible_reasons.test": "739ad5eb8128a1514ded3b6213e7512ee74679c6413c1f75f4473b08976349ff",
+    "integration/cache/multi_batch_threads.test": "32137772ee806acb189e9bcc4b021002919182ba4c033ca15d918a49926cd31a",
+    "integration/cache/opt_out.test": "4ec35a1b79afa9b3d71c6805763db934c654051109b5e21ea6082a9dfe50767c",
+    "integration/cache/ordered_serve.test": "50c12f3b15844e938450cb777d20bd666918683d992f196f3d6791b5834a4d1b",
+    "integration/cache/pack.test": "36bf83c034308ee87cea0867e40d17792e4d924cf4eaf79818481257c1c5b345",
+    "integration/cache/parallel_capture.test": "af49efd1bacef9d99b99111f52e59b4fbece1a26af54a11183a2967cd9ae9c79",
+    "integration/cache/partition_scope.test": "5807d1c26bf22f136dea7c690ecb29ea4eea820148e634f9262f61b9ae9756a0",
+    "integration/cache/partition_scope_identity.test": "effe353a262570c2d81e8b7ee29ccafd6a31369cd3846c65f819e21b7bcd42fe",
+    "integration/cache/partition_scope_ops.test": "d014377db909c1c5d4f43ade46e93c4abf32fcb6245d540eef0de5fcdd68834d",
+    "integration/cache/partition_scope_shapes.test": "0c2dcf080af714e845a4d029f74c2e74b20ad81e5c1b95d2820ba296e9629e32",
+    "integration/cache/per_value_concurrent.test": "7036214bf92340c99f7a78b49681303fb568ee280eca6a950689a191b5dd6377",
+    "integration/cache/per_value_lateral.test": "600ef743d24da86cc57550fe8ebe75c26f494873a1e277287349cbfaf67bed52",
+    "integration/cache/per_value_multi_batch.test": "a4f256a09f126b037fa0302ed4161dce5774e6eca36440d02c01a4334a047dcf",
+    "integration/cache/per_value_negative_memo.test": "54ad6821e1ac63eac8eb126d0a47f0bdcc477d6f9108b85651078b4c6b7147c5",
+    "integration/cache/per_value_partial.test": "b6d70ff53362a874ebfaf2f821af578432ec16147a2d280bc99cc04e1bd46820",
+    "integration/cache/poison.test": "4dcbc6c1a243368ed23ac713fc7f3b3086c2d2195b35842141cbda1803a8dff7",
+    "integration/cache/poison_external.test": "f830dff7df030fb0f65b1d82910d189d80cf3d8f758ae26c5fdaf769e6fc0ae5",
+    "integration/cache/prepared_reset.test": "b36ae85d06221109e0677d3d23a448ec96c5394672cab49c4f103564495bbc16",
+    "integration/cache/projection_pushdown.test": "b23e2980ba1a3cd97f90e493705478c0f26b3b4e0f8936695295ae6837985ef3",
+    "integration/cache/pushdown.test": "955a2bbb80fac55fdbc54017e379200034ea6fb0b8a4e5da1992e56a4c8b238f",
+    "integration/cache/query_shapes.test": "cb27f95872556e84d00ccf227e0185dd781495ce4f1b33209f5433ca75f9841b",
+    "integration/cache/replay_shapes.test": "670235bba1e1392cc2bd9f12065ac3509df16df69f092f3a91f85e470e6ffeb2",
+    "integration/cache/revalidate.test": "d59ed07f9a2123e431abc96af15274bff7ec05e75a3629737e5c429d0f4610e5",
+    "integration/cache/same_name_schemas.test": "8248e07da53d5b40024173c2b5d2fbfc28f328c16c7878b44f2f361b275ff194",
+    "integration/cache/secret_scope.test": "124ca669bc582def09cd6f4d041ed817fd896d0d5f41907b9fcf6084cd971e0e",
+    "integration/cache/shm_retained_batch.test": "5ed95c93763f06b01338a17f3440945f970fa096fcd7174fddf563d3210b3685",
+    "integration/cache/spill.test": "be28101c5508c8d6df5b7be3802c708cdd3139bd2ccc71ea7181a2fbb1ae4f57",
+    "integration/cache/spill_correctness.test": "5b34280e02c77497c1343845c2a9e771702855d5eb3f5fb492a198d1b323abbc",
+    "integration/cache/spill_disk_cap.test": "196a561c2d75d603c804d3307823574976b4969cad1bbdfeba57dc2f9cc4ceaa",
+    "integration/cache/spill_lifecycle.test": "d074b263241c113b9f4126d6b2b8530638d0a4181efcb282beacc68dacc146d6",
+    "integration/cache/spill_partition_values.test": "1f5de854032a76119212a6852e7438e7197e3b6449d5560cc8ddc611d5cae0bc",
+    "integration/cache/spill_poison.test": "a097a689f2b2a78786ebf0ddfb91482ade6cdcdae60613c029ea87a8f8a3a2d5",
+    "integration/cache/spill_types.test": "b2b2bd07ed07c03f2ef9a9b60ea6c9cf193911faf6fcafc3eac5d3ca3c83a12e",
+    "integration/cache/transaction_scope.test": "90430a83621766eb31eb4eb1b04dabd24b87aba527e91b0e6d05a68b0a78889a",
+    "integration/catalog/catalog_contents.test": "48a70397d9d2b400a2b969fc05644f6296f2734f7b50a0d4848fe4ba0a2813f0",
+    "integration/catalog/catalog_contents_conformance.test": "53fe492903847f45e15e33b00fe8809722530822f4595cb2869ddd23f06bf8b4",
+    "integration/catalog/catalog_contents_ddl.test": "50875c41f934d637dc5c699533f6b30ccb89bcaa8d60ea505eb71d8dad59ce45",
+    "integration/catalog/catalog_contents_fallback.test": "b148027fab344ca6123c3aee5f6a59dfa257e3377bab6a115c6bbe578e893c4a",
+    "integration/catalog/catalog_contents_revalidation.test": "93042db1ea4043be0a597d4f142b53d562e1663a49cf67e14d7437f77278b0ab",
+    "integration/catalog/catalog_contents_versions.test": "9875153b7c5d195150d93fdf0d50c7f6520e938aafc3c23a985df8826ed11f86",
+    "integration/catalog/companion_catalogs.test": "2db5011ee27b8296a851bbbe32a906ddc0eafbcc172cb3f93d7546f99cd3a465",
+    "integration/catalog/companion_hidden.test": "02236e9ac5f99f2ab3626f317d48028bbca06297664cff5c36d7af58cbcfef46",
+    "integration/catalog/companion_partial_failure.test": "1bb3ea8f2be8a160573c24a642f752d0e8d91a2897f6c7283324d7158987d8a1",
+    "integration/catalog/eager_load_threshold.test": "7755bb3aa52a904a33948333975ed1a6ceef4171411cd82b69f477545f4d95d9",
+    "integration/catalog/function_arguments.test": "8d54f6563401d9cd898e33a7c8d18d45d3f6c8e707ea14a720673262df54916b",
+    "integration/catalog/function_arguments_constraints.test": "1a86d2e9300fae5d137ca14bc99636fe7d9cbf082aa46180372fea5c13270bed",
+    "integration/catalog/function_arguments_macros.test": "bc78ae89a18f3b51b780617b7677a08c522aad8c7a90d510ca0265ab8f5d0c1a",
+    "integration/catalog/multi_branch_capability_cache.test": "30894fa9d293a38c553a2006c5f488e0b7cd1af83016758899c67924e306fd66",
+    "integration/catalog/multi_branch_empty_branches.test": "268a040af3bf267ff2259f8baf813d47ed15eb59a6afc2bd819321236b36ed6a",
+    "integration/catalog/multi_branch_format.test": "928fbe8f58505ba02f4deae1e542436cd9b554db4385f209a3d278872363a655",
+    "integration/catalog/multi_branch_heterogeneous.test": "c3fc25f72f8c084c448aa74ea8bcc7a6a17ec216f9e024f96279b563334feccc",
+    "integration/catalog/multi_branch_iceberg.test": "bf5070763ecee27d972e8a6662e865902cbbfc229c1ad164e74e64a5c7b18631",
+    "integration/catalog/multi_branch_join_optimizer.test": "06415bf1b353a801b59715bd0e194d54f31c43e3695053a08c1a24f58085040b",
+    "integration/catalog/multi_branch_lateral.test": "9b8d45da36d47b0aad2c070f4998bbd37ed05f69455a4e0fcede1023a2c1bec6",
+    "integration/catalog/multi_branch_optimizer_disabled.test": "84f9bc9859440c12025a982cf4855e5c3739a8d029a5319e59be1d72d82cb9af",
+    "integration/catalog/multi_branch_pushdown_incapable.test": "04264ab0afd3898ee890518adf80484ac759a4ef7556bead132b3243d2cc11ea",
+    "integration/catalog/multi_branch_reconciliation.test": "7d6c79eaf95ea01b0be6bb739cc63638de583c9ca7ba949dfa60984aba360f7d",
+    "integration/catalog/multi_branch_scan.test": "08e2da3d50f5a77fd2e7da599e642233d8c4050581975f8f31bd8a9d3431336f",
+    "integration/catalog/multi_branch_two_writable.test": "5eb152d29acf2f84cb3f87d74537fb21605b95aaf0db8af4bc4ea32fd3e20de1",
+    "integration/catalog/multi_branch_writes_refused.test": "af7b2c2362d46f458db68777d24347a424451a34a5be24b8c1e8e00d97d22abd",
+    "integration/catalog/window_self_join.test": "f82bc8aa587f44c1d01fd9ebda6b22fa2341a1105213249259c7d204e31741d6",
+    "integration/catalog/zero_count_bypass.test": "71d59e3a2a77e0e866a6de4e428709f77151088fa9e6c759590c61c153e3b47d",
+    "integration/connection_string.test": "0e33febc18dd27a7c28b7cd268424bfdc8d57aa3087ac36d825b88324bf3b062",
+    "integration/container/errors.test": "f2a5bf22b71ebde421d20d1e79a5e9f50c443b14eb597f02c71fe64b1f5fe482",
+    "integration/container/shared_http.test": "211c9f0da278bc74d1490555afb893d25f9a01543f65173d24bcab437961eb03",
+    "integration/container/shared_tcp.test": "d750f1414f946e1ca80cd3ab073dde5a672e724bb20a4e7522a4f9a7eab4c345",
+    "integration/container/sklearn_smoke.test": "65f72539fae46fa2e0fc7ce9565e38aecacf78583af7c751e13e7b395041ec38",
+    "integration/copy_from/basic.test": "277cbb89617a5dea4ca4329071b569fbb0ef3f1101ab84be53b8a5e41d7a2432",
+    "integration/copy_from/options.test": "3d685202e14e8ed1dd83d50b240a54a3a9acda42fc9d454babb27d68ab393325",
+    "integration/copy_from/secrets.test": "297e732eab73538aec0f488789cb8d0954fa6f22caaf7c5893df799205c23064",
+    "integration/copy_to/basic.test": "bf89484ef5059db2a38c47f85fe7b12300f9f9a167f1eb5e56d5ac4486ff5f14",
+    "integration/copy_to/failure.test": "6b4955aeb5c246c6c647163475c1006633dede924d4e3d02808b923a3e4371e5",
+    "integration/copy_to/options.test": "c4e74f7456fbcbc6901b538ea2eded378c7a325bbd178a498d2ce72849a85d55",
+    "integration/copy_to/ordered.test": "4b0e1860039c2e17d3ad32577f1a751516ee7dcbe1d5cdac005f6943e5ac230d",
+    "integration/copy_to/parallel.test": "b1adb2c0f659b6bfc3ba8f482050b5d449ea84422ab5e846bdd3332e3a17188f",
+    "integration/copy_to/secrets.test": "fd0b05ce8a857e8abd9359a9409cc6ff2b7ffa24bbf036220cbf973cc577ec4a",
+    "integration/copy_to/tmp_file.test": "c4affd37e8710abf09458ccd2dc3033495927a6b2ffd809e947b2b3d2a9092d5",
+    "integration/copy_to/types.test": "c255439e3d4712906c840e64d02f38f2d3ae171235337c09506c45d9f3f966b2",
+    "integration/database_worker/errors.test": "ba5ae944ab28e6b7240c5f85aebf5fbe300207ab4aeded35c75ac513fedc4908",
+    "integration/database_worker/package.test": "0ab42e677f348c2a6fac606ab0f19bb357579d2b42d822c342404dd104c1113f",
+    "integration/database_worker/real_bun_open_meteo.test": "8420c3e41d1afff55fa545abb9ece41b899e2ccc2ff0e2625619c1cbf0fbe80e",
+    "integration/database_worker/real_python.test": "53d4d14042542ef8c08e892abf6e63010eda66929f7317d044d94591ee35110a",
+    "integration/database_worker/real_rust_archive.test": "e3a26c89b2be70182665f620584ed7aaac24053cb32bab7eb66a6647d6028b7e",
+    "integration/error_info.test": "23b4e11b094a2b635b149d5c47062ac2245d69c6fadadae7c3a720c615ae9dd2",
+    "integration/filter_pushdown/blob.test": "ba1c72ccc780101e9073b63eb80346e6ba887b22761b71aecc0926b36a1938ad",
+    "integration/filter_pushdown/boolean_column_predicate.test": "b2545b33be71a553424e2f54c818bf3f4291de72139442751a9657d7d4f9eb62",
+    "integration/filter_pushdown/booleans.test": "1a646aa9d08ca24dfbd8dc93c192c5d1c921e191f46db52572b83c0be200f42d",
+    "integration/filter_pushdown/decimals.test": "ad10945876e0d93a1422ecb4f6028ddf80cf32442fd97890026bdca18fe75ba0",
+    "integration/filter_pushdown/dictionary_varchar.test": "07aaeb56b01529c82acf6bc4449fbf13ae1c0c2be8bf0ce9190cba2ef484b31d",
+    "integration/filter_pushdown/enums.test": "a814dd975d73514c4dd71bc8e3a4a7cb908674d62ecb2e14a6bb297371f0263a",
+    "integration/filter_pushdown/floats.test": "b19750f799afcea878554c8fb41ae5caf21abf5296306c04ecf7450c58f5040e",
+    "integration/filter_pushdown/hugeint.test": "cc43fe689835c2f64a599e6d437eb384ab86c8efdc21d97c9e5e4987980cb7a5",
+    "integration/filter_pushdown/integers.test": "60b5da6103f6e920456aabbb12c81a37001542b854fb5a8e7f76aa8ae63b747a",
+    "integration/filter_pushdown/null_logic.test": "822c800b17e7fe8f514b667affc2bbdb3ede62e4ef3bb0d8fbbaf035f4c59f9e",
+    "integration/filter_pushdown/strings.test": "f4efccff364fb2910fd2b381e34a571365871effe987fd8a6315e51822acf32c",
+    "integration/filter_pushdown/temporal.test": "c6b8a74d4173ec082f1fdca0015d7834df9ee26f7eea3905fd0399f741d249e9",
+    "integration/filter_pushdown/time_tz.test": "8a577dbb0f4eddf1edc85d2d18b08ae50eb8dd24596ce54cdfb63aa77cad6c82",
+    "integration/filter_pushdown/uuid.test": "81011ccc6af92be141feafaf6a31c4fb8510ce980b3eeeae1cdb33b21b597d2b",
+    "integration/github/download.test": "679bad8e9a832797502191c9f50d21badd41ab74ccfa6116f19ac685f96517fe",
+    "integration/github/errors.test": "d7605dd7dfb5392bbd39d81c1589a0ad537f8d54d31896ce19977fcb3c8e9ab4",
+    "integration/global_functions/basic.test": "3bd21b14e7e89a701398848ecbc320ac8484c13906ffe4ac84c872a6a083461f",
+    "integration/global_functions/lifecycle.test": "af4a696211d9f7be71891b9f111410140eb452e8b7d7abd1e9bd7a1a9660efdf",
+    "integration/http/capability_probe.test": "7ff893b89b4f6add87361524374941f3b08181da7e7a07ef50259c9286e6d53f",
+    "integration/http/gzip_fallback.test": "ea459788212b0ae7504c4770b0df3a49f64952bc20221028c7571e8981e96473",
+    "integration/http/no_compression.test": "80c195e809d11893f7efa54df49dda38136bdd41cfd63945b15575999283582e",
+    "integration/http/producer_turns.test": "01519a3bf597dfb721dab9043ca50ac19f26cf0c300663a996227dce3719454f",
+    "integration/http/small_body_encoding.test": "9964acacd6e0618223439c05abd8f3b5ad4a967b6225d87d34d11d0e8b15dac3",
+    "integration/httpi_native_rejection.test": "c3a920a64ed65c422e373d006a5a35656433611afe783f831215625ad084043c",
+    "integration/iroh_native_rejection.test": "09348fcea5d876af47ce6351ea42ce676bb987e756acc6d9eb83833973cf1d34",
+    "integration/launcher/options_smoke.test": "42388263cb0bac196704173775a4e53bc6fa37f91ede3215d361866478d45adf",
+    "integration/launcher/options_validation.test": "5221c1797dc258630c331973ebb2a6cda1c299856204ca7a5e22bc4accecfefe",
+    "integration/location_policy/external_access.test": "d04fc948bd0edd4882187d88a606bb5f9bc8abf5cb456d18c9b0ad698db6fcb1",
+    "integration/location_policy/grandfather.test": "e5cd9e5049ef1af8dce21a8557c21b5be97513c88769449e0256ecd77ce35bf9",
+    "integration/location_policy/internal_and_prepared.test": "f0c30d3b503c283f169c953083bbf8859e5b2b5d80fcf291415b85e1c3b752ba",
+    "integration/location_policy/refusals.test": "f093a2e913300da6c50a800aded309a26acbeb8f772961e735ce7e382789a6bf",
+    "integration/location_policy/setting.test": "e41c207587067d5e3ba6236e8d2bfbe90986bb66db7638bb2794767d77140eb4",
+    "integration/macro/macros.test": "b19e39ef3c16ba62740cb08c6f9f019f5d3e187929840a8256cceed3cd8b7f8c",
+    "integration/macro/session_context.test": "06f7db2b987baaee9b8f2d610d2683811a0c75e13811087cba1070659d731bf2",
+    "integration/macro/session_timezone.test": "d0a0330b0b88a78ffd66751279ccaf5c41fd1c6eb27076953005920fc044fc1b",
+    "integration/narrow_bind_mismatch.test": "bf49ce84d2128742823be2437cf8979fc0ffde0534aa5068b8ee5c73a9d444a4",
+    "integration/overload/scalar_overload.test": "9665ba8cca3a8cd49dc4e8088b3ae6c015e4dd832bb0261cfd786e722cef1c86",
+    "integration/overload/scalar_varargs_overload.test": "ac7d4353e535488241560178851097dc801c24f9c81981ab837be12c7cac32d2",
+    "integration/overload/table_overload.test": "4d777d83dbbff674773d4772f911c859aa3971a07b96c8421bc1e2618f2a54f2",
+    "integration/overload/table_varargs_overload.test": "1196cc90cdc0446342bef8be50731c1e2d2aa5d8141c6f8c8a8836e09eaaa25e",
+    "integration/projection_pushdown_repro.test": "2a8d970c2bd35e98ce90a53cfb0f718f281cfae97c68de5adc0d567c42b3339b",
+    "integration/protocol_version/version_mismatch.test": "4bfd0ce883f55b9586a3abefc872ffacc73a2466c06108e6eeda75116b964c80",
+    "integration/reflection/pre_reflection.test": "a2161619645b5176e4b696623b0cada08b073bc5d10575f7500f43386881cb3f",
+    "integration/reflection/vgi_protocols.test": "d49a417e5bd2388d061ba1695bcbaf1e2aaba05c64fe5186a1b0ce0ef5a8a620",
+    "integration/reflection/vgi_v2_hash.test": "d78c8635750467140db9465c991f6c9945ede2adb59c1b35c0e3b23d3061bc13",
+    "integration/scalar/add_values.test": "4e5359d30da345af46bd464505dc3cecfc11ec7d8bccb29a0d76d5af9e35ff0d",
+    "integration/scalar/argument_names.test": "97485fb34c7fb6adace721e46d26b2093107ce286465fb9bb37e4b515447c2bb",
+    "integration/scalar/binary_packet.test": "a65da6b61c144a0c4a9654f42b671057581d448fcc5675100ea0e337963308cf",
+    "integration/scalar/conditional_message.test": "c28f35fab9904983cfe025cf15d0db8091e8b0731a95272bff246357cd6a3b1a",
+    "integration/scalar/dedup.test": "3f26087f79c4bff2d0d3c79f6c635350fbf992f22e151be5b4357bd4d9b8d4d7",
+    "integration/scalar/dedup_large_strings.test": "0685eb376dabba5b1fc51865129322852e428f6f2c2da73259b7d0f0796bc15d",
+    "integration/scalar/double.test": "2e23249c31ccb78dc6fb9f8b337bd506efe333186a7dabd6205e5a6a4f7c947a",
+    "integration/scalar/function_registration.test": "e7aa79d586a4f6326dd4c872755528a4decc0d88560f07bab725a79c9e588611",
+    "integration/scalar/geo_centroid.test": "6d880677af5ed60b99cdd71df46c5e03c5271dad3f57f032f60436b0b1a113c0",
+    "integration/scalar/geo_distance.test": "1c692f4f2ecbf1c57d19df679f1aa477677660293e16943842dbb245058d0f58",
+    "integration/scalar/hash_seed.test": "17bc55241dbb5bb7acfda7586604f51cf9e5302c3c7659d74cfab0a80354858a",
+    "integration/scalar/null_handling.test": "630cb763940fb752070023c80a7467d3c891e3300ea23b202fe71d3bb2fc7526",
+    "integration/scalar/numeric_promotion.test": "06bc9a7863595d7d6b1b533049510dfc33d9cac7f49819109761b322631b1376",
+    "integration/scalar/per_value.test": "397f28f6acc1608c68239ca2e17ccdf41176f792c16c29d2fb7317b8edc22c7a",
+    "integration/scalar/per_value_edge.test": "b6c07ed54f62fbddeb8956654c8485ea210b83c37de7fd4b9e4c9be400e3b949",
+    "integration/scalar/random_int.test": "955a66ad91fe153eabc76d2b26c86eaaa50655fdab1bdebe6486db785113d505",
+    "integration/scalar/same_name_catalogs.test": "06c6d0645d27f82a3b00fdc1cfa7ac60d5a086352f04981182503ef69a31a317",
+    "integration/scalar/same_name_schemas.test": "8f2cd0bf70f34c918e93fa1ef035f19d53b0976b2479df1c87fed499192df1a9",
+    "integration/scalar/sum_values.test": "e7075e50bc510d4fcb13957994a8fd72b30d60153989ccc0a87d90b111a8e69b",
+    "integration/scalar/unnest_tensor.test": "41425d6b5c4b7e2c33807bbe51828590743f84571f558c32357cb31f179e5bef",
+    "integration/scalar/upper_case.test": "3d05a6d8526f8578cc17a706fb3569614cad38d0197c1479e66bcd0926b06a99",
+    "integration/scalar/whoami.test": "add62491443a138e3c95bbaeea615a7fd951a48fa97275d6fbf01e38c1ba5e42",
+    "integration/schema_reconcile.test": "8ea5c79ac76f14b925abc8a7cccdf23e27a8fdbb8f93f2aea66373b6b3fe3e1b",
+    "integration/secret/secret_aggregate.test": "9685e5d39021623fe8d66eaf79e33ecfa79a0c4159df92ad4750bb7c05d7d4c0",
+    "integration/secret/secret_fields.test": "c8f8bcc5c365262afdd57fbc8a3e94bc81e545abf7ee30a4dc699a375b8a18eb",
+    "integration/secret/secret_function_backed_table.test": "1fcea2e41011ea3873adbc6765b56b2ead3f2b6b62f7a22076336ba25077dc33",
+    "integration/secret/secret_lookup_by_name.test": "6f2a220dbc53fe8bb6787075e67058316f16bb93e96548a9462730202998b1ad",
+    "integration/secret/secret_lookup_by_type.test": "0d8a5ad1c9b47753729161d3017f0d8f8d604c288b807dc10c8be1d9c8ce1cbb",
+    "integration/secret/secret_lookup_multi_type.test": "275ec863856e675b4407467686ac8589ae8f5333d9c1a30e5fe04eec1f98416c",
+    "integration/secret/secret_lookup_redaction.test": "766e6dd6d3b13dcd72aa4584035951596f5a7bb7564a69f7ed4c2c97d3917e24",
+    "integration/secret/secret_lookup_scopes.test": "30f188647d1f9f4a9b5ede68cbc390b67ed38276710ec4d7b481ab8c0bdc63d6",
+    "integration/secret/secret_multi_scope.test": "54977f57ad011cc62bf00ca377e0f939dadd7035d777a708deb46bbe787cc9d7",
+    "integration/secret/secret_no_secret.test": "5c48a4ade0dbaaa9d28308575f763c522daee3dd08500be833aa6eeb508d9913",
+    "integration/secret/secret_registration.test": "dc604d4541924270ce1fd0a0b71642b3e771080f395f7af557e765d681a1f6f9",
+    "integration/secret/secret_scalar.test": "3f50c40bf7b7d254999a6212c0a015c1fed15680f470d913f9945230ad312210",
+    "integration/secret/secret_scoped.test": "ae248b2e10f4a95de5a5ba3fb31250193898faa2ead41565cf72847dbf738acc",
+    "integration/secret/secret_table_function.test": "2a1330bc6218d6a7c8bbc4a26828f1648525e5384da46fad4b6cd98488837d06",
+    "integration/secret/secret_table_in_out.test": "ec52d6e83a769707da27e7d53626e38508b650e847285b69eb25bdc204030a1c",
+    "integration/secret/secret_types_function.test": "8ff6133a740ed6949f0c2e09db822b3e972c94c61a4b12ce59ed929ba00f7303",
+    "integration/settings/filter_by_setting.test": "9d0fb4561776d2a55967654fad50711f1508586837fee294c46b2b72df987989",
+    "integration/settings/multiply_by_setting.test": "170f7362b23c6b07f4fb27a59a9ae77ca367d0b4e6de691bb9f7b37b2d46b90e",
+    "integration/settings/settings.test": "ab479e290e666092f2760b708c42cf9ee2713c7aa27b053b072dda975c2ff0a1",
+    "integration/settings/settings_types.test": "4bab68e862fd8c06ee05bb812278df1162b3ad558fd81225f895052189610805",
+    "integration/settings/struct_settings.test": "c36724ff57073b902b88e03201dcd1047d2240338127c648fce9137c705ca59a",
+    "integration/simple_writable/catalog_contents.test": "fbe7c97a43245177ffcdeb88d1dd9c83ac3df26786e53922b873225fe622b1c4",
+    "integration/simple_writable/delete.test": "ba8cfbc5d59bfc15c4a2c1758cfbdcc64c21bd6bcae93d577837394fb0b84224",
+    "integration/simple_writable/delete_returning.test": "9b5c613af1e17716e0b47ca023932691f21369073bbb343b1c97700c6110d60a",
+    "integration/simple_writable/delete_returning_unsupported.test": "b74d935a057cd9b74d6034a9a1d982a17b043d492131ba8bb5a6589730097bd6",
+    "integration/simple_writable/insert.test": "08111daee4d120749606a91db0fe654ab3a46c806fc8da58353ca44ea4d00bfd",
+    "integration/simple_writable/insert_returning.test": "a6f4c7083b75d4a927837dcd8e48aef4752ff14a114fcd92ed9aa2869530f106",
+    "integration/simple_writable/returning_validation.test": "3f39c98155cf4588e92b13f15073263bbc750ad52e9b6dea926aa2ac57babe41",
+    "integration/simple_writable/update.test": "f923a94a86df18371865494fcfcf90054410bce117081aa84b87bdba71f0393d",
+    "integration/splits/batch_index.test": "eab2eefba36eeb04922fadd45deab496996bd7b9d296ff4deb27fda81e10295c",
+    "integration/splits/cache_interaction.test": "f45e78a84aa15a6e657c5c585de99065faa5ec9e4ea938ec7b6fc206f01f4364",
+    "integration/splits/cancel_midsplit.test": "0111aef3f227dea9b92aa306ea1718cc20d526068e35da87734766b745b10450",
+    "integration/splits/cursor_pagination.test": "4eab45575c2536183ee3c5e15558bd0c6050362f335c8e60877790ead9f86325",
+    "integration/splits/dynamic_filters.test": "e26a64d617f469fe26c415aaa860ddc816ce574337049c91da5d8730986448c3",
+    "integration/splits/errors.test": "48cf49804678ee6ebb59659e465c9339b2927b32a74389dcfb651965038ae237",
+    "integration/splits/expired_token.test": "6e95ea17c5fbfb439b442228f423aa122da2b4c9ba397b10315b037d823605dd",
+    "integration/splits/more_splits_than_threads.test": "b24b7a4ac8abe5e02a4d48d622220dd7313581be5ef9b6029bd0828152b70aaa",
+    "integration/splits/multi_branch.test": "7d5a9f910edf0b301183fc6f7392b435a6538639202d931decd4006c83758101",
+    "integration/splits/one_split.test": "8695e764f17fecfd4ee6484e26d224f650757ef1b8c75c97e1ef666888224638",
+    "integration/splits/parity.test": "da35709d7b6075510aefeff1ef814a605cdc7e68e1ce7c8133acf43a6233b5c0",
+    "integration/splits/partition_plan_contract.test": "cf91a8b1834a5a0363cc5c8da35d87cdc24493d488558eb3e6ce7a7c3ad9fcd3",
+    "integration/splits/partition_values.test": "903002fe4adc1c86b817d09d9e89eabb52d5f7de3b9833ea57efedde5c8ab889",
+    "integration/splits/plan_bounds.test": "46cdba6624290cd6239fe24a5aba54eaa7a68ab25a2f7419e3589028d85221cf",
+    "integration/splits/poisoned_conn.test": "2b115a3d757d75bd3f261c8110c78f971e7b141cf87ce5e82352cd9aad7e12c7",
+    "integration/splits/pushdown.test": "bef749b38b9421c313d6d2f8c0121c445bab7ed368b89fbdb8c89c4d2ea2c5f9",
+    "integration/splits/rollback.test": "0a054d4723dd6383acdcec562690dea9abc7bf578e47b486d39bbe5729589977",
+    "integration/splits/skew.test": "5be148da7bc79877fbb003af7089733744eb666064e493abb7189f33438565e4",
+    "integration/splits/transaction_scope.test": "b9651029502f565fbd2199fa83f1c2e024bbf082dfabb21cef21cdf042a1a94d",
+    "integration/splits/ttl_floor.test": "24b5f9a0cc132ffc3010affafe282efa87d48ceb972c24291e77e55236160a02",
+    "integration/splits/zero_row_split.test": "5b28d8e79c78fe156c7ffe84e4da213e029e652d815e73fad3c0f1162d3a8fec",
+    "integration/splits/zero_splits.test": "f57886c293d35c9826a5903bd83cb530ab39ed1e0c6ea64e3352cd5389106f19",
+    "integration/table/arg_validation.test": "1c750b2e99d30ae4a2ec754224ff03553a50eb7dcc5cfff5d19928921ca912db",
+    "integration/table/batch_index.test": "a2068f0fa2dc9d5c82a53a894e54d8f45735e6f47eba12fde7b406481b80b264",
+    "integration/table/batch_index_contract.test": "e6ef0acfa77df5a485abd8be94aec31717ac83545d9824e9d4273e7ef1fc3faf",
+    "integration/table/batch_index_pushdown.test": "f03355bc58bb24234538e3f94ac7bd223d3d1a6d9be0d51dbb28eef00077f9b0",
+    "integration/table/column_statistics.test": "cc455bca19e1b0a2cda7acc9a0960b9c4ff37f3726d8102a9132fb5cd4dac3b6",
+    "integration/table/comments.test": "50892a3b8fd40ec3ddbb5c9639906ab6f12ce1f2d2d476c9cdf4472d5247b13e",
+    "integration/table/constant_columns.test": "03eec6a4cf6190ff00dbb2acd83958612736f792a734bb1ba0ab7d475a367e8c",
+    "integration/table/constant_columns_types.test": "fed2c523bd518deaf19d43b9104c258770a2b1ca1ea2275af742fa77029f8ca9",
+    "integration/table/constraints.test": "eee609abf1024a0046026b01cdd94b7404f16c429ce1434a5bd8466944d92bbb",
+    "integration/table/constraints_time_travel.test": "61db3ccfa11bc4132b6e7da42841b53592dead8bbf208cf9ea2c8b7b929bb154",
+    "integration/table/database_tags.test": "118afabcb7f7a06f8df4c8e2201da6d0f129333d3ce46835d2734c221433cd13",
+    "integration/table/defaults.test": "e910f20f04462d8cec3816fffe5226db5e6903380e415e9b1926075f838aa00e",
+    "integration/table/double_sequence.test": "50f89d1ef4208b2d0daed113dba7683b2b78de40afda53d59c235ad9189af68b",
+    "integration/table/dynamic_filter.test": "d15b74bf216dea697810f5eb8318f72dd1f13c4b41170f892ba744bfae3d0cd0",
+    "integration/table/dynamic_to_string.test": "780f9fe0e2f9a4c2814c5e0243652a75f3753940df338f3bb617440f1d13f4db",
+    "integration/table/expression_filter.test": "7cfa754ec6c777aacfd652bb7537682bc0a1142dd2708d021cb46e5fa600c63f",
+    "integration/table/filter_echo.test": "597d061eb2fe5e61d33f2475bca142167d3db5eeef9a6c197a2d55cf9ecec2fe",
+    "integration/table/filter_echo_partitioned.test": "de8044ed6925379ce4fb7ee2204dd47ef980abf593209d18ef16427547da7dfa",
+    "integration/table/filter_pushdown.test": "849b2e2ba4dbf7c034f76b6eab08c7ac6e4a03de67ef9b896c4a55cf295e487d",
+    "integration/table/filter_pushdown_through_view.test": "019025fc2c5534e390c3527b710e5d81273141847d52208bd4c0bde9d90eeb32",
+    "integration/table/filtered_columns_pushdown.test": "49fce3b01d8a575766b5f2527bf7dd0e17d1096ded4c15f59da000d6d6818240",
+    "integration/table/function_registration.test": "f9748cfd7c09eb76d8dd735b0a60a3325649132508590d1629f3005df0368e05",
+    "integration/table/generated_columns.test": "165df1b336de43c008e0dc29adee4cb47ab4a0411d1c926b612bfa93686091a3",
+    "integration/table/generator_exception.test": "29a3b76c185eb41a34e194f82c2e7b1b164fa10e8f99ad701ffe1e3f73a52056",
+    "integration/table/inlined_cardinality.test": "492648dc615e6439dfc0ba9064779d61a15001912088e57041d417a5b0cbe597",
+    "integration/table/inlined_scan_function.test": "4d03ea88cd9414e40f156ec4600224c92cbf353dab8b22eed70fa75d4b744a9e",
+    "integration/table/join_keys_pushdown.test": "86dec07b48a608425afa2cc1e441571ecce2d4167d8f5bbe7bf5f1deb6089b95",
+    "integration/table/joins.test": "6430c90d2aa5ba56d69c7d0604b7d9eb0a458ebc4f63657f0df7478e0c316c97",
+    "integration/table/late_materialization.test": "8cdfb5b9d5103b2904f7444bbd11f8b20c914dfa5c3ac3f63ec192d16d2b403c",
+    "integration/table/logging_generator.test": "a9bcaa92941af6d589d4b69a6a89453f918085a7c7b0f31607a0103ad2cb2b07",
+    "integration/table/malformed_worker_batches.test": "80d4d2541f64c7190d99baf0968bc46ef957c0fbbebbe4ad6800c64cd2567406",
+    "integration/table/named_params.test": "ab519ddbebf1f4e99b7b3b99fe6def313960479b18c71a7b731b44232b175896",
+    "integration/table/order_preservation_modes.test": "f12e0eaf89044ab6fece4c438c3a9dc4fbab9fa5124e88307f9956217a10b6ec",
+    "integration/table/order_pushdown.test": "97db651ec527f20a9d8018b837a13a1f4c302b030bd6a918dd3e566a9217b5b8",
+    "integration/table/partition_columns.test": "31c7aecbafd47e1d45f42fbaececa3d323f4d0815c7dc252ac982671ae602776",
+    "integration/table/partition_columns_contract.test": "0468a9ccd4ad951b4d7bffd9f2ee1079007d797aeac258b6d7ea8c03fd33897d",
+    "integration/table/partitioned_sequence.test": "7a6c897cb6efac279fed6fc82bef34b858980b2e02b3e86ff8d91101bcd3b021",
+    "integration/table/positional_args.test": "dae0bc73face116da67ac464f3fefd9ed0e950d6449c3ac8f7b648539e3db1e2",
+    "integration/table/projected_data.test": "46d8476d2fa45baf3265df37f9899083c67c482d5790e0468005672a95302a83",
+    "integration/table/projection_info.test": "5785b1de9ab229837f6ca591e7ff868181391cd652c020ca9e3c884ae8a7c8d2",
+    "integration/table/required_filters_above_get.test": "34300a09fd3c3a36592f03b0f2bfa6a6a44fad4802bd92cbb52195fcba634b44",
+    "integration/table/required_filters_basic.test": "d38ed3c054b09c7cc814dc0dc1871770aa400f79fbdb06b21b9006401684a567",
+    "integration/table/required_filters_complex.test": "f1515a3ac04818c79952300ae8f869fb130456156bae5db0f1b13a52741ef91a",
+    "integration/table/required_filters_disjunction_null.test": "a778a8d418d2e35323833e8570fd42bf98f63ce7fc28ccf58dc15a1128788936",
+    "integration/table/required_filters_native.test": "ffa9ef0c47bcf46182b7da99b7010e16a7da8dc1fb1f025674eead8a1e47888f",
+    "integration/table/required_filters_or_group.test": "7f7a01027d9f72517464b58a2ac45b534b3b06d568795869ca0d5eea87615237",
+    "integration/table/required_filters_prefix.test": "23faae5c44f8466c9dd40f111214ff502dc61db56a2947d9895734127e00685c",
+    "integration/table/required_filters_rowid.test": "415b863dea3967ff232f15a3758b6a26ab4dd9f75f45151dcf9cc15c949b54f2",
+    "integration/table/required_filters_struct.test": "f97cf3815fa2531ed9407ac260785920b8b27cdd4250254ec5fc49f8713503d8",
+    "integration/table/rowid.test": "6f89653b071e91bdad6e56c9e9da4a914ffdd1126a834e72ba24e48e4584e713",
+    "integration/table/rowid_constraint_metadata.test": "5048edd94ac8e107a82cf213f28516eb997d01a89773d1b453830ab8fd7693ec",
+    "integration/table/same_name_schemas.test": "b9b2d614e2addf46576e9f7032c29d3e0132d99f744116143624e231753da5ad",
+    "integration/table/sequence.test": "6726d66312fa70caaa92cdf9ad36cd4bdd7536a3e4efd4d12ab4f48307ffb2ad",
+    "integration/table/set_operations_and_subqueries.test": "45f16db0f059d9785070320a89d982736b0194cb0dad68b0b4863a541c5c4b8b",
+    "integration/table/table_function_statistics.test": "fa07c76d4ee0e8260d38f6b3f250b601e7490fc350c20b264c40c46e550561d5",
+    "integration/table/tablesample.test": "e6e9e6603e1a059699071a8be5de5cb4f1fa73b5a98b59119daa71e68fe79925",
+    "integration/table/time_travel.test": "41806912627221a5c8ac74d60ab8ffaf4b15c45f2b2d18c04629f54699efddc5",
+    "integration/table/time_travel_pushdown.test": "85fd806da78825dfd0bde2ad49af19dce04c6215fc3359d4f98a144cc0c013ec",
+    "integration/table/transaction_storage.test": "f64e4a6cd476fe1dd0ac45ade7c3924cff3b6fe9452c6c11be22bfd48991c1cd",
+    "integration/table/typed_probe.test": "a5d51942aeae8e9a329c798bd01d631a1577048cb1f8549326ebf50242327adf",
+    "integration/table/union_varargs.test": "226364e70ff1db3492235b934fc73b3ad720656275d45fa97e3e3f8859712018",
+    "integration/table/value_prune.test": "fcb4bd32f87719ceec5f6a6ca2c6c6fe10637ccfaf036e7a27c9d2d3def31198",
+    "integration/table_in_out/blended.test": "3d619c7163adc100dc46d81bc719f8d785d780ecec19a8d38e877dca6000da95",
+    "integration/table_in_out/blended_any.test": "17627fb3a741a25ff8885607a4766bb314eebed16cd00a55fb1daab6d052f3f7",
+    "integration/table_in_out/blended_named_args.test": "4fee4dddf110dfd3397fb2e76d8f1c8024c42ec909191b9b6729b362811df4cb",
+    "integration/table_in_out/buffer_input/basic.test": "c654619ebc29d4dd55c48b334d9e7de92f9baa0c7efb2b3cd3272c42e2345329",
+    "integration/table_in_out/buffer_input/sizes.test": "6929cb67ea84f10b8a33e8b6f65aab7fac97e3ecb2457cc4080f20d09fd5d247",
+    "integration/table_in_out/continuation_cache.test": "0146c2618f1eb8df8b1b76bd9ccc2faab70875f4f6d408a189407002472ed9d0",
+    "integration/table_in_out/continuation_cache_named_args.test": "2ccc068471945734bd8bebbe4683bf268273360d2e1b8bfd263d516cb32cf7ba",
+    "integration/table_in_out/continuation_classic.test": "92de126ffc94b2ea9bb891cd46ce8d986d379d2d900295f26ac7a7d075d7ab6f",
+    "integration/table_in_out/continuation_resume_error_revalidate.test": "6bbaeb3d4e23da7545ffb31c25bbb9809eed3231ca72027a0dca69ee0fd08591",
+    "integration/table_in_out/continuation_resume_error_revalidate_named_args.test": "b5e8282f00096376fea83d6c620a6e71a55eb15922b850154f93a946ac54bc1b",
+    "integration/table_in_out/correlated_named_args_unsupported.test": "8ad69231020ad5c8b15279d8a318d02485e3f3b8027a1f41868f199f59a65524",
+    "integration/table_in_out/distributed_sum.test": "45f470a46ec478a6e39b084b13100a019f27c0f7ce2b776c9bd898bb2ca418ac",
+    "integration/table_in_out/echo/all_types.test": "3becd661dbcbfc66c9f78397f935a60ae3155c5fdd63b31a9cdc55b1f071072b",
+    "integration/table_in_out/echo/basic.test": "d4eb30784d06dec5110408aaa4f5609e5c5de46489426443b0eb9c9032909b3c",
+    "integration/table_in_out/echo/bool_in_union.test": "ead8970467543096126804f194b8c1029a4f387aa375de2e79a7d4c906ac7198",
+    "integration/table_in_out/echo/lateral_projection.test": "c3d9f3fbde452a94e07ed62493c64acfd7976b05470469ccd76ad2bd5d7620dc",
+    "integration/table_in_out/echo/nested_type_combinations.test": "41b97b20169b2758311239988a79cc6ddef82f8be08db3f54a5b213173b51e5b",
+    "integration/table_in_out/echo/projection_filters.test": "07ff42c7e11580e3b81a271a9e6d861c6097199f017552fe6f22879e700369b3",
+    "integration/table_in_out/echo/pushdown_witness.test": "a99d3a3a531664c9225e9ea893ad62f693455d79c7bd58eb52bba112a438e788",
+    "integration/table_in_out/echo/union_tags.test": "6da3c26ba29995b0c6b7e39e049544518bce5a1ae10d1439033d26b7f7cd6eca",
+    "integration/table_in_out/exceptions.test": "251dc2c98a8461b5eadf4551aa5f301f11dd08c4fcabfb4fe594b7a7021b9087",
+    "integration/table_in_out/function_registration.test": "2e1ba0cbafe36f7d30b7bc9455a6d91f4bc11aeec97776811a74e05c7ce8869a",
+    "integration/table_in_out/input_rows_per_call.test": "eb38b432690bb8f8791d1f6aaf40bb0694f7b56b533f5179674369dca7904b4b",
+    "integration/table_in_out/input_rows_per_call_named_args.test": "760675106065806afb790a35aeb6a79b01a31606775805b95df48417b820c005",
+    "integration/table_in_out/lateral_batch.test": "a5a4869ee5e9542f4038cc29c56d0a146117b14979b9483a41654138ae2108c6",
+    "integration/table_in_out/lateral_batch_named_args.test": "13e60bdb7903403ab832655a58bc34259a1c16ee3bf8bc612b266968d56b663e",
+    "integration/table_in_out/lateral_batch_sql_export.test": "522aed0c5b5a23b1352a8b6e2166be617aa8ec5039abf346c8b4600c971e5a8a",
+    "integration/table_in_out/lateral_batch_sql_export_named_args.test": "4cb893d4cf5123594306fb86740b4d6660345e16284576156baac9cf5198a551",
+    "integration/table_in_out/lateral_continuation.test": "cb75962a62cede4d7892629a8313271601ce93b7add9cea86e21f96a8076d2be",
+    "integration/table_in_out/lateral_continuation_named_args.test": "51288aa7ec618f3a39bdd629a59fa1a13e46e835e2236542f6a9da6ced722376",
+    "integration/table_in_out/lateral_dedup.test": "e65a37a0f9f84ba585ffdfda247be3459132f823a1ba4e850d175ad0e36b7dae",
+    "integration/table_in_out/logging.test": "1437edb6885f734c785dc8aca2b390c7a8c7eb9c3e7bcee1b17f02e997492d7d",
+    "integration/table_in_out/multi_batch_finalize.test": "52cab632e20a9292afe4e536ed3c6a6ce7f0d72477fbd6859bbdc989e44834e5",
+    "integration/table_in_out/parallel_fanout.test": "f5417b41adbc86dc194168419777288c596b4677ac033b31a45e0fb0249467db",
+    "integration/table_in_out/parallel_finalize.test": "d6dc66858bbfacde635bd2724a86c6127ad942997836a3c4d41595f65de0fdbd",
+    "integration/table_in_out/repeat_inputs/basic.test": "e8147d969e72940a9074691d33f8e3a943bff4a118e22c2623ec5cd053652a7c",
+    "integration/table_in_out/repeat_inputs/types.test": "2666379e7fabb97fef66adf2e3c84a5118cdff33e884bfe95ac143b9ed12c494",
+    "integration/table_in_out/same_name_schemas.test": "a3b76d981807942627b6d87cfd0e648cd613d40d6f3bf565f373c6335d5af3e5",
+    "integration/table_in_out/shm_pool_metadata.test": "fbfe45bd3276cbea117861825f7468d6b14daedf7413f921386a962aa893f694",
+    "integration/table_in_out/sum_all_columns.test": "178a341d27bade674baf36ca3ad8d023d6ed0aa943c60aa556ba92752dfd87eb",
+    "integration/table_in_out/table_buffering_combine_crash.test": "2198bb9a4ded9e555233f1266dd24b3cc33fa39904d27bbe3eac5b16ed94b377",
+    "integration/table_in_out/table_buffering_concurrent.test": "c3cb0ad113fee4a691985251c462415a7f48a9e7c27a99a6537ab7b3e0effbc5",
+    "integration/table_in_out/table_buffering_empty_input.test": "045087cb586df1db656f05124cb42235421f51d15c7a8663b5b8d6b925c4af28",
+    "integration/table_in_out/table_buffering_finalize_crash.test": "12f9373e0fabca819a3be3d983471376af5ef847d4331504716cb7df658ee105",
+    "integration/table_in_out/table_buffering_input_batch_index.test": "43ab1c94ed1c04e859d189bfddf1bb0bcaaada36a2d57013aea3f95be3588ff4",
+    "integration/table_in_out/table_buffering_large_batch.test": "e212eb00fc0d307c1b7fcb93fa17c995bc75fac7cbfb87d1885278016cd8091b",
+    "integration/table_in_out/table_buffering_large_state.test": "ed59c1ef6830f17a4b594021d184ed9e89f4cf4dbec6877b81b786fdcf889dd7",
+    "integration/table_in_out/table_buffering_lateral.test": "b3e38411b490978c7c0c83260394270a38f7d20689b70a2c4bccbfafc028fbc5",
+    "integration/table_in_out/table_buffering_parallel.test": "047dfe5f38c9777c6a83581402ef31009cd8a5f7565627bc7ad16d9e21e4b818",
+    "integration/table_in_out/table_buffering_pool_recovery.test": "55282b70f518d8b88e09ab54b3666a8ed38d3c533a58fb0f42f375bca34d5cef",
+    "integration/table_in_out/table_buffering_pool_rotation.test": "4b976ad35e148fe8316019d031be12917a347bae2d0f7d1181dd5e648dc3953f",
+    "integration/table_in_out/table_buffering_projection_filters.test": "69a10bbbff698ec5ab14cc4bcd04d20b1506cd990c706886beab8e6f5659781b",
+    "integration/table_in_out/table_buffering_recursive_cte.test": "9251ec830bc32544979abbf6362748c25ba3ab055d4d00423a7e27cef225d63e",
+    "integration/table_in_out/table_buffering_sink_order.test": "5fe45c6086844a3dfae12b4faf2815945d5a46365e9aade943d4e54d801af201",
+    "integration/table_in_out/table_buffering_source_order.test": "1341f1f4687c40d8b8ab2760d868be4a52478d1523e099dfc990e2974d19a25a",
+    "integration/table_in_out/table_buffering_union.test": "6c978b95b0e4963da5c715e3b5fed38dce843488272ed283d0e619037deea38d",
+    "integration/table_in_out/table_buffering_worker_crash.test": "6c385b24135cddc98e4edbd72c9be00215e09035cc0cdea15de80016f8038f3d",
+    "integration/table_in_out/tableinout_multibatch_repro.test": "73d0ec26356198df35145b2a4339e14c8927d433f1a622aa9b824ea15f8576b6",
+    "integration/table_in_out/tableinout_multibatch_repro_rust.test": "5b5184a8d5d29fa39104a4bb1049070c92bab9a96099fd5d4c993172b794dfe4",
+    "integration/table_in_out/unnest_tensor_rows.test": "93e351c9d8ba6324f6a12fe13f16ec70bb07afb8793977165714969020935a0f",
+    "integration/unary_error_propagation.test": "82328cafa4170b4ee624b2a6a6212c6285a0623273ecad3939d756ffac5ce688",
+    "integration/vgi_catalogs_iroh_options.test": "dc525a5aaeac7162437a5a3f57b5fa549b4c040e5863731ee1e9e9eb0eae63d3",
+    "integration/view/view_aliases.test": "ad0aa8e2ee9717c122a45a3c0d8e1d0fd65b8271b1ecbb5caa71ef76291e6ead",
+    "integration/view/view_metadata.test": "35a06f758f998913436faf3007250541434a07a627e5b4858bdbee8e21eef885",
+    "integration/view/views.test": "fa66f5778ad4c6bbb1832fc50f3432df215e0ed94efcfc06cfdd341f4b38c90e",
+    "iroh/iroh_secret.test": "332426161b0556a2028447d32758baa1c6cbab2f9cabe4111120a418e32da0b3",
+    "oauth/catalog_discovery_options.test": "ca0b51b07276c9843a0b989d428194c33662a20654cef12e0152c2d803196215",
+    "oauth/oauth_cache_settings.test": "77e41cbd5186df810db3d6c7d175883510e9034c6ff4736ccecf794475904cb6",
+    "oauth/oauth_identity.test": "d46ea115c9d6446dd2d805cfb138d869fb64dfa6d4dd60a9255f3a1b55d96d51",
+    "vgi.test": "cedde6d6d3b55246013dd51b514f27d95e175f52e187d48edd77508df645d5c8",
+    "vgi_cardinality.test": "a450d1f5d1dd131c494646ea729fbafadc9b9105cad17c33fe6cfd6ea5867bdb",
+    "vgi_error_info.test": "ca69297d7dedc586725cdd76a54b9e22d86071d9b703af6d7a9c74fe0ef6fd24",
+    "vgi_http_response_budget.test": "6016f179aaf074f2e64322309c68eba7f691d0381aab091eb2fe170c9bfa2d8e",
+    "vgi_integration.test": "e7772d3737f97d06625bbb3f28d974da66bd09e67a10248dd0a379bd6d86d090",
+    "vgi_schema_validation.test": "2906b8449dfbd4bc961c3cc9a43af0319af6516a54b10124b5533561fd1ed70d",
+    "vgi_worker_pool.test": "5258797d8c37851fed2d022eed0bc4698b58d8b427ddd30637df1af10552d024",
+    "worker_startup_errors.test": "01be222fda038e9c7213b49928f5f9ac3a1d055ceb035ba5669274b5733d7a6c"
+  },
+  "sqlglot_version": "30.31.0",
+  "calcite_properties": {
+    "caseSensitive": false,
+    "timeZone": "UTC",
+    "conformance": "BABEL",
+    "typeSystem": "farm.query.vgicalcite.VgiTypeSystem"
+  },
+  "transport": "tcp",
+  "rpc_sdk_revision": "4d731f123881e8cd98ca996e63293d0350d16a1e",
+  "rpc_sdk_version": "0.33.4-calcite-v2-SNAPSHOT",
+  "worker_packages": {
+    "vgi-python": "0.51.1",
+    "vgi-rpc": "0.53.1",
+    "pyarrow": "26.0.1"
+  },
+  "worker_source": "installed distribution",
+  "selected_files": 417,
+  "selected_records": 7211,
+  "counts": {
+    "unsupported": 227,
+    "not_run": 1132,
+    "fail": 4444,
+    "pass": 1408
+  },
+  "full_report_sha256": "3f8ae35941bb001174f901ea8e2e232ce93bc8a0fa3fd87e503ba8bbf94801a5",
+  "provenance_note": "Run in an isolated checkout of connector_revision; all recorded source hashes verified against that commit. This predates the returned-column NULL checks and catalog-version guard. The patched SDK is not the default published connector dependency.",
+  "command": ".conformance/venv/bin/python conformance/run.py --suite ../vgi/test/sql --report target/conformance/full-survey-sdk-v2/report.json",
+  "build_command": "./mvnw -DskipTests -Dvgirpc.version=0.33.4-calcite-v2-SNAPSHOT package",
+  "by_area": {
+    "duckdb2": {
+      "unsupported": 5,
+      "not_run": 246,
+      "fail": 1
+    },
+    "engine_features": {
+      "fail": 2,
+      "unsupported": 2
+    },
+    "github": {
+      "fail": 3,
+      "unsupported": 2,
+      "not_run": 29
+    },
+    "integration/accumulate": {
+      "pass": 28,
+      "fail": 40
+    },
+    "integration/aggregate": {
+      "pass": 33,
+      "fail": 167
+    },
+    "integration/attach": {
+      "fail": 15,
+      "unsupported": 13,
+      "not_run": 230,
+      "pass": 2
+    },
+    "integration/attach_ticket": {
+      "unsupported": 2,
+      "not_run": 36,
+      "pass": 1,
+      "fail": 4
+    },
+    "integration/bad_enum.test": {
+      "unsupported": 1,
+      "not_run": 2
+    },
+    "integration/bearer_auth": {
+      "unsupported": 13
+    },
+    "integration/cache": {
+      "pass": 198,
+      "fail": 874,
+      "unsupported": 5,
+      "not_run": 81
+    },
+    "integration/catalog": {
+      "fail": 416,
+      "pass": 81,
+      "not_run": 35
+    },
+    "integration/connection_string.test": {
+      "unsupported": 1,
+      "not_run": 9
+    },
+    "integration/container": {
+      "unsupported": 4,
+      "not_run": 20,
+      "fail": 1
+    },
+    "integration/copy_from": {
+      "pass": 8,
+      "fail": 41
+    },
+    "integration/copy_to": {
+      "pass": 17,
+      "fail": 70,
+      "unsupported": 2,
+      "not_run": 19
+    },
+    "integration/database_worker": {
+      "unsupported": 5,
+      "not_run": 34,
+      "fail": 14
+    },
+    "integration/error_info.test": {
+      "pass": 1,
+      "fail": 7
+    },
+    "integration/filter_pushdown": {
+      "pass": 103,
+      "fail": 146,
+      "not_run": 3
+    },
+    "integration/github": {
+      "unsupported": 2,
+      "not_run": 10
+    },
+    "integration/global_functions": {
+      "pass": 2,
+      "fail": 11,
+      "unsupported": 1,
+      "not_run": 19
+    },
+    "integration/http": {
+      "fail": 19,
+      "pass": 10,
+      "unsupported": 8
+    },
+    "integration/httpi_native_rejection.test": {
+      "unsupported": 1
+    },
+    "integration/iroh_native_rejection.test": {
+      "unsupported": 1
+    },
+    "integration/launcher": {
+      "unsupported": 2,
+      "not_run": 10
+    },
+    "integration/location_policy": {
+      "fail": 27,
+      "unsupported": 6,
+      "not_run": 35,
+      "pass": 1
+    },
+    "integration/macro": {
+      "pass": 6,
+      "fail": 49
+    },
+    "integration/narrow_bind_mismatch.test": {
+      "pass": 4,
+      "fail": 4
+    },
+    "integration/overload": {
+      "pass": 37,
+      "fail": 51
+    },
+    "integration/projection_pushdown_repro.test": {
+      "fail": 1,
+      "not_run": 13
+    },
+    "integration/protocol_version": {
+      "unsupported": 1
+    },
+    "integration/reflection": {
+      "fail": 33,
+      "unsupported": 1,
+      "not_run": 7,
+      "pass": 4
+    },
+    "integration/scalar": {
+      "pass": 42,
+      "fail": 468,
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/schema_reconcile.test": {
+      "fail": 1,
+      "not_run": 38
+    },
+    "integration/secret": {
+      "pass": 30,
+      "fail": 137
+    },
+    "integration/settings": {
+      "pass": 10,
+      "fail": 32
+    },
+    "integration/simple_writable": {
+      "fail": 2,
+      "unsupported": 17,
+      "not_run": 64
+    },
+    "integration/splits": {
+      "pass": 35,
+      "fail": 160,
+      "unsupported": 2,
+      "not_run": 15
+    },
+    "integration/table": {
+      "pass": 623,
+      "fail": 822,
+      "unsupported": 3,
+      "not_run": 32
+    },
+    "integration/table_in_out": {
+      "pass": 100,
+      "fail": 724,
+      "unsupported": 108,
+      "not_run": 63
+    },
+    "integration/unary_error_propagation.test": {
+      "pass": 6,
+      "fail": 3
+    },
+    "integration/vgi_catalogs_iroh_options.test": {
+      "fail": 5,
+      "pass": 1
+    },
+    "integration/view": {
+      "pass": 5,
+      "fail": 28,
+      "not_run": 24
+    },
+    "iroh": {
+      "fail": 5
+    },
+    "oauth": {
+      "unsupported": 15,
+      "fail": 10,
+      "pass": 2
+    },
+    "vgi.test": {
+      "pass": 3,
+      "fail": 1
+    },
+    "vgi_cardinality.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "vgi_error_info.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 2
+    },
+    "vgi_http_response_budget.test": {
+      "fail": 3
+    },
+    "vgi_integration.test": {
+      "fail": 12,
+      "pass": 6
+    },
+    "vgi_schema_validation.test": {
+      "fail": 2,
+      "pass": 2
+    },
+    "vgi_worker_pool.test": {
+      "pass": 5,
+      "fail": 28,
+      "unsupported": 1,
+      "not_run": 38
+    },
+    "worker_startup_errors.test": {
+      "unsupported": 1,
+      "not_run": 10
+    }
+  },
+  "by_file": {
+    "duckdb2/column_paths.test": {
+      "unsupported": 1,
+      "not_run": 55
+    },
+    "duckdb2/default_schema.test": {
+      "unsupported": 1,
+      "not_run": 17
+    },
+    "duckdb2/required_filter_paths.test": {
+      "unsupported": 1,
+      "not_run": 70
+    },
+    "duckdb2/schema_dependencies.test": {
+      "unsupported": 1,
+      "not_run": 41
+    },
+    "duckdb2/view_alias_metadata.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 63
+    },
+    "engine_features/correlated_named_args.test": {
+      "fail": 1
+    },
+    "engine_features/correlated_named_args_absent.test": {
+      "unsupported": 1
+    },
+    "engine_features/delete_returning_virtual_columns.test": {
+      "fail": 1
+    },
+    "engine_features/delete_returning_virtual_columns_absent.test": {
+      "unsupported": 1
+    },
+    "github/latest.test": {
+      "fail": 2,
+      "unsupported": 1,
+      "not_run": 20
+    },
+    "github/latest_download.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 9
+    },
+    "integration/accumulate/attach_scope.test": {
+      "pass": 4,
+      "fail": 7
+    },
+    "integration/accumulate/basic.test": {
+      "pass": 8,
+      "fail": 13
+    },
+    "integration/accumulate/catalog.test": {
+      "fail": 3,
+      "pass": 2
+    },
+    "integration/accumulate/errors.test": {
+      "pass": 6,
+      "fail": 7
+    },
+    "integration/accumulate/eviction.test": {
+      "pass": 5,
+      "fail": 6
+    },
+    "integration/accumulate/result_modes.test": {
+      "pass": 3,
+      "fail": 4
+    },
+    "integration/aggregate/advanced.test": {
+      "pass": 2,
+      "fail": 10
+    },
+    "integration/aggregate/any_type.test": {
+      "pass": 2,
+      "fail": 8
+    },
+    "integration/aggregate/basic.test": {
+      "pass": 2,
+      "fail": 13
+    },
+    "integration/aggregate/const_param.test": {
+      "pass": 2,
+      "fail": 15
+    },
+    "integration/aggregate/dynamic.test": {
+      "pass": 2,
+      "fail": 18
+    },
+    "integration/aggregate/function_registration.test": {
+      "pass": 2,
+      "fail": 2
+    },
+    "integration/aggregate/function_registration_dynamic.test": {
+      "pass": 2,
+      "fail": 1
+    },
+    "integration/aggregate/grouped.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/aggregate/high_cardinality_10k.test": {
+      "pass": 2,
+      "fail": 2
+    },
+    "integration/aggregate/high_cardinality_1k.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/aggregate/large_ungrouped.test": {
+      "pass": 2,
+      "fail": 1
+    },
+    "integration/aggregate/listagg.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/aggregate/nest_tensor.test": {
+      "pass": 1,
+      "fail": 28
+    },
+    "integration/aggregate/parallel.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/aggregate/same_name_schemas.test": {
+      "pass": 1,
+      "fail": 8
+    },
+    "integration/aggregate/streaming.test": {
+      "pass": 1,
+      "fail": 13
+    },
+    "integration/aggregate/varargs.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/aggregate/window.test": {
+      "pass": 1,
+      "fail": 18
+    },
+    "integration/aggregate/window_dynamic.test": {
+      "pass": 1,
+      "fail": 3
+    },
+    "integration/attach/attach_options_echo.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 17
+    },
+    "integration/attach/attach_options_required.test": {
+      "fail": 2,
+      "unsupported": 1,
+      "not_run": 16
+    },
+    "integration/attach/ddl_wire_contract.test": {
+      "pass": 2,
+      "fail": 7
+    },
+    "integration/attach/opaque_data_logging.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/attach/versioned_tables.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 18
+    },
+    "integration/attach/versioned_tables_http.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 14
+    },
+    "integration/attach/versioned_tables_impl.test": {
+      "unsupported": 1,
+      "not_run": 30
+    },
+    "integration/attach/versioned_tables_impl_http.test": {
+      "unsupported": 1,
+      "not_run": 18
+    },
+    "integration/attach/versioned_tables_resolved.test": {
+      "unsupported": 1,
+      "not_run": 26
+    },
+    "integration/attach/versioned_tables_resolved_http.test": {
+      "unsupported": 1,
+      "not_run": 19
+    },
+    "integration/attach/versioned_tables_spec.test": {
+      "unsupported": 1,
+      "not_run": 26
+    },
+    "integration/attach/versioned_tables_spec_http.test": {
+      "unsupported": 1,
+      "not_run": 21
+    },
+    "integration/attach/versioning.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 13
+    },
+    "integration/attach/versioning_http.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 4
+    },
+    "integration/attach_ticket/round_trip.test": {
+      "unsupported": 1,
+      "not_run": 31
+    },
+    "integration/attach_ticket/unsupported.test": {
+      "pass": 1,
+      "fail": 4,
+      "unsupported": 1,
+      "not_run": 5
+    },
+    "integration/bad_enum.test": {
+      "unsupported": 1,
+      "not_run": 2
+    },
+    "integration/bearer_auth/bearer_token.test": {
+      "unsupported": 9
+    },
+    "integration/bearer_auth/catalog_discovery.test": {
+      "unsupported": 4
+    },
+    "integration/cache/at_isolation.test": {
+      "pass": 2,
+      "fail": 8
+    },
+    "integration/cache/basic.test": {
+      "fail": 15,
+      "pass": 7
+    },
+    "integration/cache/cap_matrix.test": {
+      "pass": 4,
+      "fail": 25
+    },
+    "integration/cache/cleanup.test": {
+      "fail": 19,
+      "pass": 6
+    },
+    "integration/cache/compression.test": {
+      "pass": 7,
+      "fail": 43
+    },
+    "integration/cache/coverage.test": {
+      "fail": 7,
+      "pass": 5
+    },
+    "integration/cache/diagnostics.test": {
+      "fail": 18,
+      "pass": 5
+    },
+    "integration/cache/disk.test": {
+      "fail": 17,
+      "pass": 2
+    },
+    "integration/cache/disk_streaming.test": {
+      "pass": 4,
+      "fail": 20
+    },
+    "integration/cache/entry_cap.test": {
+      "pass": 12,
+      "fail": 11
+    },
+    "integration/cache/exchange_buffered.test": {
+      "pass": 2,
+      "fail": 34
+    },
+    "integration/cache/exchange_lateral.test": {
+      "pass": 2,
+      "fail": 32
+    },
+    "integration/cache/exchange_lateral_disk.test": {
+      "pass": 2,
+      "fail": 21
+    },
+    "integration/cache/exchange_revalidate.test": {
+      "pass": 2,
+      "fail": 17
+    },
+    "integration/cache/exchange_streaming.test": {
+      "pass": 1,
+      "fail": 19,
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/cache/explain.test": {
+      "fail": 14,
+      "pass": 4
+    },
+    "integration/cache/explain_stats.test": {
+      "pass": 2,
+      "fail": 14
+    },
+    "integration/cache/filter_pushdown_keys.test": {
+      "fail": 7,
+      "pass": 6
+    },
+    "integration/cache/http_symmetry.test": {
+      "pass": 3,
+      "fail": 4
+    },
+    "integration/cache/identity_isolation.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 6
+    },
+    "integration/cache/ineligible_reasons.test": {
+      "fail": 15,
+      "pass": 5
+    },
+    "integration/cache/multi_batch_threads.test": {
+      "fail": 11,
+      "pass": 5
+    },
+    "integration/cache/opt_out.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 18
+    },
+    "integration/cache/ordered_serve.test": {
+      "fail": 13,
+      "pass": 2
+    },
+    "integration/cache/pack.test": {
+      "pass": 2,
+      "fail": 52
+    },
+    "integration/cache/parallel_capture.test": {
+      "pass": 5,
+      "fail": 13
+    },
+    "integration/cache/partition_scope.test": {
+      "fail": 34,
+      "pass": 15
+    },
+    "integration/cache/partition_scope_identity.test": {
+      "fail": 2,
+      "unsupported": 1,
+      "not_run": 11
+    },
+    "integration/cache/partition_scope_ops.test": {
+      "fail": 24,
+      "pass": 6
+    },
+    "integration/cache/partition_scope_shapes.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 38
+    },
+    "integration/cache/per_value_concurrent.test": {
+      "pass": 2,
+      "fail": 16
+    },
+    "integration/cache/per_value_lateral.test": {
+      "pass": 2,
+      "fail": 21
+    },
+    "integration/cache/per_value_multi_batch.test": {
+      "pass": 2,
+      "fail": 17
+    },
+    "integration/cache/per_value_negative_memo.test": {
+      "pass": 2,
+      "fail": 16
+    },
+    "integration/cache/per_value_partial.test": {
+      "pass": 2,
+      "fail": 22
+    },
+    "integration/cache/poison.test": {
+      "pass": 3,
+      "fail": 2
+    },
+    "integration/cache/poison_external.test": {
+      "fail": 4,
+      "pass": 3
+    },
+    "integration/cache/prepared_reset.test": {
+      "fail": 16,
+      "pass": 4
+    },
+    "integration/cache/projection_pushdown.test": {
+      "pass": 2,
+      "fail": 8
+    },
+    "integration/cache/pushdown.test": {
+      "fail": 7,
+      "pass": 6
+    },
+    "integration/cache/query_shapes.test": {
+      "fail": 8,
+      "pass": 7
+    },
+    "integration/cache/replay_shapes.test": {
+      "fail": 6,
+      "pass": 9
+    },
+    "integration/cache/revalidate.test": {
+      "fail": 17,
+      "pass": 3
+    },
+    "integration/cache/same_name_schemas.test": {
+      "pass": 5,
+      "fail": 1
+    },
+    "integration/cache/secret_scope.test": {
+      "fail": 53,
+      "pass": 2
+    },
+    "integration/cache/shm_retained_batch.test": {
+      "pass": 2,
+      "fail": 10
+    },
+    "integration/cache/spill.test": {
+      "pass": 6,
+      "fail": 19
+    },
+    "integration/cache/spill_correctness.test": {
+      "pass": 1,
+      "fail": 14
+    },
+    "integration/cache/spill_disk_cap.test": {
+      "pass": 2,
+      "fail": 15
+    },
+    "integration/cache/spill_lifecycle.test": {
+      "pass": 7,
+      "fail": 23
+    },
+    "integration/cache/spill_partition_values.test": {
+      "pass": 1,
+      "fail": 19
+    },
+    "integration/cache/spill_poison.test": {
+      "fail": 12,
+      "pass": 4
+    },
+    "integration/cache/spill_types.test": {
+      "pass": 1,
+      "fail": 19
+    },
+    "integration/cache/transaction_scope.test": {
+      "fail": 17,
+      "pass": 2
+    },
+    "integration/catalog/catalog_contents.test": {
+      "fail": 59,
+      "pass": 11
+    },
+    "integration/catalog/catalog_contents_conformance.test": {
+      "fail": 23,
+      "pass": 4
+    },
+    "integration/catalog/catalog_contents_ddl.test": {
+      "fail": 41,
+      "pass": 2
+    },
+    "integration/catalog/catalog_contents_fallback.test": {
+      "fail": 36,
+      "pass": 9
+    },
+    "integration/catalog/catalog_contents_revalidation.test": {
+      "fail": 58,
+      "pass": 4
+    },
+    "integration/catalog/catalog_contents_versions.test": {
+      "fail": 34,
+      "pass": 6
+    },
+    "integration/catalog/companion_catalogs.test": {
+      "fail": 4,
+      "not_run": 30
+    },
+    "integration/catalog/companion_hidden.test": {
+      "fail": 4,
+      "not_run": 3
+    },
+    "integration/catalog/companion_partial_failure.test": {
+      "fail": 4,
+      "not_run": 2
+    },
+    "integration/catalog/eager_load_threshold.test": {
+      "fail": 19,
+      "pass": 5
+    },
+    "integration/catalog/function_arguments.test": {
+      "pass": 1,
+      "fail": 5
+    },
+    "integration/catalog/function_arguments_constraints.test": {
+      "pass": 3,
+      "fail": 5
+    },
+    "integration/catalog/function_arguments_macros.test": {
+      "pass": 1,
+      "fail": 5
+    },
+    "integration/catalog/multi_branch_capability_cache.test": {
+      "pass": 4,
+      "fail": 7
+    },
+    "integration/catalog/multi_branch_empty_branches.test": {
+      "pass": 1,
+      "fail": 1
+    },
+    "integration/catalog/multi_branch_format.test": {
+      "fail": 8,
+      "pass": 2
+    },
+    "integration/catalog/multi_branch_heterogeneous.test": {
+      "fail": 8,
+      "pass": 1
+    },
+    "integration/catalog/multi_branch_iceberg.test": {
+      "fail": 9,
+      "pass": 1
+    },
+    "integration/catalog/multi_branch_join_optimizer.test": {
+      "pass": 1,
+      "fail": 12
+    },
+    "integration/catalog/multi_branch_lateral.test": {
+      "pass": 6,
+      "fail": 1
+    },
+    "integration/catalog/multi_branch_optimizer_disabled.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/catalog/multi_branch_pushdown_incapable.test": {
+      "fail": 7,
+      "pass": 1
+    },
+    "integration/catalog/multi_branch_reconciliation.test": {
+      "fail": 10,
+      "pass": 1
+    },
+    "integration/catalog/multi_branch_scan.test": {
+      "pass": 5,
+      "fail": 16
+    },
+    "integration/catalog/multi_branch_two_writable.test": {
+      "pass": 1,
+      "fail": 1
+    },
+    "integration/catalog/multi_branch_writes_refused.test": {
+      "pass": 3,
+      "fail": 8
+    },
+    "integration/catalog/window_self_join.test": {
+      "pass": 5,
+      "fail": 2
+    },
+    "integration/catalog/zero_count_bypass.test": {
+      "fail": 23,
+      "pass": 1
+    },
+    "integration/connection_string.test": {
+      "unsupported": 1,
+      "not_run": 9
+    },
+    "integration/container/errors.test": {
+      "unsupported": 1,
+      "not_run": 6
+    },
+    "integration/container/shared_http.test": {
+      "unsupported": 1,
+      "not_run": 5
+    },
+    "integration/container/shared_tcp.test": {
+      "unsupported": 1,
+      "not_run": 5
+    },
+    "integration/container/sklearn_smoke.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 4
+    },
+    "integration/copy_from/basic.test": {
+      "pass": 4,
+      "fail": 9
+    },
+    "integration/copy_from/options.test": {
+      "pass": 2,
+      "fail": 21
+    },
+    "integration/copy_from/secrets.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/copy_to/basic.test": {
+      "pass": 2,
+      "fail": 12
+    },
+    "integration/copy_to/failure.test": {
+      "pass": 3,
+      "fail": 5,
+      "unsupported": 1,
+      "not_run": 3
+    },
+    "integration/copy_to/options.test": {
+      "pass": 4,
+      "fail": 16
+    },
+    "integration/copy_to/ordered.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/copy_to/parallel.test": {
+      "unsupported": 1,
+      "not_run": 16
+    },
+    "integration/copy_to/secrets.test": {
+      "pass": 2,
+      "fail": 12
+    },
+    "integration/copy_to/tmp_file.test": {
+      "pass": 2,
+      "fail": 12
+    },
+    "integration/copy_to/types.test": {
+      "pass": 2,
+      "fail": 7
+    },
+    "integration/database_worker/errors.test": {
+      "unsupported": 1,
+      "not_run": 9
+    },
+    "integration/database_worker/package.test": {
+      "fail": 5,
+      "unsupported": 1,
+      "not_run": 12
+    },
+    "integration/database_worker/real_bun_open_meteo.test": {
+      "fail": 3,
+      "unsupported": 1,
+      "not_run": 4
+    },
+    "integration/database_worker/real_python.test": {
+      "fail": 3,
+      "unsupported": 1,
+      "not_run": 4
+    },
+    "integration/database_worker/real_rust_archive.test": {
+      "fail": 3,
+      "unsupported": 1,
+      "not_run": 5
+    },
+    "integration/error_info.test": {
+      "pass": 1,
+      "fail": 7
+    },
+    "integration/filter_pushdown/blob.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/filter_pushdown/boolean_column_predicate.test": {
+      "pass": 10
+    },
+    "integration/filter_pushdown/booleans.test": {
+      "pass": 14,
+      "fail": 13
+    },
+    "integration/filter_pushdown/decimals.test": {
+      "pass": 13,
+      "fail": 11
+    },
+    "integration/filter_pushdown/dictionary_varchar.test": {
+      "pass": 9,
+      "fail": 1
+    },
+    "integration/filter_pushdown/enums.test": {
+      "pass": 1,
+      "fail": 8
+    },
+    "integration/filter_pushdown/floats.test": {
+      "pass": 4,
+      "fail": 4,
+      "not_run": 3
+    },
+    "integration/filter_pushdown/hugeint.test": {
+      "pass": 1,
+      "fail": 10
+    },
+    "integration/filter_pushdown/integers.test": {
+      "pass": 18,
+      "fail": 36
+    },
+    "integration/filter_pushdown/null_logic.test": {
+      "pass": 11,
+      "fail": 9
+    },
+    "integration/filter_pushdown/strings.test": {
+      "pass": 10,
+      "fail": 30
+    },
+    "integration/filter_pushdown/temporal.test": {
+      "pass": 4,
+      "fail": 13
+    },
+    "integration/filter_pushdown/time_tz.test": {
+      "pass": 1,
+      "fail": 4
+    },
+    "integration/filter_pushdown/uuid.test": {
+      "pass": 5,
+      "fail": 4
+    },
+    "integration/github/download.test": {
+      "unsupported": 1,
+      "not_run": 5
+    },
+    "integration/github/errors.test": {
+      "unsupported": 1,
+      "not_run": 5
+    },
+    "integration/global_functions/basic.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/global_functions/lifecycle.test": {
+      "unsupported": 1,
+      "not_run": 19
+    },
+    "integration/http/capability_probe.test": {
+      "fail": 4,
+      "pass": 3
+    },
+    "integration/http/gzip_fallback.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/http/no_compression.test": {
+      "unsupported": 8
+    },
+    "integration/http/producer_turns.test": {
+      "fail": 4,
+      "pass": 3
+    },
+    "integration/http/small_body_encoding.test": {
+      "fail": 8,
+      "pass": 2
+    },
+    "integration/httpi_native_rejection.test": {
+      "unsupported": 1
+    },
+    "integration/iroh_native_rejection.test": {
+      "unsupported": 1
+    },
+    "integration/launcher/options_smoke.test": {
+      "unsupported": 1,
+      "not_run": 6
+    },
+    "integration/launcher/options_validation.test": {
+      "unsupported": 1,
+      "not_run": 4
+    },
+    "integration/location_policy/external_access.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/location_policy/grandfather.test": {
+      "pass": 1,
+      "fail": 6,
+      "not_run": 3
+    },
+    "integration/location_policy/internal_and_prepared.test": {
+      "unsupported": 1,
+      "not_run": 7
+    },
+    "integration/location_policy/refusals.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 17
+    },
+    "integration/location_policy/setting.test": {
+      "fail": 19,
+      "unsupported": 3
+    },
+    "integration/macro/macros.test": {
+      "pass": 4,
+      "fail": 30
+    },
+    "integration/macro/session_context.test": {
+      "pass": 1,
+      "fail": 10
+    },
+    "integration/macro/session_timezone.test": {
+      "pass": 1,
+      "fail": 9
+    },
+    "integration/narrow_bind_mismatch.test": {
+      "pass": 4,
+      "fail": 4
+    },
+    "integration/overload/scalar_overload.test": {
+      "pass": 2,
+      "fail": 44
+    },
+    "integration/overload/scalar_varargs_overload.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/overload/table_overload.test": {
+      "pass": 31
+    },
+    "integration/overload/table_varargs_overload.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/projection_pushdown_repro.test": {
+      "fail": 1,
+      "not_run": 13
+    },
+    "integration/protocol_version/version_mismatch.test": {
+      "unsupported": 1
+    },
+    "integration/reflection/pre_reflection.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 7
+    },
+    "integration/reflection/vgi_protocols.test": {
+      "fail": 31,
+      "pass": 4
+    },
+    "integration/reflection/vgi_v2_hash.test": {
+      "fail": 1
+    },
+    "integration/scalar/add_values.test": {
+      "pass": 2,
+      "fail": 48
+    },
+    "integration/scalar/argument_names.test": {
+      "pass": 1,
+      "fail": 1
+    },
+    "integration/scalar/binary_packet.test": {
+      "pass": 2,
+      "fail": 15
+    },
+    "integration/scalar/conditional_message.test": {
+      "pass": 2,
+      "fail": 22
+    },
+    "integration/scalar/dedup.test": {
+      "pass": 2,
+      "fail": 18
+    },
+    "integration/scalar/dedup_large_strings.test": {
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/scalar/double.test": {
+      "pass": 2,
+      "fail": 49
+    },
+    "integration/scalar/function_registration.test": {
+      "pass": 2,
+      "fail": 31
+    },
+    "integration/scalar/geo_centroid.test": {
+      "pass": 2,
+      "fail": 12
+    },
+    "integration/scalar/geo_distance.test": {
+      "pass": 2,
+      "fail": 9
+    },
+    "integration/scalar/hash_seed.test": {
+      "pass": 2,
+      "fail": 16
+    },
+    "integration/scalar/null_handling.test": {
+      "pass": 2,
+      "fail": 17
+    },
+    "integration/scalar/numeric_promotion.test": {
+      "pass": 2,
+      "fail": 12
+    },
+    "integration/scalar/per_value.test": {
+      "pass": 2,
+      "fail": 21
+    },
+    "integration/scalar/per_value_edge.test": {
+      "pass": 2,
+      "fail": 14
+    },
+    "integration/scalar/random_int.test": {
+      "pass": 2,
+      "fail": 20
+    },
+    "integration/scalar/same_name_catalogs.test": {
+      "pass": 4,
+      "fail": 12
+    },
+    "integration/scalar/same_name_schemas.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/scalar/sum_values.test": {
+      "pass": 2,
+      "fail": 79
+    },
+    "integration/scalar/unnest_tensor.test": {
+      "pass": 1,
+      "fail": 13
+    },
+    "integration/scalar/upper_case.test": {
+      "pass": 2,
+      "fail": 46
+    },
+    "integration/scalar/whoami.test": {
+      "pass": 2,
+      "fail": 2
+    },
+    "integration/schema_reconcile.test": {
+      "fail": 1,
+      "not_run": 38
+    },
+    "integration/secret/secret_aggregate.test": {
+      "pass": 2,
+      "fail": 9
+    },
+    "integration/secret/secret_fields.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/secret/secret_function_backed_table.test": {
+      "pass": 1,
+      "fail": 5
+    },
+    "integration/secret/secret_lookup_by_name.test": {
+      "pass": 2,
+      "fail": 13
+    },
+    "integration/secret/secret_lookup_by_type.test": {
+      "pass": 2,
+      "fail": 17
+    },
+    "integration/secret/secret_lookup_multi_type.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/secret/secret_lookup_redaction.test": {
+      "fail": 13,
+      "pass": 2
+    },
+    "integration/secret/secret_lookup_scopes.test": {
+      "pass": 2,
+      "fail": 13
+    },
+    "integration/secret/secret_multi_scope.test": {
+      "pass": 2,
+      "fail": 7
+    },
+    "integration/secret/secret_no_secret.test": {
+      "pass": 2,
+      "fail": 1
+    },
+    "integration/secret/secret_registration.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/secret/secret_scalar.test": {
+      "pass": 2,
+      "fail": 9
+    },
+    "integration/secret/secret_scoped.test": {
+      "pass": 2,
+      "fail": 7
+    },
+    "integration/secret/secret_table_function.test": {
+      "pass": 2,
+      "fail": 8
+    },
+    "integration/secret/secret_table_in_out.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/secret/secret_types_function.test": {
+      "fail": 7,
+      "pass": 1
+    },
+    "integration/settings/filter_by_setting.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/settings/multiply_by_setting.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/settings/settings.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/settings/settings_types.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/settings/struct_settings.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/simple_writable/catalog_contents.test": {
+      "fail": 2,
+      "unsupported": 1,
+      "not_run": 13
+    },
+    "integration/simple_writable/delete.test": {
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/simple_writable/delete_returning.test": {
+      "unsupported": 1,
+      "not_run": 11
+    },
+    "integration/simple_writable/delete_returning_unsupported.test": {
+      "unsupported": 10
+    },
+    "integration/simple_writable/insert.test": {
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/simple_writable/insert_returning.test": {
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/simple_writable/returning_validation.test": {
+      "unsupported": 1,
+      "not_run": 6
+    },
+    "integration/simple_writable/update.test": {
+      "unsupported": 1,
+      "not_run": 10
+    },
+    "integration/splits/batch_index.test": {
+      "pass": 2,
+      "fail": 10
+    },
+    "integration/splits/cache_interaction.test": {
+      "pass": 1,
+      "fail": 10
+    },
+    "integration/splits/cancel_midsplit.test": {
+      "pass": 2,
+      "fail": 14
+    },
+    "integration/splits/cursor_pagination.test": {
+      "pass": 2,
+      "fail": 7
+    },
+    "integration/splits/dynamic_filters.test": {
+      "pass": 2,
+      "fail": 14
+    },
+    "integration/splits/errors.test": {
+      "pass": 2,
+      "fail": 10
+    },
+    "integration/splits/expired_token.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/splits/more_splits_than_threads.test": {
+      "pass": 1,
+      "fail": 4
+    },
+    "integration/splits/multi_branch.test": {
+      "pass": 2,
+      "fail": 10
+    },
+    "integration/splits/one_split.test": {
+      "pass": 2,
+      "fail": 7
+    },
+    "integration/splits/parity.test": {
+      "pass": 1,
+      "fail": 7
+    },
+    "integration/splits/partition_plan_contract.test": {
+      "unsupported": 1,
+      "not_run": 4
+    },
+    "integration/splits/partition_values.test": {
+      "unsupported": 1,
+      "not_run": 11
+    },
+    "integration/splits/plan_bounds.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/splits/poisoned_conn.test": {
+      "pass": 2,
+      "fail": 8
+    },
+    "integration/splits/pushdown.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/splits/rollback.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/splits/skew.test": {
+      "pass": 1,
+      "fail": 3
+    },
+    "integration/splits/transaction_scope.test": {
+      "pass": 2,
+      "fail": 14
+    },
+    "integration/splits/ttl_floor.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/splits/zero_row_split.test": {
+      "pass": 1,
+      "fail": 5
+    },
+    "integration/splits/zero_splits.test": {
+      "pass": 2,
+      "fail": 8
+    },
+    "integration/table/arg_validation.test": {
+      "pass": 11,
+      "fail": 3
+    },
+    "integration/table/batch_index.test": {
+      "pass": 28,
+      "fail": 16
+    },
+    "integration/table/batch_index_contract.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/table/batch_index_pushdown.test": {
+      "pass": 7,
+      "fail": 12
+    },
+    "integration/table/column_statistics.test": {
+      "pass": 10,
+      "fail": 64
+    },
+    "integration/table/comments.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/table/constant_columns.test": {
+      "pass": 2,
+      "fail": 127
+    },
+    "integration/table/constant_columns_types.test": {
+      "fail": 67,
+      "pass": 2
+    },
+    "integration/table/constraints.test": {
+      "pass": 6,
+      "fail": 13
+    },
+    "integration/table/constraints_time_travel.test": {
+      "pass": 4,
+      "fail": 10
+    },
+    "integration/table/database_tags.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/table/defaults.test": {
+      "pass": 3,
+      "fail": 4
+    },
+    "integration/table/double_sequence.test": {
+      "pass": 85
+    },
+    "integration/table/dynamic_filter.test": {
+      "pass": 15,
+      "fail": 8
+    },
+    "integration/table/dynamic_to_string.test": {
+      "pass": 2,
+      "fail": 19
+    },
+    "integration/table/expression_filter.test": {
+      "pass": 3,
+      "fail": 21
+    },
+    "integration/table/filter_echo.test": {
+      "pass": 28,
+      "fail": 5
+    },
+    "integration/table/filter_echo_partitioned.test": {
+      "pass": 17,
+      "fail": 6
+    },
+    "integration/table/filter_pushdown.test": {
+      "pass": 37,
+      "fail": 23
+    },
+    "integration/table/filter_pushdown_through_view.test": {
+      "pass": 6,
+      "fail": 33
+    },
+    "integration/table/filtered_columns_pushdown.test": {
+      "pass": 7,
+      "fail": 1
+    },
+    "integration/table/function_registration.test": {
+      "pass": 2,
+      "fail": 22
+    },
+    "integration/table/generated_columns.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/table/generator_exception.test": {
+      "pass": 5
+    },
+    "integration/table/inlined_cardinality.test": {
+      "pass": 1,
+      "fail": 8
+    },
+    "integration/table/inlined_scan_function.test": {
+      "pass": 3,
+      "fail": 7
+    },
+    "integration/table/join_keys_pushdown.test": {
+      "pass": 2,
+      "fail": 21
+    },
+    "integration/table/joins.test": {
+      "pass": 4,
+      "fail": 20
+    },
+    "integration/table/late_materialization.test": {
+      "pass": 1,
+      "fail": 48,
+      "unsupported": 1,
+      "not_run": 3
+    },
+    "integration/table/logging_generator.test": {
+      "pass": 3,
+      "fail": 9
+    },
+    "integration/table/malformed_worker_batches.test": {
+      "unsupported": 1,
+      "not_run": 15
+    },
+    "integration/table/named_params.test": {
+      "pass": 10,
+      "fail": 10
+    },
+    "integration/table/order_preservation_modes.test": {
+      "pass": 5,
+      "fail": 8
+    },
+    "integration/table/order_pushdown.test": {
+      "pass": 7,
+      "fail": 11
+    },
+    "integration/table/partition_columns.test": {
+      "pass": 18,
+      "fail": 14
+    },
+    "integration/table/partition_columns_contract.test": {
+      "pass": 4,
+      "fail": 2
+    },
+    "integration/table/partitioned_sequence.test": {
+      "pass": 43,
+      "fail": 13
+    },
+    "integration/table/positional_args.test": {
+      "pass": 4
+    },
+    "integration/table/projected_data.test": {
+      "pass": 34,
+      "fail": 1
+    },
+    "integration/table/projection_info.test": {
+      "pass": 11
+    },
+    "integration/table/required_filters_above_get.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/table/required_filters_basic.test": {
+      "pass": 4,
+      "fail": 8
+    },
+    "integration/table/required_filters_complex.test": {
+      "pass": 2,
+      "fail": 13
+    },
+    "integration/table/required_filters_disjunction_null.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/table/required_filters_native.test": {
+      "fail": 21,
+      "pass": 2
+    },
+    "integration/table/required_filters_or_group.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/table/required_filters_prefix.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/table/required_filters_rowid.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/table/required_filters_struct.test": {
+      "pass": 2,
+      "fail": 8
+    },
+    "integration/table/rowid.test": {
+      "pass": 3,
+      "fail": 13
+    },
+    "integration/table/rowid_constraint_metadata.test": {
+      "unsupported": 1,
+      "not_run": 14
+    },
+    "integration/table/same_name_schemas.test": {
+      "pass": 5,
+      "fail": 1
+    },
+    "integration/table/sequence.test": {
+      "pass": 100,
+      "fail": 3
+    },
+    "integration/table/set_operations_and_subqueries.test": {
+      "pass": 15,
+      "fail": 8
+    },
+    "integration/table/table_function_statistics.test": {
+      "pass": 4,
+      "fail": 13
+    },
+    "integration/table/tablesample.test": {
+      "pass": 3,
+      "fail": 7
+    },
+    "integration/table/time_travel.test": {
+      "pass": 2,
+      "fail": 18
+    },
+    "integration/table/time_travel_pushdown.test": {
+      "pass": 4,
+      "fail": 17
+    },
+    "integration/table/transaction_storage.test": {
+      "pass": 10,
+      "fail": 13
+    },
+    "integration/table/typed_probe.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/table/union_varargs.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/table/value_prune.test": {
+      "pass": 15,
+      "fail": 1
+    },
+    "integration/table_in_out/blended.test": {
+      "pass": 2,
+      "fail": 17
+    },
+    "integration/table_in_out/blended_any.test": {
+      "pass": 2,
+      "fail": 15
+    },
+    "integration/table_in_out/blended_named_args.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/table_in_out/buffer_input/basic.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/table_in_out/buffer_input/sizes.test": {
+      "pass": 2,
+      "fail": 11
+    },
+    "integration/table_in_out/continuation_cache.test": {
+      "pass": 2,
+      "fail": 16
+    },
+    "integration/table_in_out/continuation_cache_named_args.test": {
+      "pass": 2,
+      "fail": 29
+    },
+    "integration/table_in_out/continuation_classic.test": {
+      "pass": 1,
+      "unsupported": 22
+    },
+    "integration/table_in_out/continuation_resume_error_revalidate.test": {
+      "pass": 1,
+      "fail": 1,
+      "unsupported": 21
+    },
+    "integration/table_in_out/continuation_resume_error_revalidate_named_args.test": {
+      "pass": 1,
+      "fail": 1,
+      "unsupported": 19
+    },
+    "integration/table_in_out/correlated_named_args_unsupported.test": {
+      "unsupported": 6
+    },
+    "integration/table_in_out/distributed_sum.test": {
+      "pass": 2,
+      "fail": 9
+    },
+    "integration/table_in_out/echo/all_types.test": {
+      "fail": 13,
+      "pass": 2
+    },
+    "integration/table_in_out/echo/basic.test": {
+      "pass": 2,
+      "fail": 20
+    },
+    "integration/table_in_out/echo/bool_in_union.test": {
+      "fail": 8,
+      "pass": 2
+    },
+    "integration/table_in_out/echo/lateral_projection.test": {
+      "pass": 2,
+      "fail": 9
+    },
+    "integration/table_in_out/echo/nested_type_combinations.test": {
+      "fail": 73,
+      "pass": 2
+    },
+    "integration/table_in_out/echo/projection_filters.test": {
+      "pass": 2,
+      "fail": 40
+    },
+    "integration/table_in_out/echo/pushdown_witness.test": {
+      "pass": 2,
+      "fail": 13
+    },
+    "integration/table_in_out/echo/union_tags.test": {
+      "fail": 6,
+      "pass": 2
+    },
+    "integration/table_in_out/exceptions.test": {
+      "pass": 2,
+      "fail": 7
+    },
+    "integration/table_in_out/function_registration.test": {
+      "pass": 2,
+      "fail": 14
+    },
+    "integration/table_in_out/input_rows_per_call.test": {
+      "pass": 2,
+      "fail": 28
+    },
+    "integration/table_in_out/input_rows_per_call_named_args.test": {
+      "pass": 2,
+      "fail": 24
+    },
+    "integration/table_in_out/lateral_batch.test": {
+      "pass": 2,
+      "fail": 22
+    },
+    "integration/table_in_out/lateral_batch_named_args.test": {
+      "pass": 2,
+      "fail": 6
+    },
+    "integration/table_in_out/lateral_batch_sql_export.test": {
+      "unsupported": 1,
+      "not_run": 21
+    },
+    "integration/table_in_out/lateral_batch_sql_export_named_args.test": {
+      "unsupported": 1,
+      "not_run": 6
+    },
+    "integration/table_in_out/lateral_continuation.test": {
+      "pass": 2,
+      "fail": 51
+    },
+    "integration/table_in_out/lateral_continuation_named_args.test": {
+      "pass": 1,
+      "fail": 3,
+      "unsupported": 33
+    },
+    "integration/table_in_out/lateral_dedup.test": {
+      "pass": 2,
+      "fail": 21
+    },
+    "integration/table_in_out/logging.test": {
+      "pass": 2,
+      "fail": 15
+    },
+    "integration/table_in_out/multi_batch_finalize.test": {
+      "pass": 1,
+      "fail": 9,
+      "unsupported": 1,
+      "not_run": 1
+    },
+    "integration/table_in_out/parallel_fanout.test": {
+      "unsupported": 1,
+      "not_run": 12
+    },
+    "integration/table_in_out/parallel_finalize.test": {
+      "unsupported": 1,
+      "not_run": 8
+    },
+    "integration/table_in_out/repeat_inputs/basic.test": {
+      "pass": 2,
+      "fail": 14
+    },
+    "integration/table_in_out/repeat_inputs/types.test": {
+      "pass": 2,
+      "fail": 9
+    },
+    "integration/table_in_out/same_name_schemas.test": {
+      "pass": 1,
+      "fail": 10
+    },
+    "integration/table_in_out/shm_pool_metadata.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/table_in_out/sum_all_columns.test": {
+      "pass": 2,
+      "fail": 21
+    },
+    "integration/table_in_out/table_buffering_combine_crash.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/table_in_out/table_buffering_concurrent.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/table_in_out/table_buffering_empty_input.test": {
+      "pass": 1,
+      "fail": 26
+    },
+    "integration/table_in_out/table_buffering_finalize_crash.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/table_in_out/table_buffering_input_batch_index.test": {
+      "pass": 2,
+      "fail": 15
+    },
+    "integration/table_in_out/table_buffering_large_batch.test": {
+      "pass": 3,
+      "fail": 3
+    },
+    "integration/table_in_out/table_buffering_large_state.test": {
+      "pass": 2,
+      "fail": 5
+    },
+    "integration/table_in_out/table_buffering_lateral.test": {
+      "pass": 2,
+      "fail": 1
+    },
+    "integration/table_in_out/table_buffering_parallel.test": {
+      "pass": 2,
+      "fail": 19
+    },
+    "integration/table_in_out/table_buffering_pool_recovery.test": {
+      "pass": 2,
+      "fail": 10
+    },
+    "integration/table_in_out/table_buffering_pool_rotation.test": {
+      "unsupported": 1,
+      "not_run": 12
+    },
+    "integration/table_in_out/table_buffering_projection_filters.test": {
+      "pass": 2,
+      "fail": 30
+    },
+    "integration/table_in_out/table_buffering_recursive_cte.test": {
+      "pass": 3,
+      "fail": 1
+    },
+    "integration/table_in_out/table_buffering_sink_order.test": {
+      "pass": 2,
+      "fail": 10
+    },
+    "integration/table_in_out/table_buffering_source_order.test": {
+      "pass": 2,
+      "fail": 9
+    },
+    "integration/table_in_out/table_buffering_union.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "integration/table_in_out/table_buffering_worker_crash.test": {
+      "pass": 2,
+      "fail": 3
+    },
+    "integration/table_in_out/tableinout_multibatch_repro.test": {
+      "pass": 2,
+      "fail": 10
+    },
+    "integration/table_in_out/tableinout_multibatch_repro_rust.test": {
+      "unsupported": 1,
+      "not_run": 3
+    },
+    "integration/table_in_out/unnest_tensor_rows.test": {
+      "pass": 1,
+      "fail": 13
+    },
+    "integration/unary_error_propagation.test": {
+      "pass": 6,
+      "fail": 3
+    },
+    "integration/vgi_catalogs_iroh_options.test": {
+      "fail": 5,
+      "pass": 1
+    },
+    "integration/view/view_aliases.test": {
+      "pass": 3,
+      "fail": 15
+    },
+    "integration/view/view_metadata.test": {
+      "fail": 1,
+      "not_run": 24
+    },
+    "integration/view/views.test": {
+      "pass": 2,
+      "fail": 12
+    },
+    "iroh/iroh_secret.test": {
+      "fail": 5
+    },
+    "oauth/catalog_discovery_options.test": {
+      "unsupported": 14
+    },
+    "oauth/oauth_cache_settings.test": {
+      "fail": 3,
+      "unsupported": 1
+    },
+    "oauth/oauth_identity.test": {
+      "fail": 7,
+      "pass": 2
+    },
+    "vgi.test": {
+      "pass": 3,
+      "fail": 1
+    },
+    "vgi_cardinality.test": {
+      "pass": 2,
+      "fail": 4
+    },
+    "vgi_error_info.test": {
+      "fail": 1,
+      "unsupported": 1,
+      "not_run": 2
+    },
+    "vgi_http_response_budget.test": {
+      "fail": 3
+    },
+    "vgi_integration.test": {
+      "fail": 12,
+      "pass": 6
+    },
+    "vgi_schema_validation.test": {
+      "fail": 2,
+      "pass": 2
+    },
+    "vgi_worker_pool.test": {
+      "pass": 5,
+      "fail": 28,
+      "unsupported": 1,
+      "not_run": 38
+    },
+    "worker_startup_errors.test": {
+      "unsupported": 1,
+      "not_run": 10
+    }
+  },
+  "failure_observations": {
+    "note": "Ordered, mutually exclusive textual buckets, not root-cause diagnoses. First matching rule wins. No record status or expected result was changed. SET/RESET and utility matches include source SQL that this harness does not emulate. Other failures still need review; unsupported worker function kinds are not inferred solely from directory names.",
+    "rules": [
+      {
+        "bucket": "engine_control_statement",
+        "source_sql_regex": "\\s*(SET|RESET|CALL\\s+(?:enable_logging|disable_logging|truncate_duckdb_logs))\\b",
+        "operation": "match",
+        "flags": "IGNORECASE"
+      },
+      {
+        "bucket": "engine_utility_reference",
+        "source_sql_regex": "\\b(?:duckdb_[a-z_]+|vgi_result_cache_[a-z_]+|vgi_clear_cache|rpc_count|vgi_engine_features)\\s*\\(",
+        "operation": "search",
+        "flags": "IGNORECASE"
+      },
+      {
+        "bucket": "expected_error_text_mismatch",
+        "reason_equals": "Error text differs"
+      },
+      {
+        "bucket": "other_failures_requiring_review",
+        "fallback": true
+      }
+    ],
+    "counts": {
+      "engine_control_statement": 767,
+      "engine_utility_reference": 601,
+      "other_failures_requiring_review": 2912,
+      "expected_error_text_mismatch": 164
+    },
+    "examples": {
+      "engine_control_statement": [
+        "duckdb2/view_alias_metadata.test:10",
+        "github/latest.test:13",
+        "github/latest_download.test:14",
+        "integration/aggregate/any_type.test:55"
+      ],
+      "engine_utility_reference": [
+        "engine_features/correlated_named_args.test:14",
+        "engine_features/delete_returning_virtual_columns.test:14",
+        "integration/aggregate/function_registration.test:31",
+        "integration/aggregate/function_registration.test:39"
+      ],
+      "other_failures_requiring_review": [
+        "github/latest.test:17",
+        "integration/accumulate/attach_scope.test:22",
+        "integration/accumulate/attach_scope.test:26",
+        "integration/accumulate/attach_scope.test:32"
+      ],
+      "expected_error_text_mismatch": [
+        "integration/accumulate/errors.test:23",
+        "integration/accumulate/errors.test:32",
+        "integration/accumulate/errors.test:41",
+        "integration/aggregate/const_param.test:106"
+      ]
+    }
+  },
+  "by_record_kind": {
+    "query": {
+      "not_run": 453,
+      "fail": 2933,
+      "unsupported": 61,
+      "pass": 729
+    },
+    "statement error": {
+      "not_run": 189,
+      "unsupported": 45,
+      "fail": 186,
+      "pass": 27
+    },
+    "statement ok": {
+      "unsupported": 121,
+      "not_run": 490,
+      "fail": 1325,
+      "pass": 652
+    }
+  },
+  "not_run_reasons": {
+    "Earlier bridge failure: ATTACH requires options or a worker fixture not implemented by this harness": 1016,
+    "Earlier bridge failure: Required ATTACH did not meet its expectation": 113,
+    "Earlier bridge failure: Calcite bridge exited: 1": 3
+  }
+}

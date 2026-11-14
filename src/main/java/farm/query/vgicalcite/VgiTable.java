@@ -33,25 +33,27 @@ import java.util.List;
 public final class VgiTable extends AbstractTable implements ProjectableFilterableTable, TranslatableTable {
     record Invocation(String function, List<String> path, byte[] arguments, boolean projection, boolean filtering) {}
     final VgiConfig config;
+    final long catalogVersion;
     final Schema columns;
     private final TableInfo table;
     private final Invocation invocation;
     private final List<FunctionInfo> functions;
 
-    private VgiTable(VgiConfig config, Schema columns, TableInfo table, Invocation invocation, List<FunctionInfo> functions) {
+    private VgiTable(VgiConfig config, long catalogVersion, Schema columns, TableInfo table, Invocation invocation, List<FunctionInfo> functions) {
         this.config = config;
+        this.catalogVersion = catalogVersion;
         this.columns = columns;
         this.table = table;
         this.invocation = invocation;
         this.functions = List.copyOf(functions);
     }
 
-    static VgiTable catalog(VgiConfig config, TableInfo table, List<FunctionInfo> functions) {
-        return new VgiTable(config, SchemaUtil.deserializeSchema(table.columns()), table, null, functions);
+    static VgiTable catalog(VgiConfig config, long catalogVersion, TableInfo table, List<FunctionInfo> functions) {
+        return new VgiTable(config, catalogVersion, SchemaUtil.deserializeSchema(table.columns()), table, null, functions);
     }
 
-    static VgiTable function(VgiConfig config, Invocation invocation, Schema columns) {
-        return new VgiTable(config, columns, null, invocation, List.of());
+    static VgiTable function(VgiConfig config, long catalogVersion, Invocation invocation, Schema columns) {
+        return new VgiTable(config, catalogVersion, columns, null, invocation, List.of());
     }
 
     boolean isCatalogTable() { return table != null; }
