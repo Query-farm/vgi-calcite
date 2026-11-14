@@ -1,0 +1,291 @@
+{
+  "description": "Stalled-scan cancellation and client buffer cleanup qualified with an unpublished private RPC SDK build. These results do not apply to the main branch default SDK dependency.",
+  "connector_revision": "75d93c99291ae8ac31f9f882cc32a2c016bf9939",
+  "connector_worktree_base_revision": "c21e622a78e5d018e21d740ade7bf8db1d693859",
+  "provenance_note": "Every recorded source hash matches connector_revision. The run began before this source was committed, with -Dvgirpc.version=0.33.4-calcite-v3-SNAPSHOT. The connector release PR must use the published fixed SDK before merging.",
+  "rpc_sdk_revision": "765df9306d0da417b0b5e583d16ee9df322971a8",
+  "rpc_sdk_version": "0.33.4-calcite-v3-SNAPSHOT",
+  "connector_source_sha256": {
+    "conformance/run.py": "f7361756561d8e2bd98524b7dd106aa9862fe2cfadad8945c6c174f921a9457f",
+    "conformance/test_runner.py": "197b6e00f0e10fe81a34505acb46bcc625e582dcb95845826e3161fb0732dc66",
+    "pom.xml": "52a55207dae7972b1be45a0f649b7a7cbbfab9535376cb508853ebfd28591c47",
+    "src/main/java/farm/query/vgicalcite/ArrowTypes.java": "6d23fd964ae150e96839c9ff4479e5ca8dc8e3eb005d0f1843c4975ff98f9863",
+    "src/main/java/farm/query/vgicalcite/Main.java": "0b1d7406f39edec24b6ba72e6fb8e8f978a5d922a780ad4984d496b3c384d8b6",
+    "src/main/java/farm/query/vgicalcite/VgiBatchValidation.java": "eccaa1e1db44d423a6937c126e97dfe84f353e6fcec716a8c03198784d6dd0f7",
+    "src/main/java/farm/query/vgicalcite/VgiCancellation.java": "d08bf07b38ddd4eae52a2270d2a0db102c6eaaa1bfa23b78afa3c84b2291fe42",
+    "src/main/java/farm/query/vgicalcite/VgiCatalogMetadata.java": "346de1f1be8d17705456773cf6ea672e91b38b3353350be53d9d43dd5165a91d",
+    "src/main/java/farm/query/vgicalcite/VgiConfig.java": "e61fc0f904f165f59937507b169da159e1697dfbf3c9f198f0edcffa9904419b",
+    "src/main/java/farm/query/vgicalcite/VgiEnumerator.java": "368443a19eb97482584221d7a71b619fa59d8c3b0ae963e8876da2e93c3fc7b2",
+    "src/main/java/farm/query/vgicalcite/VgiFilters.java": "a25d00ae96aeef2e778ef2682287e8fb2a890a8eb2c3c5a66d1e09437781584f",
+    "src/main/java/farm/query/vgicalcite/VgiFunctionScan.java": "d3d9f599868dac423e40bbe03cf61ff60546ac722f02d2d8e2049ee1ea1fe25a",
+    "src/main/java/farm/query/vgicalcite/VgiSchema.java": "d2dc83085df4ce2846037135bf8a297bff5d4af76cfd95c5e21c8ac421900ed4",
+    "src/main/java/farm/query/vgicalcite/VgiSchemaFactory.java": "2a07122a7464f4d0463aff99a55bb18cdd237e4b38a85ace41b811cb57f50ba0",
+    "src/main/java/farm/query/vgicalcite/VgiSession.java": "80870a3ddd35edef80788d4eb6611358404405d2d4202ee88702bc1eea7cb613",
+    "src/main/java/farm/query/vgicalcite/VgiTable.java": "bf0625826f65279ff28263f7fefd2c3150870bc66ff013167f9b0c7a7c19fcb4",
+    "src/main/java/farm/query/vgicalcite/VgiTableMacro.java": "829ea8ad8150d9e09559719713a062eb89146ecbf2667c78f6a170054587780c",
+    "src/main/java/farm/query/vgicalcite/VgiTypeSystem.java": "d72ce583f500b562b6df0cd8e448971245592dc22fdf5d268a5a224c09313029",
+    "src/test/java/farm/query/vgicalcite/ArrowTypesTest.java": "fbd76b9bdd058a31cdcf045179b9f61ee1b1077a69719bb15d84e3a7a59f4877",
+    "src/test/java/farm/query/vgicalcite/CalciteIntegrationTest.java": "5b3c0fc0311b1b29397f92bc2d62143b0bb2c2f4558006f229ea60c9f43fb0f4",
+    "src/test/java/farm/query/vgicalcite/CancellationIntegrationTest.java": "8f24b012c6477086d1599eed9590386026de4a08dbeb849a2213a9de733ab6ab",
+    "src/test/java/farm/query/vgicalcite/FixtureWorker.java": "e17123c452497596a04f79b6836562c079e4665ee8d9b0cd2c470561bdd1107c",
+    "src/test/java/farm/query/vgicalcite/SqlLogicBridge.java": "80e212ad27e3b237953b36df97992a9c8b7baf3368abf7c50ea55fc40ffcae0d",
+    "src/test/java/farm/query/vgicalcite/TransportIntegrationTest.java": "6bea11f87d64d6e7160195827c696c300ed2b82553332129c453a7a654b203f2",
+    "src/test/java/farm/query/vgicalcite/VgiBatchValidationTest.java": "439c8cb69b65351c3ad6f4f3216f012ffe45c22f5263510837b95ad85b6a035f",
+    "src/test/java/farm/query/vgicalcite/VgiCatalogMetadataTest.java": "5404fb56115885ddf6ea8f25e1a81d0b703e31a9df65d684195047540cef99ed"
+  },
+  "runtime_artifacts_sha256": {
+    "accessors-smart-2.6.0.jar": "222c9f547bb20a99fc486403a398352d1306fb671b38abd7ecab6401df170e61",
+    "aggdesigner-algorithm-6.1.jar": "572364e03acf44b3fb336e4e36ea41b8a5baeb771c14c8df36bbee2c46ffc22e",
+    "apiguardian-api-1.1.2.jar": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+    "arrow-format-19.0.0.jar": "e805ea51ba8b517ec6c18a96ea83bef5cda5172a2b74419d4b48fb3584ce4504",
+    "arrow-memory-core-19.0.0.jar": "0d3646cc2fa9ae94e95dc8b3e0ed5a51e1df15b59dc548f359e941023471884d",
+    "arrow-memory-netty-19.0.0.jar": "e882e201a9a8de25f450e697491a3fb4689fb7cba9883c3323a966087fcf8c84",
+    "arrow-memory-netty-buffer-patch-19.0.0.jar": "47a8d7d1c9df06b3b84a0e49815615dad86c8c91afddf5b9817ed3e777784557",
+    "arrow-vector-19.0.0.jar": "113e70317945e780050f13d17027d862d4c5d1cebe06c9fd8a5e922945bb2f8c",
+    "asm-9.7.1.jar": "8cadd43ac5eb6d09de05faecca38b917a040bb9139c7edeb4cc81c740b713281",
+    "avatica-core-1.28.0.jar": "59d279a2175b148ac9f73218aba1dd302fc2536bee40cf6f01fe441f886f66a2",
+    "avatica-metrics-1.28.0.jar": "ea64431d3c7cb229df4fb8f35ad0f69de900c9142dfe421222b0f15824bf78fe",
+    "calcite-core-1.42.0.jar": "2ed5489201baab842001c95f939a0829849cf3cdaed9cdbf4b9078633c35792b",
+    "calcite-linq4j-1.42.0.jar": "6f54fa9f24a07ad961e0e1af499a58cfc2374a93ee280283beafe9035de3fa45",
+    "checker-qual-3.10.0.jar": "a4dc882ca6aac496d33381e5e5eb0604c45483b004bc3eac9368f1bb17cb2512",
+    "commons-codec-1.16.0.jar": "56595fb20b0b85bc91d0d503dad50bb7f1b9afc0eed5dffa6cbb25929000484d",
+    "commons-compiler-3.1.12.jar": "17ea25d860225f4b59d0a512b4995f2e4711bdae5e15736cbcd5f6ce4dda8f7c",
+    "commons-dbcp2-2.11.0.jar": "58d144d6327b4a054ca0e71a4438456bd66c0ca8d0c1aa799f59dcfb0ec599cc",
+    "commons-io-2.15.0.jar": "a328dad730921d197b6a9b195dffa00e41c974c2dac8fe37e84d31706bca7792",
+    "commons-lang3-3.1.jar": "131f0519a8e4602e47cf024bfd7e0834bcf5592a7207f9a2fdb711d4f5afc166",
+    "commons-logging-1.3.5.jar": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+    "commons-math3-3.6.1.jar": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308",
+    "commons-pool2-2.12.0.jar": "6d3bd18df8410f3e31b031aca582cc109342358a62a2759ebd0c4cdf30d06f8b",
+    "commons-text-1.11.0.jar": "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
+    "error_prone_annotations-2.36.0.jar": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+    "failureaccess-1.0.3.jar": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
+    "flatbuffers-java-25.2.10.jar": "587bd6c31cda747587493a113bec8602d3a0b0ca579b2b1b838ef71b19e6525d",
+    "gson-2.14.0.jar": "2cbd119bf1961c28788310963dc80ba65f58cdeec1dd139c8bdb1240faa2c36f",
+    "guava-33.4.8-jre.jar": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+    "httpclient5-5.5.jar": "496b4b0e8d5f3a8139a5d2638486d304758bac3a9c39d76989f663cfd9354fc9",
+    "httpcore5-5.3.5.jar": "34ce80396dcf2927406ddcd7c1c9063879220952ad0a2121c10103d3ad2cc3a4",
+    "httpcore5-h2-5.3.4.jar": "1fb4f34e4b612e7c127ad693335583587850b17ce9b1c366f9de1ca49fe2c781",
+    "j2objc-annotations-3.0.0.jar": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64",
+    "jackson-annotations-2.21.jar": "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b",
+    "jackson-core-2.21.0.jar": "e22604bcd9b24e462d5df102007cb06e1ed811e86f1ce6081ca62f385f2db87b",
+    "jackson-databind-2.21.0.jar": "0057817ee40bc71544072dc2a3ba575ef91dce53a2d87489bde91c05f3a22621",
+    "jackson-dataformat-cbor-2.21.0.jar": "79a579275cb0dd5847406930a58ce8a49d06db7815bba38a0d4a6ae1db3fb043",
+    "jackson-dataformat-yaml-2.21.0.jar": "5d184579144780c38962a5f475ed2485e8a29f36cc59ca237135b19e9b642420",
+    "jackson-datatype-jsr310-2.21.0.jar": "b350169a3b2cc53d781541fe1bfbc0f00c978d185884da79b8330be8fb7aefeb",
+    "jakarta.servlet-api-6.0.0.jar": "c034eb1afb158987dbb53a5fea0cadf611c8dae8daadd59c44d9d5ab70129cef",
+    "jakarta.transaction-api-1.3.3.jar": "0b02a194dd04ee2e192dc9da9579e10955dd6e8ac707adfc91d92f119b0e67ab",
+    "janino-3.1.12.jar": "5699878c31e71c9a94cf472f95a2dad52ca7b0449c099276b8bd7e992a43595b",
+    "jetty-alpn-client-12.0.16.jar": "28ff9568536483af9844b06a840af90ff21ad4549aee284070ec614060305531",
+    "jetty-client-12.0.16.jar": "0d5375c83a60362f2225ae06d4837463942f39c5bc6bd83172b4ad2aef28df29",
+    "jetty-ee10-servlet-12.0.16.jar": "18a6c41074061a0ff440d618b43e7ab328e81226ec21c4d6a4d53b90b2c94a55",
+    "jetty-http-12.0.16.jar": "b0751b3dd9a8abc79ba0c5061613843dba1d2ce231057f53ad3d038ca888dfb0",
+    "jetty-io-12.0.16.jar": "c8dfd2d88d34be5461417f2256be0cc868865c45815f7ee0e409ddd872f0e84f",
+    "jetty-security-12.0.16.jar": "7a6d5b2d0edb1b5012b5510a80411c7fb4b9844b3879938d3b6e9ace3b9b6876",
+    "jetty-server-12.0.16.jar": "9e3f17ca732154ee2c67cc2bc340f322b29335f74d65f7cc0104c2e9cdc6640e",
+    "jetty-session-12.0.16.jar": "5d7dfd24c94472c368441488791412a31ea476ad4f1d9286b4f5802c5d85514b",
+    "jetty-util-12.0.16.jar": "a03d43c194993ebb4d51fbfe7fe29134d7863b28708380eeedd11797c83543cf",
+    "joou-java-6-0.9.5.jar": "17abe9a61051bcb8f591213858d5ef60eb56b0ebda00ad249672f8c4d359c13a",
+    "json-path-2.10.0.jar": "890daa95dd3892d34d9fabc27cd5153656e6f369358625c88f4dc7b79cbd6c5a",
+    "json-simple-1.1.1.jar": "4e69696892b88b41c55d49ab2fdcc21eead92bf54acc588c0050596c3b75199c",
+    "json-smart-2.6.0.jar": "1ae4b561458afb540be8ec5c6dbb4f2e715a319a7ae64854998aaf924770d61b",
+    "jspecify-1.0.0.jar": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+    "jts-core-1.19.0.jar": "dbb8644cf324123d06c27aa982f570811e10b4cb1f2aef893b00de237d33efc0",
+    "jts-io-common-1.19.0.jar": "e0f0c62024d4282f5f905de1abd2cc96f975a51d9e8d98254234fa14b16bbe9b",
+    "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+    "memory-0.9.0.jar": "c7d22ca0298753de7a5c85edc9b926892936e978595fe44375159b8ada15fdfc",
+    "netty-buffer-4.2.9.Final.jar": "d013a96acea4889bc01ee03738d53c2e4a05e3faec14c25a92b4224c77d7a408",
+    "netty-common-4.2.9.Final.jar": "99d965d507b09599ab2d215e940c690d4f7ce8cd97ff13776aa17eb4e0d90b8a",
+    "proj4j-1.2.2.jar": "e6fb89b55a6466aff5cc8497079e9d08c160122f4b433e8061acc37f81d7f802",
+    "protobuf-java-3.25.8.jar": "72bdb32eb38cafb7dcd288262c29a34d57cba2e19101af9685155ba8c0a56008",
+    "sketches-core-0.9.0.jar": "672a7973eae372d9f6ad9dab5904292ab38a1be2b7445521a0d820a59f2ae13c",
+    "slf4j-api-2.0.17.jar": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832",
+    "snakeyaml-2.4.jar": "ef779af5d29a9dde8cc70ce0341f5c6f7735e23edff9685ceaa9d35359b7bb7f",
+    "sqlite-jdbc-3.49.1.0.jar": "5c8609d2ca341deb8c6f71778974b5ba4995c7d32d7c7c89d9392a3e72c39291",
+    "uzaygezen-core-0.2.jar": "29aabe951d220f03b3789332f9f455ca2eba953c91ecef8aa06f76f458cedc4e",
+    "vgi-0.48.0.jar": "1fcf01e4d9cb30e99159634e7be077b0e57d8abdf419d9617aa948b2e202b54a",
+    "vgirpc-0.33.4-calcite-v3-SNAPSHOT.jar": "5f9af7a7fee1c20b8bf96bf13163800f0074eea050649934cade57819fe1b9b6",
+    "zstd-jni-1.5.6-8.jar": "57081e5c898cff772f97f5d96f5e74c7d8370797520e652b5d2a33b98e3cfc96"
+  },
+  "worker_packages": {
+    "vgi-python": "0.51.1",
+    "vgi-rpc": "0.53.1",
+    "pyarrow": "26.0.1"
+  },
+  "worker_source": "installed distribution",
+  "sqlglot_version": "30.31.0",
+  "calcite_properties": {
+    "caseSensitive": false,
+    "timeZone": "UTC",
+    "conformance": "BABEL",
+    "typeSystem": "farm.query.vgicalcite.VgiTypeSystem"
+  },
+  "sql_runs": [
+    {
+      "name": "lifecycle-v3-http-adapter",
+      "started_at": "2026-11-14T18:20:33.947530+00:00",
+      "suite_revision": "c21e622a78e5d018e21d740ade7bf8db1d693859",
+      "transport": "http",
+      "selected_files": [
+        "python_worker.test"
+      ],
+      "file_sha256": {
+        "python_worker.test": "92964cd9b8b33087d9e965d6487492e03a8e487f46e0a85659a3b0c30c60c6ef"
+      },
+      "counts": {
+        "pass": 14
+      },
+      "report_sha256": "ede9a985695d9536ceafa2bbbf5cd577987794642daf361acc1de727983df12a"
+    },
+    {
+      "name": "lifecycle-v3-http-malformed",
+      "started_at": "2026-11-14T18:20:33.943289+00:00",
+      "suite_revision": "c21e622a78e5d018e21d740ade7bf8db1d693859",
+      "transport": "http",
+      "selected_files": [
+        "worker.test"
+      ],
+      "file_sha256": {
+        "worker.test": "678e29b19062a39a59b28f97669acf8e41e930c3180328fb0924b204c74c39a1"
+      },
+      "counts": {
+        "pass": 8
+      },
+      "report_sha256": "92d06db137bc9593e8f2c33466de36bd04268812a3d7c79d3bd4ee848a6d7c22"
+    },
+    {
+      "name": "lifecycle-v3-http-upstream",
+      "started_at": "2026-11-14T18:20:34.585528+00:00",
+      "suite_revision": "86036b699c533ab87d9ddf44c2b477d7c9675951",
+      "transport": "http",
+      "selected_files": [
+        "integration/table/double_sequence.test",
+        "integration/table/positional_args.test",
+        "integration/table/projection_info.test"
+      ],
+      "file_sha256": {
+        "integration/table/double_sequence.test": "50f89d1ef4208b2d0daed113dba7683b2b78de40afda53d59c235ad9189af68b",
+        "integration/table/positional_args.test": "dae0bc73face116da67ac464f3fefd9ed0e950d6449c3ac8f7b648539e3db1e2",
+        "integration/table/projection_info.test": "5785b1de9ab229837f6ca591e7ff868181391cd652c020ca9e3c884ae8a7c8d2"
+      },
+      "counts": {
+        "not_run": 7111,
+        "pass": 100
+      },
+      "report_sha256": "1eed90915277f2e2faac2f3f41629dbf6db5bf054049fbbc4e4fe16f23a7c75b"
+    },
+    {
+      "name": "lifecycle-v3-tcp-adapter",
+      "started_at": "2026-11-14T18:20:33.948486+00:00",
+      "suite_revision": "c21e622a78e5d018e21d740ade7bf8db1d693859",
+      "transport": "tcp",
+      "selected_files": [
+        "python_worker.test"
+      ],
+      "file_sha256": {
+        "python_worker.test": "92964cd9b8b33087d9e965d6487492e03a8e487f46e0a85659a3b0c30c60c6ef"
+      },
+      "counts": {
+        "pass": 14
+      },
+      "report_sha256": "f5c2266efa6b0e684d4e62704d6c2997c63d1da137c5e2ff324221c04866e628"
+    },
+    {
+      "name": "lifecycle-v3-tcp-malformed",
+      "started_at": "2026-11-14T18:20:33.958804+00:00",
+      "suite_revision": "c21e622a78e5d018e21d740ade7bf8db1d693859",
+      "transport": "tcp",
+      "selected_files": [
+        "worker.test"
+      ],
+      "file_sha256": {
+        "worker.test": "678e29b19062a39a59b28f97669acf8e41e930c3180328fb0924b204c74c39a1"
+      },
+      "counts": {
+        "pass": 8
+      },
+      "report_sha256": "408081ffae4de78d6eef96aab1e844c60754239c4b61d1df2441a4dfaf419856"
+    },
+    {
+      "name": "lifecycle-v3-tcp-upstream",
+      "started_at": "2026-11-14T18:20:34.582879+00:00",
+      "suite_revision": "86036b699c533ab87d9ddf44c2b477d7c9675951",
+      "transport": "tcp",
+      "selected_files": [
+        "integration/table/double_sequence.test",
+        "integration/table/positional_args.test",
+        "integration/table/projection_info.test"
+      ],
+      "file_sha256": {
+        "integration/table/double_sequence.test": "50f89d1ef4208b2d0daed113dba7683b2b78de40afda53d59c235ad9189af68b",
+        "integration/table/positional_args.test": "dae0bc73face116da67ac464f3fefd9ed0e950d6449c3ac8f7b648539e3db1e2",
+        "integration/table/projection_info.test": "5785b1de9ab229837f6ca591e7ff868181391cd652c020ca9e3c884ae8a7c8d2"
+      },
+      "counts": {
+        "not_run": 7111,
+        "pass": 100
+      },
+      "report_sha256": "76a0ee3607d59d7d473cf030a9c5b7564c17bb89cef2cc79263eb317191b09bf"
+    }
+  ],
+  "java_tests": [
+    {
+      "suite": "farm.query.vgicalcite.ArrowTypesTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report_sha256": "ccda0cdcb683d8b74d0f6c96a3342051760a0d77d69a27e0f4c7436a631f2c87"
+    },
+    {
+      "suite": "farm.query.vgicalcite.CalciteIntegrationTest",
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report_sha256": "ea60c477408109b6e4fbf580b7c178fc8039f62e1078ef38ea28baa942f36780"
+    },
+    {
+      "suite": "farm.query.vgicalcite.CancellationIntegrationTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report_sha256": "aab6cf60a40923b37d1f7acd9356acb94adca41f14fc9f4588669f6b8fec66fc"
+    },
+    {
+      "suite": "farm.query.vgicalcite.TransportIntegrationTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report_sha256": "2f059d7138e668c82fb201b65e80df550085662bc7662b414ebeba6b2d34e479"
+    },
+    {
+      "suite": "farm.query.vgicalcite.VgiBatchValidationTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report_sha256": "8bf6a8fd9faf64f91c1f0753e05b4b7504cee13ff9b633ca3f64630da8760920"
+    },
+    {
+      "suite": "farm.query.vgicalcite.VgiCatalogMetadataTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report_sha256": "519f0d9caf6486239df327750e93dd9c2b0135b566c7e61783dcc666036d928e"
+    }
+  ],
+  "regressions": {
+    "stalled_scan_before": "All eight cancellation/timeout cases exceeded the three-second completion bound before the adapter transport abort fix.",
+    "stalled_scan_after": "Eight cases pass across TCP, HTTP, Unix sockets and subprocesses. Another statement executes while a scan is blocked, and a fresh query succeeds afterward.",
+    "arrow_buffers_before": {
+      "warmup_scans": 3,
+      "measured_scans": 10,
+      "allocated_before_bytes": 768,
+      "allocated_after_bytes": 3328
+    },
+    "arrow_buffers_after": "The repeated-scan assertion observes no increase in client Arrow allocation after ten completed scans."
+  }
+}
