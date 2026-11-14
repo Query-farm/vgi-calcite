@@ -1,47 +1,72 @@
-# vgi-calcite
+<p align="center">
+  <img src="assets/vgi-logo.png" alt="Vector Gateway Interface logo" width="320">
+</p>
 
-A Java adapter that makes a **VGI worker an external data source in Apache
-Calcite**. Load a JSON model, then use Calcite JDBC to query the worker's catalog
-tables and table functions. No DuckDB process or Calcite fork is involved.
+<h1 align="center">vgi-calcite</h1>
+
+<p align="center">
+  Query VGI catalogs and table functions with Apache Calcite.<br>
+  Built by <a href="https://query.farm">Query.Farm</a>.
+</p>
+
+<p align="center">
+  <a href="https://github.com/Query-farm/vgi-calcite/actions/workflows/ci.yml">
+    <img src="https://github.com/Query-farm/vgi-calcite/actions/workflows/ci.yml/badge.svg" alt="Build and test status">
+  </a>
+</p>
+
+**vgi-calcite** connects [Apache Calcite](https://calcite.apache.org/) to
+[Vector Gateway Interface (VGI)](https://github.com/Query-farm/vgi-java) workers.
+Java applications can use Calcite JDBC to query a worker's catalog tables and
+call its table functions with SQL.
 
 ```sql
+-- Query a catalog table.
 SELECT id, label FROM vgi.data.numbers WHERE id >= 4 ORDER BY id DESC;
+
+-- Call a table function and aggregate its results.
 SELECT COUNT(*), SUM(id) FROM TABLE(vgi.main.sequence(17));
 ```
 
-This initial implementation is read-only. It targets **Calcite 1.42.0** and the
-published **VGI Java SDK 0.48.0** (`vgi.v3`, protocol 3.3.0; RPC SDK 0.33.2,
-Arrow 19.0.0). Older `vgi.v2` workers need a matching SDK upgrade; protocol-major
-compatibility is not implied. All dependencies resolve from Maven Central; no
-sibling source checkouts are required.
+These tables and functions are available in the included demo below.
 
-## Build and try it
+## What you can do
 
-Use JDK 21 or 27 and the included Maven wrapper:
+- **Browse worker catalogs.** Discover tables and public table functions,
+  including those in nested schemas.
+- **Call table functions from SQL.** Pass literal scalar values, use named
+  arguments, and omit optional arguments to use the worker's defaults.
+- **Use familiar SQL operations.** Filter, join, aggregate, sort, and limit
+  results through Calcite.
+- **Choose a connection.** Connect over HTTP(S), TCP, or a Unix socket, or run a
+  worker as a subprocess.
+- **Stream Arrow data.** Read results in batches, with column selection sent to
+  catalog-table scan functions that support it.
+
+This initial version is **read-only**. Calcite evaluates filters, joins,
+aggregates, sorts, and limits; those operations are not pushed down to the worker.
+
+## Quickstart
+
+Use **JDK 21 or 27**. The commands below are for macOS or Linux and run a
+self-contained demo using the included test worker.
+
+### 1. Build the adapter
 
 ```sh
+git clone https://github.com/Query-farm/vgi-calcite.git
+cd vgi-calcite
 ./mvnw clean verify
 ```
 
-The build produces `target/vgi-calcite-0.1.0-SNAPSHOT.jar`, a sources JAR, and
-`target/dependency/` containing the runtime libraries. Keep that directory next
-to the adapter JAR when using the packaged query runner.
+The Maven wrapper downloads the build tools and dependencies. The build runs the
+tests and produces `target/vgi-calcite-0.1.0-SNAPSHOT.jar` and
+`target/dependency/`. Keep the dependency directory beside the JAR when using
+the packaged query runner.
 
-Edit [examples/model.json](examples/model.json) to identify your worker and its
-catalog. Then run a SQL query:
+### 2. Start the demo worker
 
-```sh
-java --add-opens=java.base/java.nio=ALL-UNNAMED \
-  --enable-native-access=ALL-UNNAMED -Dio.netty.noUnsafe=false \
-  -jar target/vgi-calcite-0.1.0-SNAPSHOT.jar examples/model.json \
-  'SELECT * FROM vgi.data.numbers'
-```
-
-The runner sets case-insensitive identifier lookup, UTC, and `VgiTypeSystem`.
-Query and table names in the examples match the included test worker; use the
-names your worker advertises when connecting another catalog.
-
-For a self-contained demo, start the test worker after building:
+In the repository directory, run:
 
 ```sh
 java --add-opens=java.base/java.nio=ALL-UNNAMED \
@@ -50,182 +75,104 @@ java --add-opens=java.base/java.nio=ALL-UNNAMED \
   farm.query.vgicalcite.FixtureWorker --http --host 127.0.0.1 --port 8000
 ```
 
-Keep it running while using the query runner in another terminal. Windows uses
-`;` instead of `:` as the classpath separator. The integration suite's Unix
-socket checks require Linux or macOS.
+Leave this terminal running. The worker serves the `demo` catalog at
+`http://127.0.0.1:8000`, matching [examples/model.json](examples/model.json).
 
-## Embed with Calcite JDBC
+### 3. Run a SQL query
 
-After `./mvnw install`, add `farm.query:vgi-calcite:0.1.0-SNAPSHOT` to your local
-application. This project has not been published to Maven Central.
+Open a second terminal in the repository directory:
 
-```java
-Properties properties = new Properties();
-properties.setProperty("model", "/absolute/path/to/model.json");
-properties.setProperty("caseSensitive", "false");
-properties.setProperty("timeZone", "UTC");
-properties.setProperty("typeSystem", "farm.query.vgicalcite.VgiTypeSystem");
-try (Connection connection = DriverManager.getConnection("jdbc:calcite:", properties);
-     Statement statement = connection.createStatement();
-     ResultSet rows = statement.executeQuery("SELECT COUNT(*) FROM vgi.data.numbers")) {
-  rows.next();
-  System.out.println(rows.getLong(1));
+```sh
+java --add-opens=java.base/java.nio=ALL-UNNAMED \
+  --enable-native-access=ALL-UNNAMED -Dio.netty.noUnsafe=false \
+  -jar target/vgi-calcite-0.1.0-SNAPSHOT.jar examples/model.json \
+  'SELECT COUNT(*) AS row_count, SUM(id) AS id_total FROM TABLE(vgi.main.sequence(17))'
+```
+
+Expected result, with columns separated by tabs:
+
+```text
+ROW_COUNT  ID_TOTAL
+17         136
+```
+
+The function returns integers from 0 through 16. Try more queries from
+[examples/queries.sql](examples/queries.sql), then stop the worker with
+**Ctrl+C** when finished.
+
+## Connect your own worker
+
+Update [examples/model.json](examples/model.json) with your worker's endpoint
+and catalog name:
+
+```json
+{
+  "version": "1.0",
+  "schemas": [
+    {
+      "name": "vgi",
+      "type": "custom",
+      "factory": "farm.query.vgicalcite.VgiSchemaFactory",
+      "operand": {
+        "location": "http://127.0.0.1:8000",
+        "catalog": "demo"
+      }
+    }
+  ]
 }
 ```
 
-Use the Arrow JVM flags shown above in the embedding application as well.
-The schema can also be created programmatically with
-`VgiSchema.connect(VgiConfig.from(operandMap))` and added to a `CalciteConnection`'s
-root schema. `unsupportedFunctions()` reports table-function signatures omitted
-from discovery.
+`catalog` must match a catalog advertised by the worker. `name` is the local
+SQL alias: a worker table named `data.numbers` becomes `vgi.data.numbers`.
 
-## Model operands
+For a subprocess, replace `location` with
+`"command": ["/absolute/path/to/worker"]`, adding any arguments your worker
+requires. Supply exactly one of `location` and `command`.
 
-The model's `name` is a local alias. Its `catalog` operand is the actual catalog
-name advertised by the worker. Supply exactly one of `location` and `command`.
+See the [usage guide](docs/usage.md) for authentication, all connection options,
+and embedding in a Java application. For JDBC tools that browse tables through
+metadata, use [`schemaPath`](docs/usage.md#jdbc-tools-and-schema-mounting) to
+mount a worker schema directly.
 
-| Operand | Meaning |
+## Compatibility
+
+| Component | Version |
 | --- | --- |
-| `catalog` | Required VGI catalog name. |
-| `location` | `http://`, `https://`, `tcp://host:port`, or `unix:///absolute/path`. |
-| `command` | Subprocess argument array, e.g. `["/path/to/worker", "--stdio"]` if that worker accepts `--stdio`. Omit transport flags for the included Java worker. Arguments are passed directly to `ProcessBuilder`; no shell expansion. |
-| `schemaPath` | Optional array such as `["data"]` to mount just that VGI schema. Omit to mount the full catalog with nested schemas. |
-| `bearerTokenEnv` | Environment variable containing an HTTP bearer token. The token is read when opening each HTTP connection. |
-| `attachOptions` | Object of scalar worker attach options, encoded by the SDK. |
-| `dataVersion` | Optional requested VGI data-version specification. |
-| `implementationVersion` | Optional requested VGI implementation version. |
+| Java | Tested with JDK 21 and 27 |
+| Apache Calcite | 1.42.0 |
+| VGI Java SDK | 0.48.0 |
+| VGI protocol | `vgi.v3`, version 3.3.0 |
 
-For JDBC tools that enumerate tables through `DatabaseMetaData`, use
-`"schemaPath": ["data"]`. With this mount, `vgi.numbers` is a top-level schema
-table and appears in JDBC metadata. Calcite 1.42's standard JDBC metadata
-enumerates root schemas; it does not recursively list `vgi.data.*` when mounting
-the full catalog. Both mount styles support normal SQL queries.
+VGI v2 workers are not supported. Build dependencies are available from Maven
+Central; **the adapter itself has not been published there**. To use it in
+another project, [install it locally and add the Maven dependency](docs/usage.md#embed-in-a-java-application).
 
-TCP connects have a 10-second timeout and a 60-second socket read timeout.
-HTTP uses the SDK's timeouts. Subprocess and Unix-socket reads currently have no
-adapter deadline. Cancellation is checked between rows/batches and sends the
-SDK's stream cancellation signal on close; it does not interrupt a blocked
-subprocess read.
+## Current limitations
 
-## What works
+- No writes or transactions. VGI scalar functions, aggregate functions, and
+  table-in/out transforms are not exposed; Calcite's own SQL aggregates work.
+- Table-function arguments must be literals. Dynamic prepared parameters
+  (`?`) in table-function calls are not supported.
+- Worker-side predicate, join, aggregate, sort, and limit pushdown, distributed
+  splits, and native-file scans are not implemented.
+- Each scan uses an independent connection. Catalog metadata is loaded once;
+  reconnect to refresh it.
+- Time and timestamp values have millisecond precision.
 
-* VGI schema, table, and public producer-function discovery, including multi-component
-  schema paths. Metadata is a snapshot taken when the model is loaded.
-* Catalog tables backed by inline scan functions or one/multiple function scan
-  branches. Multiple branches are read sequentially with UNION ALL semantics.
-* `TABLE(vgi.schema.function(...))` with literal scalar arguments. Calcite table
-  macros bind the worker to learn the actual output schema. Omitted trailing
-  defaults and explicit SQL NULL remain distinct. Named arguments should use
-  the worker's exact quoted names, e.g. `"batch_size" => 2`.
-* Streaming Arrow batches, including zero-row batches, NULLs, and multiple
-  batches. Returned rows own their Java values and survive Arrow buffer reuse.
-* Projection pushdown on catalog-table scans when the backing function
-  advertises it. Calcite handles projection for other scans. A zero-column
-  request such as COUNT(*) still reads rows correctly.
-* Calcite-side filters, sorts, joins, aggregates, and limits; repeated prepared
-  queries and concurrent scans use independent VGI connections.
-* Booleans, signed/unsigned integers, floats, strings, binary, decimals,
-  dates/times/timestamps, arrays, structs, maps, and top-level dictionaries.
-  Unknown types and nested dictionary encodings fail explicitly.
+The [usage guide](docs/usage.md#types-and-execution-limits) describes supported
+types, connection behavior, and worker features that require additional adapter
+support.
 
-`VgiTypeSystem` raises Calcite's decimal precision limit to 38. It is required
-for uint64 (DECIMAL(20,0)) and decimal128 columns above Calcite's default
-19-digit limit. Decimal256 and Arrow logical extension types currently fail
-explicitly. Time and timestamp values are exposed at **millisecond precision**;
-micro/nanosecond values are floored to milliseconds, including before the Unix
-epoch. Zoned timestamps use Calcite's `TIMESTAMP WITH LOCAL TIME ZONE`.
+## Development
 
-## Boundaries of this version
+Run `./mvnw verify` to test real Calcite SQL queries against the included VGI
+worker over HTTP, TCP, Unix sockets, and subprocess connections. No external
+service is required.
 
-There is no worker-side predicate, join, aggregate, sort, or limit pushdown;
-no distributed split planning, connection pool, writes, transactions, snapshot
-consistency across independent attaches, automatic catalog refresh, or `launch:`
-transport. Each scan reattaches and rebinds on its own connection, so a bare
-subprocess command starts a worker per scan. Use a persistent HTTP/TCP/Unix
-worker to avoid process startup overhead. Configure a data version when the
-worker supports stable versioned reads.
-
-VGI scalar/aggregate functions, table-in/out transforms, views/macros in the
-worker's SQL dialect, table/any/variadic function arguments, dynamic prepared
-parameters in TABLE calls, secrets requested during bind, and required session
-settings are not implemented. A prepared statement containing literal TABLE
-arguments can be executed repeatedly.
-
-Required-filter tables, filtered scan planning, SQL `branch_filter` clauses,
-format/native scan delegation (such as `read_parquet`), companion catalogs,
-and scans requiring engine extensions are rejected. They are not approximated
-by a partial table scan. The adapter advertises no advanced execution
-capabilities. Workers requiring those capabilities are outside this version's
-supported scope.
-
-## Design and next work
-
-```mermaid
-flowchart LR
-  JDBC[Calcite JDBC / SQL] --> Catalog[VgiSchemaFactory + metadata snapshot]
-  Catalog --> Planner[Calcite planner]
-  Planner --> Scan[Catalog scan or bound function operator]
-  Scan --> Client[VGI Java SDK: attach / bind / init]
-  Client --> Worker[VGI worker]
-  Worker --> Arrow[Arrow record batches]
-  Arrow --> Rows[Calcite Enumerable rows]
-```
-
-`VgiSchemaFactory` is the adapter integration point. `VgiTable` implements
-`ProjectableFilterableTable`, leaving residual predicates with Calcite.
-`VgiTableMacro` discovers signatures and performs bind-time calls; its execution
-operator retains each bound invocation in Calcite's prepared-query context.
-Function arguments are part of the operator's planner identity, so two calls
-with different arguments cannot be incorrectly merged. The function operator
-is not a generic TableScan: generic scan rules would discard that identity.
-
-`VgiEnumerator` owns a connection and the current batch. Nothing is pooled or
-stored in a global registry. Schema/model objects hold metadata only. Normal
-completion detaches; early close cancels the stream and closes its transport.
-Rows are converted only at Calcite's Enumerable boundary; transport stays
-columnar. This supports federation with other Calcite adapters, while keeping
-the first implementation small enough to validate.
-
-The next useful steps are:
-
-1. Translate Calcite predicates into the VGI v3 filter representation, negotiate
-   its semantic profiles, and preserve residual predicates. This unlocks
-   required-filter tables and avoids unnecessary data transfer.
-2. Add a VGI relational convention and planner rules for larger pushdown units,
-   plus split planning and cancellation deadlines.
-3. Add batched scalar/table-in-out operators. A row-at-a-time scalar RPC would
-   lose VGI's vectorized execution model, so scalar registration needs an
-   execution design rather than a reflective method wrapper.
-4. Add bounded connection reuse and metadata/version refresh with explicit
-   lifecycle ownership, then benchmark against an existing Calcite adapter.
-
-## Verification
-
-`./mvnw verify` runs real Calcite JDBC queries against a Java VGI worker in a
-separate process, using the released SDK. Tests cover TCP, stdio subprocesses,
-HTTP and Unix sockets; metadata mounting; nested schemas; empty/multiple
-batches; projection fallback; SQL operations; NULL/default arguments;
-multi-branch scans; distinct function calls; repeated prepared statements;
-worker errors and early LIMIT. Type tests cover unsigned boundaries, temporal
-precision, numeric carriers and dictionaries. No external service or sibling
-repository is needed, and tests do not silently skip a missing worker.
-
-Local verification on macOS ARM64 passes **24 tests with no skips**, on both
-JDK 21 and JDK 27. The packaged JAR was also run independently against the
-fixture worker: `COUNT(*), SUM(id)` over `sequence(17)` returned `17, 136`.
-The CI workflow is supplied for Linux/macOS; hosted CI has not been run here.
-
-Jackson is aligned with the VGI SDK's 2.21.0 BOM: mixing Calcite's 2.18 core with
-the SDK's 2.21 CBOR codec fails HTTP stream-state decoding. SLF4J is aligned to
-2.0.17. The adapter does not bundle a logging backend; an embedding application
-can supply one.
-
-References: [Calcite adapter interfaces](https://calcite.apache.org/docs/adapter.html),
-[Calcite 1.42.0](https://calcite.apache.org/docs/history.html), and the
-[VGI Java SDK](https://github.com/Query-farm/vgi-java).
+See [architecture and development](docs/architecture.md) for the implementation,
+test coverage, and planned extensions.
 
 ## License
 
-[Query Farm Source-Available License, Version 1.0](LICENSE), following the
-existing Query Farm JVM adapters. This is an external adapter, not an Apache
-Software Foundation release.
+[Query Farm Source-Available License, Version 1.0](LICENSE).
+This is an external adapter, not an Apache Software Foundation release.
