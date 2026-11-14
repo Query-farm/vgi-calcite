@@ -22,8 +22,8 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 70 tests. The Python interoperability gate runs 100
-upstream records, 14 adapter-specific records and 8 malformed-worker checks
+The Java suite now has 74 tests. The Python interoperability gate runs 211
+upstream records, 26 adapter-specific records and 8 malformed-worker checks
 over TCP and HTTP. The adapter checks include worker-echoed filters, retained local expressions and
 catalog-table reads. See the [conformance instructions](../conformance/README.md)
 and [CI workflow](../.github/workflows/ci.yml) for reproducible commands and
@@ -47,7 +47,7 @@ dependencies. The CI suite revision is separately pinned to the public commit
 `e75482339d07244105e4a040f998a7092b7402a5`; its selected test files match the
 development suite above.
 
-The latest **full table-directory survey** ran against source matching connector
+An earlier **full table-directory survey** ran against source matching connector
 commit `2bf3463cdf644acd98ceb2622e696c827f9185e3` and the same development suite and
 released Python worker. Its 62 selected files contain 1,480 static records:
 
@@ -67,6 +67,32 @@ counts and source hashes for comparison with future runs. This improves on the
 previous survey's 609 passes and 836 failures; none of its passing records
 regressed. The run began before its source was committed, so the baseline also
 records the worktree's base revision and the verified source hashes.
+
+A subsequent comparison used the published RPC SDK 0.33.4 and public suite
+revision `e75482339d07244105e4a040f998a7092b7402a5`. It ran **all 64 table-directory
+files, containing 1,527 static records**, before and after the numeric and
+SQLLogicTest formatting changes. TCP and HTTP produced identical counts:
+
+| Status | Before | After |
+| --- | ---: | ---: |
+| Passed | 625 | 629 |
+| Failed | 858 | 854 |
+| Unsupported by the harness | 3 | 3 |
+| Not run after an unavailable setup | 41 | 41 |
+
+Three integer-average results and one empty-string comparison account for the
+four improved records. No previously passing record regressed. The expanded
+passing gate separately verifies 245 records per transport: 211 upstream,
+26 adapter and eight malformed-worker records. The
+[comparison record](../conformance/baselines/compatibility-numeric-results.json)
+contains exact sources, runtime and report hashes, per-file results and the
+three unresolved numeric overflow cases described below.
+
+Both revisions were compared on GitHub runners with the same 30-second harness
+deadline. An earlier local candidate attempt hit startup/catalog-attachment
+deadlines under heavy host CPU load and was interrupted; its partial results
+remain recorded. Successful survey collection does not mean the cases passed.
+The complete 448-file upstream inventory was not rerun in this comparison.
 
 The **full inventory survey** subsequently attempted all 417 files against
 connector commit `2b5e5e93d392205f4bbdb7eb30dad76331338335`, using the same
@@ -105,8 +131,8 @@ the RPC dependency's Arrow loader expanded a malformed list's child vector
 before adapter validation could see its original length. RPC versions through
 0.33.3 fail that rejection check. The adapter now pins
 [RPC SDK 0.33.4](https://github.com/Query-farm/vgi-rpc-java/releases/tag/v0.33.4),
-which fixes the reader. All 122 selected SQL records pass on both TCP and HTTP
-with the published dependency, including the eight malformed-worker checks.
+which fixes the reader. Its initial release qualification passed all 122 selected
+SQL records on both TCP and HTTP, including the eight malformed-worker checks.
 Repeating the full table survey with the revised reader produced the same
 623 passes and 822 failures, with no record-status changes. The
 [SDK qualification record](../conformance/baselines/sdk-reader-validation.json)
@@ -132,6 +158,29 @@ quoted reserved column names. Its one remaining failure is
 independent DuckDB calculation both return the latter. The original upstream
 assertion remains a failure in the report; the adapter suite separately checks
 the correct result. This file is not part of the all-passing CI gate.
+
+## Numeric aggregate compatibility
+
+The upstream sequence tests exposed integer averages losing their fractional
+part. Additional SQL regressions found narrow integer accumulator wraparound:
+summing ten copies of `2,147,483,647` returned `-10`. The adapter's configured
+type system now widens integer sums to `BIGINT` and returns `DOUBLE` for integer
+and decimal averages. Tests cover batches, negative values, NULLs, empty inputs,
+grouping, DISTINCT and windows. These rules affect the whole Calcite connection.
+
+**BIGINT overflow remains unresolved.** A representable average can still have
+an intermediate sum outside that range. Three failures are preserved in the
+[numeric overflow survey](../conformance/surveys/numeric_overflow.test).
+Explicitly casting the input to `DECIMAL(38,0)` before `SUM` or `AVG` is tested
+as a workaround; casting the result is too late. Automatically declaring a
+decimal accumulator exposed a Calcite 1.42 code-generation limitation, so that
+change was not adopted. See [numeric types](usage.md#arrow-types) for the
+configured result types and bounds.
+
+The SQLLogicTest runner also now formats empty strings as `(empty)` and embedded
+NUL characters as `\0` before sorting and hashing. This fixes false mismatches
+against the upstream result format without changing query results or expected
+values. Runner regressions keep empty strings distinct from NULL and missing rows.
 
 ## Catalog-version checks
 
@@ -173,9 +222,9 @@ pass alongside the 698-test core suite and 21-test FFM suite (three and two
 platform-dependent skips, respectively). All ten cross-platform SDK CI jobs
 also pass for [the exact cleanup commit](https://github.com/Query-farm/vgi-rpc-java/actions/runs/43625838307).
 
-The connector includes the SQL memory regression. All 70 Java tests and all
-122 selected Python-worker records per transport pass with published RPC SDK
-0.33.4. This resolves the dependency defects found by these checks. The broader
+The connector includes the SQL memory regression. At the RPC SDK 0.33.4 release,
+all 70 Java tests and all 122 selected Python-worker records per transport passed
+with the published dependency. This resolved the dependency defects found by those checks. The broader
 compatibility and operational work below remains incomplete.
 
 The [lifecycle qualification record](../conformance/baselines/lifecycle-sdk-validation.json)
@@ -189,9 +238,11 @@ records the subsequent checks against Maven Central artifacts.
 
 - **Broader query coverage.** Triage the full inventory's remaining failures and
   distinguish connector defects, harness controls, and DuckDB-specific expectations.
-  The remaining 39 selected failures include named arguments that omit an
-  earlier default, integer `AVG` result types, engine-specific SQL and settings,
+  Remaining failures include named arguments that omit an
+  earlier default, engine-specific SQL and settings,
   and equivalent predicate strings printed differently by the workers.
+- **Numeric bounds.** Resolve or explicitly bound `BIGINT` aggregate overflow;
+  the passing gate's decimal-cast cases do not make uncast large sums safe.
 - **Function coverage.** Scalar, aggregate and table-in/table-out functions
   remain unsupported. They account for substantial parts of the upstream
   suite. Producer functions accept literal scalar arguments only.

@@ -63,6 +63,8 @@ jobs:
           --include integration/table/double_sequence.test
           --include integration/table/positional_args.test
           --include integration/table/projection_info.test
+          --include integration/table/sequence.test
+          --include integration/table/filtered_columns_pushdown.test
           --transport ${{ matrix.transport }}
           --report target/conformance/upstream/report.json
       - uses: actions/upload-artifact@v4

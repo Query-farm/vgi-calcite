@@ -102,6 +102,57 @@ class CalciteIntegrationTest {
         assertEquals(List.of(List.of(0L)), query("select count(*) from vgi.data.\"empty\""));
     }
 
+    @Test void exactNumericAveragesRetainFractions() throws Exception {
+        for (String type : List.of("tinyint", "smallint", "integer", "bigint", "decimal(20,0)", "decimal(20,2)")) {
+            String expression = "cast(id as " + type + ")";
+            assertEquals(List.of(List.of(4.5d, -4.5d)), query(
+                    "select avg(" + expression + "), avg(-" + expression + ") from vgi.data.numbers"), type);
+        }
+        assertEquals(List.of(List.of(6.5d)), query("select avg(id) from vgi.data.numbers where id >= 4"));
+        assertEquals(List.of(List.of(5d)), query(
+                "select avg(case when id = 0 then null else id end) from vgi.data.numbers"));
+        try (var statement = connection.createStatement();
+             var rows = statement.executeQuery("select avg(id) from vgi.data.\"empty\"")) {
+            assertEquals(java.sql.Types.DOUBLE, rows.getMetaData().getColumnType(1));
+            assertTrue(rows.next()); assertNull(rows.getObject(1)); assertFalse(rows.next());
+        }
+    }
+
+    @Test void integerSumsUseWideAccumulators() throws Exception {
+        assertEquals(List.of(List.of(21474836470L)), query(
+                "select sum(cast(2147483647 as integer)) from vgi.data.numbers"));
+        assertEquals(List.of(List.of(-21474836480L)), query(
+                "select sum(cast('-2147483648' as integer)) from vgi.data.numbers"));
+        assertEquals(List.of(List.of(45L, 45L)), query(
+                "select sum(distinct id), sum(case when id = 0 then null else id end) from vgi.data.numbers"));
+        try (var statement = connection.createStatement();
+             var rows = statement.executeQuery("select sum(id) from vgi.data.\"empty\"")) {
+            assertEquals(java.sql.Types.BIGINT, rows.getMetaData().getColumnType(1));
+            assertTrue(rows.next()); assertNull(rows.getObject(1)); assertFalse(rows.next());
+        }
+    }
+
+    @Test void explicitDecimalInputsAvoidBigintAggregateOverflow() throws Exception {
+        // Calcite's BIGINT accumulator can still wrap. A cast must precede the
+        // aggregate, not just convert its already-overflowed result.
+        assertEquals(List.of(List.of(new java.math.BigDecimal("92233720368547758070"))), query(
+                "select sum(cast(9223372036854775807 as decimal(38,0))) from vgi.data.numbers"));
+        assertEquals(List.of(List.of(new java.math.BigDecimal("-92233720368547758080"))), query(
+                "select sum(cast('-9223372036854775808' as decimal(38,0))) from vgi.data.numbers"));
+        assertEquals(List.of(List.of((double) Long.MAX_VALUE)), query(
+                "select avg(cast(9223372036854775807 as decimal(38,0))) from vgi.data.numbers"));
+    }
+
+    @Test void groupedDistinctAndWindowAveragesRetainFractions() throws Exception {
+        assertEquals(List.of(List.of(4.5d)), query("select avg(distinct id) from ("
+                + "select id from vgi.data.numbers union all select id from vgi.data.numbers)"));
+        assertEquals(List.of(List.of(false, 1.5d), List.of(true, 6.5d)), query(
+                "select id >= 4 as high, avg(id) from vgi.data.numbers group by id >= 4 order by high"));
+        assertEquals(List.of(List.of(0d), List.of(0.5d), List.of(1d)), query(
+                "select avg(id) over (order by id rows between unbounded preceding and current row) "
+                        + "from table(vgi.main.single_sequence(3)) order by id"));
+    }
+
     @Test void projectionFallbackPreservesColumns() throws Exception {
         assertEquals(query("select label, id from vgi.data.numbers order by id"),
                 query("select label, id from vgi.data.unprojected order by id"));

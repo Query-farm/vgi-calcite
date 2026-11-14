@@ -73,6 +73,25 @@ class RunnerTest(unittest.TestCase):
         response["rows"].append(["3"])
         self.assertFalse(compare(record, response)[0])
 
+    def test_empty_values_use_sqllogictest_marker_before_sorting_and_hashing(self):
+        for order in ["nosort", "rowsort", "valuesort"]:
+            record = Record("a", 1, "query T " + order, "", ["z", "(empty)", "NULL"], [])
+            response = {"ok": True, "columns": ["s"], "rows": [["z"], [""], ["NULL"]]}
+            self.assertTrue(compare(record, response)[0], order)
+        digest = hashlib.md5(b"(empty)\nNULL\nz\n").hexdigest()
+        record = Record("a", 1, "query T valuesort", "", [f"3 values hashing to {digest}"], [])
+        self.assertTrue(compare(record, response)[0])
+
+    def test_empty_marker_does_not_match_null_missing_rows_or_other_values(self):
+        record = Record("a", 1, "query T", "", ["(empty)"], [])
+        for rows in [[], [["NULL"]], [[" "]], [["not empty"]]]:
+            self.assertFalse(compare(record, {"ok": True, "columns": ["s"], "rows": rows})[0])
+
+    def test_embedded_nul_uses_sqllogictest_escape(self):
+        record = Record("a", 1, "query T", "", [r"before\0after"], [])
+        response = {"ok": True, "columns": ["s"], "rows": [["before\x00after"]]}
+        self.assertTrue(compare(record, response)[0])
+
 
 if __name__ == "__main__":
     unittest.main()

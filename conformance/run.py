@@ -184,7 +184,9 @@ def compare(record: Record, response: dict) -> tuple[bool, str]:
     if len(response.get("columns", [])) != width:
         return False, f"Expected {width} columns, got {len(response.get('columns', []))}"
     order = header[2] if len(header) > 2 else "nosort"
-    actual = [list(row) for row in rows]
+    # DuckDB's SQLLogicTest format represents empty strings and embedded NULs
+    # before sorting or hashing. Keep NULL distinct from an empty string.
+    actual = [[cell.replace("\x00", r"\0") if cell else "(empty)" for cell in row] for row in rows]
     if order == "rowsort":
         actual.sort()
     values = [cell for row in actual for cell in row]
