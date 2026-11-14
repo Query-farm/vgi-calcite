@@ -215,6 +215,18 @@ Unsigned integers are widened to a suitable Calcite type; `uint64` maps to
 19 to 38 digits. Use it for `uint64` and decimal128 columns above 19 digits.
 Decimal256 is not supported.
 
+The configured `VgiTypeSystem` also defines numeric aggregate results:
+`SUM` of an integer returns `BIGINT`, and `AVG` of an integer or decimal returns
+`DOUBLE`. Averages use floating-point precision. These rules apply to the
+entire Calcite connection, including queries over other adapters.
+
+Calcite's integer accumulator can still wrap when an intermediate sum exceeds
+the `BIGINT` range, including inside `AVG`. For potentially larger totals, cast
+the **input** to decimal: `SUM(CAST(n AS DECIMAL(38,0)))` or
+`AVG(CAST(n AS DECIMAL(38,0)))`. Casting the aggregate result is too late.
+The conformance overflow survey preserves uncast failures as an open numeric
+limitation; production workloads must account for these bounds.
+
 Time and timestamp values use **millisecond precision**. Microsecond and
 nanosecond values are floored to milliseconds, including values before the Unix
 epoch. Zoned timestamps use Calcite's `TIMESTAMP WITH LOCAL TIME ZONE`.

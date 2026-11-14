@@ -27,14 +27,24 @@ git -C .conformance/upstream checkout e75482339d07244105e4a040f998a7092b7402a5
   --include integration/table/double_sequence.test \
   --include integration/table/positional_args.test \
   --include integration/table/projection_info.test \
+  --include integration/table/sequence.test \
+  --include integration/table/filtered_columns_pushdown.test \
   --report target/conformance/upstream/report.json
 ```
 
 Add `--transport http` to repeat either run over HTTP. CI runs both transports,
 uploads the reports and logs, and fails on any failure or unsupported record in
-the selected files. The upstream gate currently selects **100 records**; the
-adapter-specific suite adds **14 separate records**. Neither number represents
+the selected files. The upstream gate currently selects **211 records**; the
+adapter-specific suite adds **26 separate records**. Neither number represents
 coverage of the whole upstream suite.
+
+| Upstream file | Records | Scope |
+| --- | ---: | --- |
+| `double_sequence.test` | 85 | Floating-point producer queries, filters and relational operations |
+| `positional_args.test` | 4 | Catalog scan arguments, including a million-row table |
+| `projection_info.test` | 11 | Worker-observed column projection |
+| `sequence.test` | 103 | Integer producers, batches, empty results and local aggregates |
+| `filtered_columns_pushdown.test` | 8 | Worker-observed filter columns and empty metadata values |
 
 CI also runs **8 malformed-worker checks** per transport using the upstream
 fixture that corrupts Arrow buffers after constructing its batches:
@@ -69,6 +79,15 @@ connector or identifying engine-specific expectations. Omit `--include` to
 attempt every file, or use `--inventory-only` to count records without launching
 a worker. The inventory covers `.test` files, not `.test_slow` files or expanded
 loop iterations.
+
+The [compatibility survey workflow](../.github/workflows/compatibility.yml) runs
+the complete table directory for a baseline and candidate over TCP and HTTP.
+Choose the candidate ref when dispatching it and supply an immutable baseline
+commit in `baseline_ref` for a repeatable comparison. It also runs the numeric
+overflow survey when present. Each job uploads the raw reports, logs, command
+and exit status, and shows selected-record counts in its summary. A successful
+collection job means the runner finished; failed compatibility records remain
+failures. The separate `verify` workflow remains the passing regression gate.
 
 ## What the report means
 
@@ -113,6 +132,28 @@ ignored. Unknown `ATTACH` options and alternate workers are also rejected by
 the harness. Query comparisons support row/value sorting, hashes, NULL text,
 and absolute tolerance of `1e-9` for non-hashed `R` cells. Expected error text
 must match; merely receiving any error does not pass a negative test.
+
+Empty values are rendered as `(empty)` and embedded NUL characters as `\0`,
+following DuckDB's SQLLogicTest result format. This conversion happens before
+sorting and hashing; NULL remains distinct from an empty string.
+
+## Numeric overflow survey
+
+The passing gate includes fractional averages and exact sums with explicit
+decimal inputs. The separate overflow survey retains correct expected values
+for known failures of Calcite's uncast `BIGINT` accumulator:
+
+```sh
+.conformance/venv/bin/python conformance/run.py \
+  --suite conformance/surveys --include numeric_overflow.test \
+  --report target/conformance/numeric-overflow/report.json
+```
+
+This command is expected to fail until the accumulator limitation is fixed.
+These cases remain outside the passing CI gate and count as unresolved failures,
+not unsupported or successful records. Cast inputs to `DECIMAL(38,0)` before
+`SUM` or `AVG` when totals can exceed the `BIGINT` range; see
+[numeric types](../docs/usage.md#arrow-types).
 
 See [production readiness](../docs/production-readiness.md) for the broader
 qualification status.
