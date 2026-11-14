@@ -22,7 +22,7 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 56 tests. The Python interoperability gate runs 100
+The Java suite now has 58 tests. The Python interoperability gate runs 100
 upstream records, 14 adapter-specific records and 8 malformed-worker checks
 over TCP and HTTP. The
 adapter checks include worker-echoed filters, retained local expressions and
@@ -96,6 +96,14 @@ Valid nested lists and structs are also exercised through the Python worker.
 Map fields use Arrow's buffer validation without its separate type visitor,
 which incorrectly rejects valid maps in Arrow 19. A regression test verifies
 both a valid map and rejection of an invalid map offset.
+
+Every returned top-level column is checked for NULLs against its bind
+declaration and any stronger catalog nullability constraint before local
+projection. This includes dictionary entries referenced by non-nullable columns.
+A SQL regression reproduced an invalid NULL going unchecked when a worker
+returned a fallback column that Calcite did not decode; batch validation now
+rejects it, while valid nullable data and unused NULL dictionary entries remain
+accepted.
 
 A four-file projection survey passed 134 of 135 records after the harness
 quoted reserved column names. Its one remaining failure is

@@ -41,6 +41,10 @@ final class VgiBatchValidation {
             for (int i = 0; i < expected.size(); i++) {
                 FieldVector vector = root.getVector(i);
                 vector.accept(DATA_VALIDATOR, null);
+                Field expectedField = expected.get(i);
+                if (!expectedField.isNullable() && vector.getNullCount() > 0) {
+                    throw nullViolation(expectedField);
+                }
                 Field logical = vector.getField();
                 var encoding = logical.getDictionary();
                 if (encoding != null) {
@@ -60,6 +64,9 @@ final class VgiBatchValidation {
                         if (index < 0 || index >= values.getValueCount()) {
                             throw new IllegalArgumentException("Dictionary indices invalid at column " + i + ", row " + row);
                         }
+                        if (!expectedField.isNullable() && values.isNull((int) index)) {
+                            throw nullViolation(expectedField);
+                        }
                     }
                     logical = new Field(logical.getName(), new FieldType(logical.isNullable(),
                             values.getField().getType(), null, logical.getMetadata()), values.getField().getChildren());
@@ -74,6 +81,10 @@ final class VgiBatchValidation {
             throw new IllegalStateException("VGI worker sent a malformed Arrow batch (full validation): "
                     + failure.getMessage(), failure);
         }
+    }
+
+    private static IllegalArgumentException nullViolation(Field field) {
+        return new IllegalArgumentException("VGI returned NULL for non-nullable column " + field.getName());
     }
 
     private static boolean sameType(Field expected, Field actual, boolean compareName) {

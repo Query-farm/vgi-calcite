@@ -62,6 +62,10 @@ public final class FixtureWorker {
                 .registerTable("main", new Sequence("single_sequence", Schemas.of(COLUMNS.getFields().get(0))))
                 .registerTable("main", new Sequence("single_floating", Schemas.of(COLUMNS.getFields().get(12))))
                 .registerTable("main", new Sequence("single_nullable", Schemas.of(COLUMNS.getFields().get(1))))
+                .registerTable("main", new Sequence("broken_not_null", Schemas.of(
+                        COLUMNS.getFields().get(0),
+                        new org.apache.arrow.vector.types.pojo.Field("label",
+                                org.apache.arrow.vector.types.pojo.FieldType.notNullable(Schemas.UTF8), List.of())), false))
                 .registerTable("main", new Sequence("unprojected", false))
                 .registerTable("main", new Sequence("filtered_sequence", true, true, true))
                 .registerTable("main", new Sequence("filtered_unprojected", false, true, true))
@@ -151,8 +155,11 @@ public final class FixtureWorker {
             this.columns = COLUMNS;
         }
         Sequence(String name, Schema columns) {
+            this(name, columns, true);
+        }
+        Sequence(String name, Schema columns, boolean projection) {
             this.name = name; this.columns = columns;
-            this.projection = true; this.filtering = false; this.apply = false;
+            this.projection = projection; this.filtering = false; this.apply = false;
         }
         @Override public String name() { return name; }
         @Override protected Schema outputSchema() { return columns; }

@@ -131,4 +131,24 @@ class VgiBatchValidationTest {
             assertThrows(IllegalStateException.class, () -> VgiBatchValidation.validate(root, null, schema.getFields()));
         }
     }
+
+    @Test void rejectsNullDictionaryValuesOnlyWhenReferencedByANonNullableColumn() {
+        var encoding = new DictionaryEncoding(8, false, new ArrowType.Int(32, true));
+        var indicesField = new Field("text", new FieldType(true, new ArrowType.Int(32, true), encoding), List.of());
+        var required = new Field("text", FieldType.notNullable(new ArrowType.Utf8()), List.of());
+        try (var allocator = new RootAllocator(); var root = VectorSchemaRoot.create(new Schema(List.of(indicesField)), allocator);
+             var values = new VarCharVector("values", allocator)) {
+            root.allocateNew(); values.allocateNew();
+            values.setSafe(0, new byte[] {65}); values.setNull(1); values.setValueCount(2);
+            var provider = new DictionaryProvider.MapDictionaryProvider(new Dictionary(values, encoding));
+            var indices = (IntVector) root.getVector(0);
+            indices.setSafe(0, 0); root.setRowCount(1);
+            assertDoesNotThrow(() -> VgiBatchValidation.validate(root, provider, List.of(required)));
+            indices.set(0, 1);
+            var error = assertThrows(IllegalStateException.class,
+                    () -> VgiBatchValidation.validate(root, provider, List.of(required)));
+            assertTrue(error.getMessage().contains("NULL for non-nullable column text"), error.getMessage());
+            assertDoesNotThrow(() -> VgiBatchValidation.validate(root, provider, List.of(field("text", new ArrowType.Utf8()))));
+        }
+    }
 }

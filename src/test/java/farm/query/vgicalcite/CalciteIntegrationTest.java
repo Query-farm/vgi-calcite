@@ -115,6 +115,21 @@ class CalciteIntegrationTest {
         assertEquals(List.of(List.of(10L)), query("select count(*) from vgi.data.numbers"));
     }
 
+    @Test void validatesReturnedNonNullColumnsEvenWhenTheyAreNotDecoded() throws Exception {
+        for (String sql : List.of(
+                "select count(*) from vgi.data.violates_not_null",
+                "select count(label) from vgi.data.violates_not_null",
+                "select count(*) from table(vgi.main.broken_not_null(3)) where id >= 0",
+                "select count(label) from table(vgi.main.broken_not_null(3)) where id >= 0",
+                "select id from table(vgi.main.broken_not_null(3)) where id >= 0",
+                "select 1 from table(vgi.main.broken_not_null(3)) where id >= 0")) {
+            Exception failure = assertThrows(Exception.class, () -> query(sql), sql);
+            assertTrue(failure.toString().contains("NULL for non-nullable column label"), failure.toString());
+        }
+        assertEquals(List.of(List.of(3L)), query("select count(id) from vgi.data.constrained"));
+        assertEquals(List.of(List.of(6L)), query("select count(label) from vgi.data.numbers"));
+    }
+
     @Test void tableFunctionDefaultAndNamedArguments() throws Exception {
         assertEquals(List.of(List.of(17L, 136L)), query("select count(*), sum(id) from table(vgi.main.sequence(17))"));
         assertEquals(List.of(List.of(7L)), query("select count(*) from table(vgi.main.sequence(\"count\" => 7, \"batch_size\" => 2))"));

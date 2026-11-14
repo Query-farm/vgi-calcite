@@ -67,10 +67,6 @@ final class VgiEnumerator implements Enumerator<Object[]> {
                     Object[] values = new Object[projects.length];
                     for (int i = 0; i < values.length; i++) {
                         values[i] = ArrowTypes.read(batch.getVector(sourceColumns[i]), row, dictionaries);
-                        var field = table.columns.getFields().get(projects[i]);
-                        if (values[i] == null && !field.isNullable()) {
-                            throw new IllegalStateException("VGI returned NULL for non-nullable column " + field.getName());
-                        }
                     }
                     row++;
                     current = values;
@@ -132,7 +128,17 @@ final class VgiEnumerator implements Enumerator<Object[]> {
         // Empty projection (COUNT(*)) still needs rows. Some workers interpret [] as no rows.
         List<Integer> projection = invocation.projection() && projects.length > 0
                 ? Arrays.stream(projects).distinct().sorted().boxed().toList() : null;
-        expectedFields = projection == null ? actual.getFields() : projection.stream().map(actual.getFields()::get).toList();
+        // Keep wire names and types for schema comparison, and enforce both the
+        // bind declaration and stronger catalog NOT_NULL facts on every returned
+        // column, including fallback columns that Calcite does not decode.
+        var checkedFields = java.util.stream.IntStream.range(0, actual.getFields().size()).mapToObj(i -> {
+            var field = actual.getFields().get(i);
+            return new org.apache.arrow.vector.types.pojo.Field(field.getName(),
+                    new org.apache.arrow.vector.types.pojo.FieldType(
+                            field.isNullable() && table.columns.getFields().get(i).isNullable(),
+                            field.getType(), field.getDictionary(), field.getMetadata()), field.getChildren());
+        }).toList();
+        expectedFields = projection == null ? checkedFields : projection.stream().map(checkedFields::get).toList();
         sourceColumns = new int[projects.length];
         for (int i = 0; i < projects.length; i++) sourceColumns[i] = projection == null ? projects[i] : projection.indexOf(projects[i]);
         stream = session.service.init(new InitRequest(RecordCodec.serializeToBytes(VgiTable.request(session, invocation)),
