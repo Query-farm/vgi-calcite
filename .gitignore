@@ -1,4 +1,6 @@
 /target/
+/.conformance/
+__pycache__/
 /.idea/
 *.iml
 .DS_Store

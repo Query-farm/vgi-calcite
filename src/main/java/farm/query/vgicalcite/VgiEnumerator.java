@@ -65,7 +65,13 @@ final class VgiEnumerator implements Enumerator<Object[]> {
                 }
                 if (batch != null && row < batch.getRowCount()) {
                     Object[] values = new Object[projects.length];
-                    for (int i = 0; i < values.length; i++) values[i] = ArrowTypes.read(batch.getVector(sourceColumns[i]), row, dictionaries);
+                    for (int i = 0; i < values.length; i++) {
+                        values[i] = ArrowTypes.read(batch.getVector(sourceColumns[i]), row, dictionaries);
+                        var field = table.columns.getFields().get(projects[i]);
+                        if (values[i] == null && !field.isNullable()) {
+                            throw new IllegalStateException("VGI returned NULL for non-nullable column " + field.getName());
+                        }
+                    }
                     row++;
                     current = values;
                     return true;
@@ -113,10 +119,13 @@ final class VgiEnumerator implements Enumerator<Object[]> {
             var expected = ArrowTypes.type(factory, table.columns.getFields().get(i));
             var received = ArrowTypes.type(factory, actual.getFields().get(i));
             if (!factory.createTypeWithNullability(expected, true).equals(factory.createTypeWithNullability(received, true))
-                    || !expected.isNullable() && received.isNullable()) {
+                    || !table.isCatalogTable() && !expected.isNullable() && received.isNullable()) {
                 throw new IllegalStateException("VGI output type changed at column " + i + "; reconnect to refresh metadata");
             }
         }
+        // A validated catalog NOT_NULL/PRIMARY_KEY fact may strengthen a scan
+        // function's nullable declaration. Keep the catalog type and check the
+        // returned values rather than rejecting this legitimate binding.
         // Encode against the full bind schema: catalog aliases and projected positions
         // are not the function's wire column identities.
         VgiFilters translated = VgiFilters.translate(filters, actual, context);

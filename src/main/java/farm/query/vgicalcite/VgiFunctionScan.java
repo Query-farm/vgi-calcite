@@ -51,8 +51,12 @@ final class VgiFunctionScan extends AbstractRelNode implements EnumerableRel {
         // Never look the function up as a named table: that loses its bound arguments.
         var expression = Expressions.call(implementor.stash(source, VgiTable.class), "scanFiltered",
                 DataContext.ROOT, implementor.stash(filters, List.class));
-        var physical = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), JavaRowFormat.ARRAY, false);
-        return implementor.result(physical, Blocks.toBlock(expression));
+        var sourcePhysical = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), JavaRowFormat.ARRAY, false);
+        var physical = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), JavaRowFormat.ARRAY);
+        // The scanner always emits Object[], but Calcite optimizes one-column
+        // inputs to scalars (and zero-column inputs to empty lists). Convert the
+        // actual rows as well as describing their format to parent operators.
+        return implementor.result(physical, Blocks.toBlock(sourcePhysical.convertTo(expression, physical)));
     }
 
     @Override public org.apache.calcite.rel.RelWriter explainTerms(org.apache.calcite.rel.RelWriter writer) {

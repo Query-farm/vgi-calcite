@@ -50,6 +50,11 @@ This adapter is **read-only**. Compatible workers receive supported filters;
 Calcite rechecks the results and evaluates unsupported expressions. Joins,
 aggregates, sorts, and limits run in Calcite.
 
+This is a **pre-release connector**. Production qualification is ongoing;
+see [test evidence and remaining gaps](docs/production-readiness.md). The
+[Python-worker conformance checks](conformance/README.md) complement the Java
+fixture tests and make the current interoperability coverage reproducible.
+
 ## Quickstart
 
 Use **JDK 21 or 27**. The commands below are for macOS or Linux and run a

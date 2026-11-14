@@ -57,6 +57,9 @@ public final class FixtureWorker {
         byte[] schema = SchemaUtil.serializeSchema(COLUMNS);
         Worker worker = Worker.builder().catalogName("demo").defaultSchema("main")
                 .registerTable("main", new Sequence("sequence", true))
+                .registerTable("main", new Sequence("single_sequence", Schemas.of(COLUMNS.getFields().get(0))))
+                .registerTable("main", new Sequence("single_floating", Schemas.of(COLUMNS.getFields().get(12))))
+                .registerTable("main", new Sequence("single_nullable", Schemas.of(COLUMNS.getFields().get(1))))
                 .registerTable("main", new Sequence("unprojected", false))
                 .registerTable("main", new Sequence("filtered_sequence", true, true, true))
                 .registerTable("main", new Sequence("filtered_unprojected", false, true, true))
@@ -75,6 +78,15 @@ public final class FixtureWorker {
         for (String name : List.of("filtered_sequence", "filtered_unprojected", "advisory_sequence", "foreign_profile")) {
             worker.registerCatalogTable(CatalogTable.builder("data", name, schema)
                     .scanFunction(name, List.of(10L), Map.of()).exposeScan(true).build());
+        }
+        for (String name : List.of("constrained", "violates_not_null")) {
+            var constraint = farm.query.vgi.catalog.ConstraintRecord.builder("data", name, "not_null")
+                    .notNull(name.equals("constrained") ? "id" : "label")
+                    .enforcement(farm.query.vgi.catalog.ConstraintRecord.Enforcement.ENFORCED)
+                    .validation(farm.query.vgi.catalog.ConstraintRecord.Validation.ALL_ROWS).build();
+            worker.registerCatalogTable(CatalogTable.builder("data", name, schema)
+                    .scanFunction("sequence", List.of(3L), Map.of())
+                    .constraints(List.of(constraint), null).exposeScan(true).build());
         }
         var renamed = new Schema(java.util.stream.IntStream.range(0, COLUMNS.getFields().size())
                 .mapToObj(i -> {
@@ -130,12 +142,18 @@ public final class FixtureWorker {
         private final boolean projection;
         private final boolean filtering;
         private final boolean apply;
+        private final Schema columns;
         Sequence(String name, boolean projection) { this(name, projection, false, false); }
         Sequence(String name, boolean projection, boolean filtering, boolean apply) {
             this.name = name; this.projection = projection; this.filtering = filtering; this.apply = apply;
+            this.columns = COLUMNS;
+        }
+        Sequence(String name, Schema columns) {
+            this.name = name; this.columns = columns;
+            this.projection = true; this.filtering = false; this.apply = false;
         }
         @Override public String name() { return name; }
-        @Override protected Schema outputSchema() { return COLUMNS; }
+        @Override protected Schema outputSchema() { return columns; }
         @Override public FunctionMetadata metadata() {
             var metadata = FunctionMetadata.describe("Deterministic multibatch fixture").withPushdown(projection, filtering, false);
             return name.equals("foreign_profile") ? metadata.withFilterSemanticProfiles("example.other.v1") : metadata;

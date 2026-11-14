@@ -1,0 +1,6 @@
+# Released worker baseline; keep these pins in the report and CI environment.
+vgi-python[test-fixtures,duckdb,http,transactor]==0.51.1
+vgi-rpc[cli,conformance,external,http]==0.53.1
+pyarrow==26.0.1
+duckdb==1.5.5
+sqlglot==30.31.0

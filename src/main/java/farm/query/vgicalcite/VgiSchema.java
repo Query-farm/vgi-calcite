@@ -39,14 +39,26 @@ public final class VgiSchema extends AbstractSchema {
                         .map(item -> RecordCodec.deserializeFromBytes(item, FunctionInfo.class)).toList();
                 allFunctions.addAll(functions);
             }
+            Map<List<String>, farm.query.vgi.protocol.TableInfo> allTables = new LinkedHashMap<>();
+            for (SchemaInfo info : paths) {
+                for (var table : TableInfoDecoder.decodeAll(session.service.catalog_schema_contents_tables(
+                        session.handle(), info.path(), null, null).items())) {
+                    if (!table.schema_path().equals(info.path())) {
+                        throw new IllegalStateException("VGI table schema path differs from its enumeration path: " + table.name());
+                    }
+                    if (allTables.put(tableKey(info.path(), table.name()), table) != null) {
+                        throw new IllegalStateException("Duplicate VGI table: " + info.path() + "." + table.name());
+                    }
+                }
+            }
             for (SchemaInfo info : paths) {
                 VgiSchema schema = root.path(info.path());
                 Map<String, Table> tables = new LinkedHashMap<>();
-                for (var table : TableInfoDecoder.decodeAll(session.service.catalog_schema_contents_tables(
-                        session.handle(), info.path(), null, null).items())) {
-                    if (tables.put(table.name(), VgiTable.catalog(config, table, allFunctions)) != null) {
-                        throw new IllegalStateException("Duplicate VGI table: " + info.path() + "." + table.name());
-                    }
+                for (var table : allTables.values()) {
+                    if (!table.schema_path().equals(info.path())) continue;
+                    VgiCatalogMetadata.validate(table, session.selectedCatalogCapabilities,
+                            (path, name) -> allTables.get(tableKey(path, name)));
+                    tables.put(table.name(), VgiTable.catalog(config, table, allFunctions));
                 }
                 schema.tables = Collections.unmodifiableMap(tables);
             }
@@ -69,6 +81,12 @@ public final class VgiSchema extends AbstractSchema {
             session.detach();
         }
         return root;
+    }
+
+    private static List<String> tableKey(List<String> path, String name) {
+        var key = new ArrayList<>(path);
+        key.add(name);
+        return List.copyOf(key);
     }
 
     private VgiSchema path(List<String> path) {

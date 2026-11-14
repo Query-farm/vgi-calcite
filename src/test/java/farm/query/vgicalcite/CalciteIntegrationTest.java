@@ -107,6 +107,14 @@ class CalciteIntegrationTest {
                 query("select label, id from vgi.data.unprojected order by id"));
     }
 
+    @Test void catalogConstraintsCanStrengthenNullableScanDeclarations() throws Exception {
+        assertEquals(List.of(List.of(0L), List.of(1L), List.of(2L)), query(
+                "select id from vgi.data.constrained order by id"));
+        Exception failure = assertThrows(Exception.class, () -> query("select label from vgi.data.violates_not_null"));
+        assertTrue(failure.toString().contains("NULL for non-nullable column label"), failure.toString());
+        assertEquals(List.of(List.of(10L)), query("select count(*) from vgi.data.numbers"));
+    }
+
     @Test void tableFunctionDefaultAndNamedArguments() throws Exception {
         assertEquals(List.of(List.of(17L, 136L)), query("select count(*), sum(id) from table(vgi.main.sequence(17))"));
         assertEquals(List.of(List.of(7L)), query("select count(*) from table(vgi.main.sequence(\"count\" => 7, \"batch_size\" => 2))"));
@@ -154,6 +162,37 @@ class CalciteIntegrationTest {
                 }
             }
         }
+    }
+
+    @Test void singleColumnFunctionsSortLimitAndAggregate() throws Exception {
+        assertEquals(List.of(List.of(4L), List.of(3L)), query(
+                "select * from table(vgi.main.single_sequence(5)) order by id desc fetch next 2 rows only"));
+        assertEquals(List.of(List.of(4.0), List.of(3.0)), query(
+                "select * from table(vgi.main.single_floating(5)) where floating >= 1 "
+                        + "and floating <= 4 order by floating desc fetch next 2 rows only"));
+        assertEquals(List.of(List.of(5L, 10L)), query(
+                "select count(*), sum(id) from table(vgi.main.single_sequence(5))"));
+    }
+
+    @Test void singleColumnFunctionsJoinAndUnion() throws Exception {
+        assertEquals(List.of(List.of(1L, 2L), List.of(0L, 1L)), query(
+                "select a.id, b.id from table(vgi.main.single_sequence(2)) a "
+                        + "join table(vgi.main.single_sequence(4)) b on a.id + 1 = b.id order by a.id desc"));
+        assertEquals(List.of(List.of(6L)), query(
+                "select count(*) from table(vgi.main.single_sequence(2)) a "
+                        + "cross join table(vgi.main.single_sequence(3)) b"));
+        assertEquals(List.of(List.of(2L), List.of(1L), List.of(0L)), query(
+                "select * from table(vgi.main.single_sequence(2)) union "
+                        + "select * from table(vgi.main.single_sequence(3)) order by id desc"));
+        assertEquals(List.of(List.of(0L), List.of(0L), List.of(1L)), query(
+                "select * from table(vgi.main.single_sequence(1)) union all "
+                        + "select * from table(vgi.main.single_sequence(2)) order by id"));
+    }
+
+    @Test void singleColumnFunctionsPreserveNullsAndEmptyResults() throws Exception {
+        assertEquals(Arrays.asList(Arrays.asList((Object) null), List.of("row-1"), List.of("row-2")), query(
+                "select * from table(vgi.main.single_nullable(3)) order by label nulls first"));
+        assertEquals(List.of(), query("select * from table(vgi.main.single_sequence(0)) order by id"));
     }
 
     @Test void earlyLimitAndRepeatedExecutionLeaveWorkerUsable() throws Exception {

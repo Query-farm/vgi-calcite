@@ -54,6 +54,8 @@ public final class VgiTable extends AbstractTable implements ProjectableFilterab
         return new VgiTable(config, columns, null, invocation, List.of());
     }
 
+    boolean isCatalogTable() { return table != null; }
+
     @Override public RelDataType getRowType(RelDataTypeFactory factory) { return ArrowTypes.rowType(factory, columns); }
 
     @Override public Statistic getStatistic() {
