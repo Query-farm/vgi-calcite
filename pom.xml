@@ -13,7 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <calcite.version>1.42.0</calcite.version>
     <vgi.version>0.48.0</vgi.version>
-    <vgirpc.version>0.33.3</vgirpc.version>
+    <vgirpc.version>0.33.4</vgirpc.version>
   </properties>
   <dependencyManagement>
     <dependencies>

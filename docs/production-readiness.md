@@ -22,7 +22,7 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 69 tests. The Python interoperability gate runs 100
+The Java suite now has 70 tests. The Python interoperability gate runs 100
 upstream records, 14 adapter-specific records and 8 malformed-worker checks
 over TCP and HTTP. The
 adapter checks include worker-echoed filters, retained local expressions and
@@ -175,8 +175,9 @@ for this additional fix; the previous green run predates it.
 
 The connector's SDK release candidate includes the SQL memory regression. With
 the private `0.33.4-calcite-v3-SNAPSHOT` build, all 70 Java tests and all 122
-selected Python-worker records per transport pass. The release candidate must
-pin the published fixed SDK before merging; the main branch still uses 0.33.3.
+selected Python-worker records per transport pass. The release candidate pins
+RPC SDK 0.33.4 and must verify the published artifact before merging; the main
+branch still uses 0.33.3.
 Production readiness remains blocked on that dependency fix as well as the
 broader compatibility and operational work below.
 
