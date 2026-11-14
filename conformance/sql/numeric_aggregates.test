@@ -1,0 +1,71 @@
+# Numeric aggregate policy with the released Python worker and Calcite JDBC.
+
+statement ok
+ATTACH 'example' AS example (TYPE vgi, LOCATION '${VGI_TEST_WORKER}');
+
+# Fractional results must survive integer and scale-zero decimal inputs.
+query RRR
+SELECT AVG(n), AVG(-n), AVG(CAST(n AS DECIMAL(20,0)))
+FROM example.sequence(10, batch_size := 3);
+----
+4.5	-4.5	4.5
+
+# Small integer sums widen to BIGINT. Larger sums require a decimal input.
+query II
+SELECT SUM(CAST(2147483647 AS INTEGER)), SUM(CAST(9223372036854775807 AS DECIMAL(38,0)))
+FROM example.sequence(10, batch_size := 3);
+----
+21474836470	92233720368547758070
+
+query I
+SELECT SUM(CAST('-9223372036854775808' AS DECIMAL(38,0))) FROM example.sequence(10);
+----
+-92233720368547758080
+
+# AVG is reduced to SUM / COUNT; cast its input to avoid a BIGINT overflow.
+query R
+SELECT AVG(CAST(9223372036854775807 AS DECIMAL(38,0))) FROM example.sequence(10);
+----
+9.223372036854776E18
+
+query RII
+SELECT AVG(n), SUM(n), COUNT(*) FROM example.sequence(0);
+----
+NULL	NULL	0
+
+query RI
+SELECT AVG(CASE WHEN n = 0 THEN NULL ELSE n END),
+       SUM(CASE WHEN n = 0 THEN NULL ELSE n END)
+FROM example.sequence(10);
+----
+5.0	45
+
+query TR
+SELECT n >= 4 AS high, AVG(n) FROM example.sequence(10)
+GROUP BY n >= 4 ORDER BY high;
+----
+false	1.5
+true	6.5
+
+query IR
+SELECT n, AVG(n) OVER (ORDER BY n ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+FROM example.sequence(3) ORDER BY n;
+----
+0	0.0
+1	0.5
+2	1.0
+
+query R
+SELECT AVG(DISTINCT n) FROM (
+    SELECT n FROM example.sequence(10) UNION ALL SELECT n FROM example.sequence(10)
+);
+----
+4.5
+
+query R
+SELECT AVG(CAST(n * 1.25 AS DECIMAL(20,2))) FROM example.sequence(10);
+----
+5.625
+
+statement ok
+DETACH example;
