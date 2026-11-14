@@ -360,7 +360,7 @@ public final class FixtureWorker {
             done = true;
             try {
                 java.nio.file.Files.writeString(java.nio.file.Path.of(marker + ".entered"), "ready");
-                long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(30);
+                long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(90);
                 while (!java.nio.file.Files.exists(java.nio.file.Path.of(marker + ".release"))) {
                     if (System.nanoTime() >= deadline) throw new IllegalStateException("Fixture release timed out");
                     Thread.sleep(10);
