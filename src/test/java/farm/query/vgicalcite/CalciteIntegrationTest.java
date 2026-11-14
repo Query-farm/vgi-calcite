@@ -135,6 +135,15 @@ class CalciteIntegrationTest {
         assertEquals(List.of(List.of(7L)), query("select count(*) from table(vgi.main.sequence(\"count\" => 7, \"batch_size\" => 2))"));
     }
 
+    @Test void repeatedScansReleaseArrowBuffers() throws Exception {
+        String sql = "select sum(id) from table(vgi.main.sequence(100))";
+        for (int i = 0; i < 3; i++) assertEquals(List.of(List.of(4950L)), query(sql));
+        long before = farm.query.vgirpc.wire.Allocators.root().getAllocatedMemory();
+        for (int i = 0; i < 10; i++) assertEquals(List.of(List.of(4950L)), query(sql));
+        assertEquals(before, farm.query.vgirpc.wire.Allocators.root().getAllocatedMemory(),
+                "Completed scans must release the client's Arrow buffers");
+    }
+
     @Test void preparedQueriesRejectChangedCatalogVersionsAndReconnectRefreshesMetadata() throws Exception {
         connection.close();
         connection = open(Map.of("location", location, "catalog", "versioned_demo"));
