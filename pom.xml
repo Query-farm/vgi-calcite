@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>farm.query</groupId>
+  <artifactId>vgi-calcite</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <name>VGI Calcite adapter</name>
+  <description>Read VGI worker catalogs and table functions through Apache Calcite.</description>
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <calcite.version>1.42.0</calcite.version>
+    <vgi.version>0.48.0</vgi.version>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Keep Jackson core/databind/CBOR aligned with the VGI HTTP state codec. -->
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId><artifactId>jackson-bom</artifactId><version>2.21.0</version>
+        <type>pom</type><scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.calcite</groupId><artifactId>calcite-core</artifactId><version>${calcite.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>farm.query</groupId><artifactId>vgi</artifactId><version>${vgi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>2.0.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.12.2</version><scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId><artifactId>slf4j-simple</artifactId><version>2.0.17</version><scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <resources>
+      <resource>
+        <directory>${project.basedir}</directory><targetPath>META-INF</targetPath>
+        <includes><include>LICENSE</include></includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.14.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.4</version>
+        <configuration>
+          <argLine>--add-opens=java.base/java.nio=ALL-UNNAMED --enable-native-access=ALL-UNNAMED -Dio.netty.noUnsafe=false</argLine>
+          <systemPropertyVariables><org.slf4j.simpleLogger.defaultLogLevel>warn</org.slf4j.simpleLogger.defaultLogLevel></systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.2</version>
+        <configuration><archive><manifest>
+          <mainClass>farm.query.vgicalcite.Main</mainClass>
+          <addClasspath>true</addClasspath><classpathPrefix>dependency/</classpathPrefix>
+        </manifest></archive></configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId><artifactId>maven-source-plugin</artifactId><version>3.3.1</version>
+        <executions><execution><id>sources</id><goals><goal>jar-no-fork</goal></goals></execution></executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.8.1</version>
+        <executions><execution><id>runtime-libraries</id><phase>package</phase><goals><goal>copy-dependencies</goal></goals>
+          <configuration><includeScope>runtime</includeScope></configuration>
+        </execution></executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

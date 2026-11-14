@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "schemas": [
+    {
+      "name": "vgi",
+      "type": "custom",
+      "factory": "farm.query.vgicalcite.VgiSchemaFactory",
+      "operand": {
+        "location": "http://127.0.0.1:8000",
+        "catalog": "demo"
+      }
+    }
+  ]
+}
