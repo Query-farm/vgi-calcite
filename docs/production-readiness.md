@@ -87,6 +87,10 @@ With a locally built copy of that patch, all 122 selected SQL records pass on
 both TCP and HTTP. The public CI gate remains failing until a patched SDK is
 published and the connector pins it. These local runs record the patched
 runtime JAR's hash; they are not results for the published dependency.
+Repeating the full table survey with the revised reader produced the same
+623 passes and 822 failures, with no record-status changes. The
+[SDK qualification record](../conformance/baselines/sdk-reader-validation.json)
+identifies the exact SDK source, private artifact and connector source used.
 Valid nested lists and structs are also exercised through the Python worker.
 
 Map fields use Arrow's buffer validation without its separate type visitor,
