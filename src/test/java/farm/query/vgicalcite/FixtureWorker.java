@@ -38,6 +38,8 @@ public final class FixtureWorker {
     static final AtomicLong FILTERED_INITS = new AtomicLong();
     static final AtomicLong EMITTED_ROWS = new AtomicLong();
     static final AtomicLong PLANNED_SCANS = new AtomicLong();
+    static final java.util.concurrent.atomic.AtomicReference<String> LAST_PROJECTION =
+            new java.util.concurrent.atomic.AtomicReference<>("");
     static final Schema COLUMNS = Schemas.of(
             Schemas.nullable("id", Schemas.INT64),
             Schemas.nullable("label", Schemas.UTF8),
@@ -169,6 +171,7 @@ public final class FixtureWorker {
             state.count = count;
             state.batchSize = batchSize;
             state.schemaJson = params.outputSchema().toJson();
+            LAST_PROJECTION.set(String.join(",", params.outputSchema().getFields().stream().map(f -> f.getName()).toList()));
             state.filtering = filtering;
             state.apply = apply;
             state.pushedFilters = params.pushdownFilters();
@@ -244,7 +247,7 @@ public final class FixtureWorker {
         @Override public List<ArgSpec> argumentSpecs() { return List.of(new ArgSpec("reset", 0, Schemas.BOOL, false)); }
         @Override protected Schema outputSchema() {
             return Schemas.of(Schemas.nullable("inits", Schemas.INT64), Schemas.nullable("rows", Schemas.INT64),
-                    Schemas.nullable("plans", Schemas.INT64));
+                    Schemas.nullable("plans", Schemas.INT64), Schemas.nullable("projected", Schemas.UTF8));
         }
         @Override public TableProducerState createProducer(TableInitParams params) {
             boolean reset = (Boolean) params.arguments().positionalAt(0);
@@ -252,6 +255,7 @@ public final class FixtureWorker {
             state.inits = reset ? FILTERED_INITS.getAndSet(0) : FILTERED_INITS.get();
             state.rows = reset ? EMITTED_ROWS.getAndSet(0) : EMITTED_ROWS.get();
             state.plans = reset ? PLANNED_SCANS.getAndSet(0) : PLANNED_SCANS.get();
+            state.projected = reset ? LAST_PROJECTION.getAndSet("") : LAST_PROJECTION.get();
             return state;
         }
     }
@@ -260,6 +264,7 @@ public final class FixtureWorker {
         public long inits;
         public long rows;
         public long plans;
+        public String projected;
         public boolean done;
         public StatsState() {}
         @Override public void produceTick(OutputCollector out, CallContext context) {
@@ -270,6 +275,7 @@ public final class FixtureWorker {
             ((BigIntVector) root.getVector(0)).setSafe(0, inits);
             ((BigIntVector) root.getVector(1)).setSafe(0, rows);
             ((BigIntVector) root.getVector(2)).setSafe(0, plans);
+            ((VarCharVector) root.getVector(3)).setSafe(0, projected.getBytes(StandardCharsets.UTF_8));
             root.setRowCount(1);
             out.emit(root);
         }

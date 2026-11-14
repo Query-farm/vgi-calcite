@@ -93,12 +93,17 @@ public final class ArrowTypes {
             var encoding = vector.getField().getDictionary();
             var dictionary = dictionaries == null ? null : dictionaries.lookup(encoding.getId());
             if (dictionary == null) throw new IllegalStateException("Missing Arrow dictionary " + encoding.getId());
-            int index = Math.toIntExact(((Number) vector.getObject(row)).longValue());
+            int index = Math.toIntExact(dictionaryIndex(vector, row));
             if (index < 0 || index >= dictionary.getVector().getValueCount()) throw new IllegalStateException("Invalid Arrow dictionary index " + index);
             return read(dictionary.getVector(), index, dictionaries);
         }
         Object value = vector instanceof TimeStampVector timestamp ? timestamp.get(row) : vector.getObject(row);
         return value(vector.getField(), value);
+    }
+
+    static long dictionaryIndex(FieldVector vector, int row) {
+        Object value = vector.getObject(row);
+        return value instanceof Character ch ? ch : ((Number) value).longValue();
     }
 
     private static Object value(Field field, Object value) {

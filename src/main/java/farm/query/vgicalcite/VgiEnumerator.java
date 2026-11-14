@@ -89,9 +89,7 @@ final class VgiEnumerator implements Enumerator<Object[]> {
                     batch = next.root();
                     dictionaries = next.dictionaryProvider();
                     row = 0;
-                    if (batch.getFieldVectors().size() != expectedColumnCount) {
-                        throw new IllegalStateException("VGI stream returned a different column count than its binding");
-                    }
+                    VgiBatchValidation.validate(batch, dictionaries, expectedFields);
                 } catch (NoSuchElementException end) {
                     stream.close();
                     stream = null;
@@ -105,7 +103,7 @@ final class VgiEnumerator implements Enumerator<Object[]> {
         }
     }
 
-    private int expectedColumnCount;
+    private List<org.apache.arrow.vector.types.pojo.Field> expectedFields;
 
     private void start(VgiTable.Invocation invocation) {
         var bound = VgiTable.bind(session, invocation);
@@ -134,7 +132,7 @@ final class VgiEnumerator implements Enumerator<Object[]> {
         // Empty projection (COUNT(*)) still needs rows. Some workers interpret [] as no rows.
         List<Integer> projection = invocation.projection() && projects.length > 0
                 ? Arrays.stream(projects).distinct().sorted().boxed().toList() : null;
-        expectedColumnCount = projection == null ? actual.getFields().size() : projection.size();
+        expectedFields = projection == null ? actual.getFields() : projection.stream().map(actual.getFields()::get).toList();
         sourceColumns = new int[projects.length];
         for (int i = 0; i < projects.length; i++) sourceColumns[i] = projection == null ? projects[i] : projection.indexOf(projects[i]);
         stream = session.service.init(new InitRequest(RecordCodec.serializeToBytes(VgiTable.request(session, invocation)),

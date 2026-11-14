@@ -37,9 +37,12 @@ keeps calls with different arguments distinct during optimization. A dedicated
 operator preserves that identity through planning and execution.
 
 Catalog scans receive predicates through `ProjectableFilterableTable`.
-Function scans use rules for Calcite Filter and Calc operators to carry
-predicates into the bound invocation without removing the enclosing condition.
-The scan's planner identity includes both arguments and filters.
+Function scans use rules for Calcite Filter, Project and Calc operators to
+carry predicates and column selection into the bound invocation. Filter
+conditions remain in Calcite. Projection rules collect every input needed by
+local expressions and conditions, then remap input references as columns are
+removed. Scan ordinals and pushed predicates always refer to the original bind
+schema. The planner identity includes arguments, filters and projected columns.
 
 `VgiFilters` expands Calcite SEARCH expressions into comparisons and Boolean
 combinations. It pushes independent supported conjuncts, but only pushes a
@@ -51,6 +54,13 @@ Workers must advertise filter pushdown and the standard semantic profile to
 receive init-time filters. Filtered catalog planners receive advisory predicates
 against table column identities; scan functions receive predicates against their
 actual, unprojected bind schema. Each scan branch gets its own filters.
+
+`VgiBatchValidation` checks each received batch against its projected binding
+before any row is decoded. Arrow's structural and scalar validation is augmented
+with dictionary bounds checks, collection element-name normalization and a
+workaround for Arrow 19's fixed-size-list data visitor. Validation also runs
+when Calcite needs only a row count. The transport owns received buffers and
+recycles them on the next tick; Java result values are copied before that point.
 
 Calcite rechecks all predicates and evaluates other relational operations.
 Using Calcite's schema interfaces provides an integration point for applications

@@ -22,8 +22,9 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 45 tests. The Python interoperability gate runs 89
-upstream records plus 9 adapter-specific records over TCP and HTTP. The
+The Java suite now has 55 tests. The Python interoperability gate runs 100
+upstream records, 14 adapter-specific records and 8 malformed-worker checks
+over TCP and HTTP. The
 adapter checks include worker-echoed filters, retained local expressions and
 catalog-table reads. See the [conformance instructions](../conformance/README.md)
 and [CI workflow](../.github/workflows/ci.yml) for reproducible commands and
@@ -44,7 +45,7 @@ static records**. It selected seven files: `arg_validation`, `double_sequence`,
 The worker was released `vgi-python 0.51.1` with `vgi-rpc 0.53.1`, protocol
 3.3.0. This is not evidence for an unreleased source checkout with different
 dependencies. The CI suite revision is separately pinned to the public commit
-`e75482339d07244105e4a040f998a7092b7402a5`; its two selected test files match the
+`e75482339d07244105e4a040f998a7092b7402a5`; its selected test files match the
 development suite above.
 
 The subsequent **full table-directory survey** ran against connector commit
@@ -65,6 +66,26 @@ also do not support a claim that the connector passes most table tests. The
 [recorded baseline](../conformance/baselines/table-survey.json) includes per-file
 counts and source hashes for comparison with future runs.
 
+## Function projection and batch validation
+
+Producer table functions now receive column selections as well as supported
+filters. Regression tests inspect the worker's requested columns, including
+prepared parameters, reordered and repeated outputs, and columns needed only
+by residual conditions. Queries with no referenced columns preserve row counts.
+
+Every batch is validated before row decoding, including count-only queries.
+The upstream malformed-batch fixture verifies rejection of corrupt offsets,
+invalid UTF-8 and out-of-range dictionary indices over TCP and HTTP. Valid
+nested lists and structs are also exercised through the Python worker.
+
+A four-file projection survey passed 134 of 135 records after the harness
+quoted reserved column names. Its one remaining failure is
+`integration/table/projected_data.test:220`: the expected running sum is
+`11,994,000`, but `1.5 * 4000 * 3999 / 2` is `11,997,000`. Calcite and an
+independent DuckDB calculation both return the latter. The original upstream
+assertion remains a failure in the report; the adapter suite separately checks
+the correct result. This file is not part of the all-passing CI gate.
+
 ## Remaining qualification work
 
 - **Broader query coverage.** Run the full inventory and distinguish connector
@@ -77,8 +98,7 @@ counts and source hashes for comparison with future runs.
   suite. Producer functions accept literal scalar arguments only.
 - **Pushdown coverage.** Validate more types and expression combinations with
   the standard worker, including required filters and filtered scan planning.
-  Current function scans do not push column selection. Join, aggregate, sort
-  and limit pushdown remain unsupported.
+  Join, aggregate, sort and limit pushdown remain unsupported.
 - **Operational behavior.** Qualify cancellation during blocked I/O, timeout
   behavior, connection and attachment cleanup under failures, concurrent
   queries, memory bounds and long-running scans. Each scan currently attaches

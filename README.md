@@ -43,8 +43,11 @@ These tables and functions are available in the included demo below.
   `WHERE` clauses.
 - **Choose a connection.** Connect over HTTP(S), TCP, or a Unix socket, or run a
   worker as a subprocess.
-- **Stream Arrow data.** Read results in batches, with column selection sent to
-  catalog-table scan functions that support it.
+- **Transfer only needed columns.** Push column selection into compatible
+  catalog scans and table functions, retaining columns needed by local filters
+  and expressions.
+- **Validate Arrow batches.** Check schemas, buffers, text, and dictionary
+  indices before Calcite reads worker results.
 
 This adapter is **read-only**. Compatible workers receive supported filters;
 Calcite rechecks the results and evaluates unsupported expressions. Joins,

@@ -35,10 +35,19 @@ class RunnerTest(unittest.TestCase):
     def test_sql_translation_preserves_literal_and_null_arguments(self):
         sql = normalize_sql("SELECT * FROM example.sequence(3, increment := NULL)", {"example"},
                             {"example.main.sequence": ["count", "batch_size", "increment"]})
-        self.assertIn('TABLE(example.main.sequence("count" => 3, "increment" => NULL))', sql)
+        self.assertIn('TABLE("example"."main".sequence("count" => 3, "increment" => NULL))', sql)
         self.assertNotIn("batch_size", sql)
         sql = normalize_sql("SELECT * FROM example.nested.echo('x := y', 2)", {"example"})
-        self.assertIn("TABLE(example.nested.echo('x := y', 2))", sql)
+        self.assertIn('TABLE("example"."nested".echo(\'x := y\', 2))', sql)
+
+    def test_sql_translation_quotes_reserved_column_names(self):
+        sql = normalize_sql("SELECT value, id FROM example.projected_data(3)", {"example"})
+        self.assertTrue(sql.startswith('SELECT "value", "id" FROM TABLE('), sql)
+
+    def test_sql_translation_preserves_array_subscripts(self):
+        sql = normalize_sql("SELECT history[1], history[n] FROM example.nested_sequence(3)", {"example"})
+        self.assertIn('"history"[1]', sql)
+        self.assertIn('"history"["n"]', sql)
 
     def test_engine_failures_never_become_expected_query_results(self):
         record = Record("a", 1, "query I", "SELECT 1", ["1"], [])

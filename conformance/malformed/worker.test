@@ -1,0 +1,39 @@
+# Run only with the upstream test/support/malformed_batch_worker.py fixture.
+
+statement ok
+ATTACH 'malformed' AS m (TYPE vgi, LOCATION '${VGI_TEST_WORKER}');
+
+statement error
+SELECT * FROM m.main.malformed_string_offsets();
+----
+VGI worker sent a malformed Arrow batch (full validation)
+
+statement error
+SELECT * FROM m.main.malformed_list_offsets();
+----
+VGI worker sent a malformed Arrow batch (full validation)
+
+statement error
+SELECT * FROM m.main.malformed_bad_utf8();
+----
+VGI worker sent a malformed Arrow batch (full validation)
+
+statement error
+SELECT * FROM m.main.malformed_dict_index();
+----
+Dictionary indices invalid
+
+# Validation runs before local operators, even when they do not read a value.
+statement error
+SELECT COUNT(*) FROM m.main.malformed_bad_utf8();
+----
+VGI worker sent a malformed Arrow batch (full validation)
+
+# The failed worker stream does not invalidate Calcite's JDBC connection.
+query I
+SELECT 42;
+----
+42
+
+statement ok
+DETACH m;

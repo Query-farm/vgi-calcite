@@ -236,9 +236,20 @@ Distributed split planning and native-file scan delegation are not supported.
 
 ### Worker features
 
-The adapter supports column selection on catalog-table scans and predicate
-pushdown as described above. Calcite handles other projections, residual
+The adapter supports column selection on catalog-table scans and producer table
+functions, together with predicate pushdown as described above. Columns needed
+for local expressions and filter rechecks remain in the scan. If the function
+does not support projection, the adapter selects columns locally. `COUNT(*)`
+requests the full worker schema to preserve row counts for workers that treat
+an empty projection specially. Calcite handles computed projections, residual
 filters, joins, aggregates, sorts, and limits.
+
+Every received batch is validated before row decoding, including batches used
+only by `COUNT(*)`. The adapter checks the projected schema, row counts,
+buffer bounds, nested offsets, UTF-8 text, and dictionary indices and values.
+Malformed batches fail the query. Validation scans the batch values and has a
+CPU cost; it does not impose a memory limit on the RPC transport or make worker
+code trusted.
 
 The following worker features are not supported:
 

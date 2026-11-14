@@ -20,7 +20,13 @@ import sys
 import time
 
 import sqlglot
-from sqlglot import exp
+from sqlglot import Dialect, exp
+
+
+class CalciteSql(Dialect):
+    # SQLGlot's neutral AST normalizes constant array subscripts to zero-based;
+    # Calcite's SQL array access, like DuckDB's, is one-based.
+    INDEX_OFFSET = 1
 
 
 @dataclasses.dataclass
@@ -119,7 +125,9 @@ def normalize_sql(sql: str, aliases: set[str], parameters: dict[str, list[str]] 
     for dot in list(tree.find_all(exp.Dot)):
         if isinstance(dot.this, exp.Identifier) and dot.this.name in aliases and isinstance(dot.expression, exp.Anonymous):
             dot.set("this", exp.Dot(this=dot.this.copy(), expression=exp.to_identifier("main")))
-    return tree.sql()
+    # Names such as value/range are legal fixture columns but reserved words in
+    # Calcite. Quote identifiers without changing the expressions they name.
+    return tree.sql(dialect=CalciteSql, identify=True)
 
 
 class Bridge:
@@ -238,6 +246,7 @@ def main():
     parser.add_argument("--inventory-only", action="store_true")
     parser.add_argument("--worker-python", default=sys.executable)
     parser.add_argument("--worker-source", type=Path, help="Optional Python checkout to prepend to the worker's PYTHONPATH")
+    parser.add_argument("--worker-script", type=Path, help="Standalone fixture script instead of the standard worker module")
     parser.add_argument("--java", default=os.environ.get("JAVA_HOME", "") + "/bin/java" if os.environ.get("JAVA_HOME") else "java")
     parser.add_argument("--transport", choices=["tcp", "http"], default="tcp")
     parser.add_argument("--timeout", type=float, default=30)
@@ -275,6 +284,10 @@ def main():
     if args.inventory_only:
         return 0
     command = [args.worker_python, "-m", "vgi._test_fixtures.worker"]
+    if args.worker_script:
+        script = args.worker_script.resolve()
+        command = [args.worker_python, str(script)]
+        report["worker_script"] = {"path": str(script), "sha256": hashlib.sha256(script.read_bytes()).hexdigest()}
     command += ["--tcp", "127.0.0.1:0"] if args.transport == "tcp" else ["--http", "--host", "127.0.0.1", "--port", "0"]
     environment = dict(os.environ, OPENBLAS_NUM_THREADS="1")
     if args.worker_source:

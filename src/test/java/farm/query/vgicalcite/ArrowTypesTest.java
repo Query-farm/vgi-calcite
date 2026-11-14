@@ -18,6 +18,18 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ArrowTypesTest {
+    @Test void unsignedShortDictionaryIndicesUseTheirNumericValue() {
+        var encoding = new DictionaryEncoding(7, false, new ArrowType.Int(16, false));
+        var field = new Field("encoded", new FieldType(true, new ArrowType.Int(16, false), encoding), null);
+        try (var allocator = new RootAllocator(); var indices = (UInt2Vector) field.createVector(allocator);
+             var values = new VarCharVector("values", allocator)) {
+            values.allocateNew(); values.setSafe(0, new byte[] {65}); values.setValueCount(1);
+            indices.allocateNew(1); indices.setSafe(0, (char) 0); indices.setValueCount(1);
+            var provider = new DictionaryProvider.MapDictionaryProvider(new Dictionary(values, encoding));
+            assertEquals("A", ArrowTypes.read(indices, 0, provider));
+        }
+    }
+
     @Test void unsignedBoundariesDoNotWrapOrNarrow() {
         try (var allocator = new RootAllocator(); var small = new UInt1Vector("u8", allocator);
              var medium = new UInt4Vector("u32", allocator); var large = new UInt8Vector("u64", allocator)) {

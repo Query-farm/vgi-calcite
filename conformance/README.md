@@ -26,14 +26,29 @@ git -C .conformance/upstream checkout e75482339d07244105e4a040f998a7092b7402a5
   --suite .conformance/upstream/test/sql \
   --include integration/table/double_sequence.test \
   --include integration/table/positional_args.test \
+  --include integration/table/projection_info.test \
   --report target/conformance/upstream/report.json
 ```
 
 Add `--transport http` to repeat either run over HTTP. CI runs both transports,
 uploads the reports and logs, and fails on any failure or unsupported record in
-the selected files. The upstream gate currently selects **89 records**; the
-adapter-specific suite adds **9 separate records**. Neither number represents
+the selected files. The upstream gate currently selects **100 records**; the
+adapter-specific suite adds **14 separate records**. Neither number represents
 coverage of the whole upstream suite.
+
+CI also runs **8 malformed-worker checks** per transport using the upstream
+fixture that corrupts Arrow buffers after constructing its batches:
+
+```sh
+.conformance/venv/bin/python conformance/run.py \
+  --suite conformance/malformed \
+  --worker-script .conformance/upstream/test/support/malformed_batch_worker.py \
+  --report target/conformance/malformed/report.json
+```
+
+These checks require rejection of invalid string/list offsets, invalid UTF-8,
+and invalid dictionary indices. A `COUNT(*)` case checks validation when the
+query does not decode any returned column values.
 
 For an existing VGI checkout, pass its `test/sql` directory to `--suite`.
 For a source worker, use `--worker-python /path/to/its/python` and
@@ -80,6 +95,10 @@ two-part function names, and translates named arguments to Calcite's `=>`
 syntax. Mixed positional/named calls use advertised parameter names. It does
 not insert missing argument defaults or replace worker functions with local
 implementations.
+
+Identifiers are quoted so fixture columns such as `value` do not collide with
+Calcite keywords. The SQLGlot generator preserves one-based SQL array indices
+instead of emitting the neutral AST's zero-based subscripts.
 
 Calcite's `BABEL` conformance mode accepts `%` and grouping by select-list
 aliases. Other SQL is parsed and rendered by SQLGlot. DuckDB-specific functions,

@@ -79,6 +79,11 @@ public final class VgiTable extends AbstractTable implements ProjectableFilterab
         return scan(context, filters, null);
     }
 
+    /** Runtime entry point for a function scan with ordinals in its full bind schema. */
+    public Enumerable<Object[]> scanProjected(DataContext context, List<RexNode> filters, int[] projects) {
+        return scan(context, filters, projects);
+    }
+
     String invocationKey() {
         try {
             return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(invocation.arguments()));

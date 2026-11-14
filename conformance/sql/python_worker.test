@@ -54,3 +54,33 @@ SELECT id, name, quantity, price FROM example.data.products ORDER BY id;
 
 statement ok
 DETACH example;
+
+statement ok
+ATTACH 'example' AS example (TYPE vgi, LOCATION '${VGI_TEST_WORKER}');
+
+# Projection and window aggregation span four worker batches. The generated
+# values are 1.5 * id, so the final sum is 1.5 * 4000 * 3999 / 2.
+query IR
+SELECT MAX(id), MAX(running_sum) FROM (
+    SELECT id, SUM(value) OVER (ORDER BY id) AS running_sum FROM example.projected_data(4000)
+);
+----
+3999	11997000.0
+
+# Nested values retain their structure when unrelated columns are pruned.
+query III
+SELECT n, CARDINALITY(history), history[1] FROM example.nested_sequence(3) ORDER BY n;
+----
+0	1	0
+1	2	0
+2	3	0
+
+query IT
+SELECT s.metadata.index, s.metadata.label FROM example.nested_sequence(3) s ORDER BY s.n;
+----
+0	row_0
+1	row_1
+2	row_2
+
+statement ok
+DETACH example;

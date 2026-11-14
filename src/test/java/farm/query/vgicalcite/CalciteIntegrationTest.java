@@ -230,7 +230,51 @@ class CalciteIntegrationTest {
     private void resetStats() throws Exception { query("select * from table(vgi.main.scan_stats(true))"); }
 
     private void assertStats(long inits, long rows, long plans) throws Exception {
-        assertEquals(List.of(List.of(inits, rows, plans)), query("select * from table(vgi.main.scan_stats(false))"));
+        assertEquals(List.of(List.of(inits, rows, plans)), query("select inits, \"rows\", plans from table(vgi.main.scan_stats(false))"));
+    }
+
+    private void assertProjection(String columns) throws Exception {
+        assertEquals(List.of(List.of(columns)), query("select projected from table(vgi.main.scan_stats(false))"));
+    }
+
+    @Test void functionProjectionPrunesColumnsAndRemapsFilters() throws Exception {
+        resetStats();
+        assertEquals(List.of(List.of("row-2")), query(
+                "select label from table(vgi.main.filtered_sequence(10)) where label = 'row-2'"));
+        assertStats(1, 1, 0);
+        assertProjection("label");
+        resetStats();
+        assertEquals(List.of(List.of("ROW-2", 2L, 2L)), query(
+                "select upper(label), id, id from table(vgi.main.filtered_sequence(10)) "
+                        + "where amount = 2.50 and label is not null"));
+        assertStats(1, 1, 0);
+        assertProjection("id,label,amount");
+    }
+
+    @Test void functionProjectionKeepsLocalPredicateInputsAndSupportsFallback() throws Exception {
+        assertEquals(List.of(List.of("row-2"), List.of("row-4")), query(
+                "select label from table(vgi.main.filtered_sequence(5)) where mod(id, 2) = 0 and label is not null order by label"));
+        assertProjection("id,label");
+        assertEquals(List.of(List.of("row-2")), query(
+                "select label from table(vgi.main.filtered_unprojected(5)) where id = 2"));
+        assertProjection(String.join(",", FixtureWorker.COLUMNS.getFields().stream().map(f -> f.getName()).toList()));
+        assertEquals(List.of(List.of(5L)), query("select count(*) from table(vgi.main.sequence(5))"));
+        assertEquals(List.of(List.of(7), List.of(7), List.of(7)), query("select 7 from table(vgi.main.sequence(3))"));
+    }
+
+    @Test void preparedFunctionProjectionKeepsParameterBindings() throws Exception {
+        try (var statement = connection.prepareStatement(
+                "select label from table(vgi.main.filtered_sequence(10)) where label = ?")) {
+            for (String label : List.of("row-2", "row-4", "row-8")) {
+                resetStats();
+                statement.setString(1, label);
+                try (var rows = statement.executeQuery()) {
+                    assertTrue(rows.next()); assertEquals(label, rows.getString(1)); assertFalse(rows.next());
+                }
+                assertStats(1, 1, 0);
+                assertProjection("label");
+            }
+        }
     }
 
     private void assertRemote(String predicate, long transferred) throws Exception {
