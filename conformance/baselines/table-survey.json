@@ -1,7 +1,35 @@
 {
   "description": "Static SQLLogicTest record counts for the full integration/table directory; failures include engine-specific expectations and harness limitations, not just connector defects.",
-  "started_at": "2026-11-14T16:19:50.238691+00:00",
-  "connector_revision": "ae3aab666a78c7ecd88fef03f8ee492befa70909",
+  "started_at": "2026-11-14T16:45:18.127866+00:00",
+  "connector_revision": "2bf3463cdf644acd98ceb2622e696c827f9185e3",
+  "connector_worktree_base_revision": "6a57be79971710a96dbd4b4e2de319c5e95efda1",
+  "provenance_note": "The run used uncommitted source at its worktree base; every recorded Java, Python and pom.xml source hash matches connector_revision.",
+  "connector_source_sha256": {
+    "conformance/run.py": "83ece8d2e34238812296efe05c1dd0b7e6187666b4d3ae134d7c3ad9c95f6fc7",
+    "conformance/test_runner.py": "197b6e00f0e10fe81a34505acb46bcc625e582dcb95845826e3161fb0732dc66",
+    "pom.xml": "769978db96c04c27182d75f0fa5d22d8b48f61e0c4b5fa8f5a5ac4104e16f4bb",
+    "src/main/java/farm/query/vgicalcite/ArrowTypes.java": "6d23fd964ae150e96839c9ff4479e5ca8dc8e3eb005d0f1843c4975ff98f9863",
+    "src/main/java/farm/query/vgicalcite/Main.java": "0b1d7406f39edec24b6ba72e6fb8e8f978a5d922a780ad4984d496b3c384d8b6",
+    "src/main/java/farm/query/vgicalcite/VgiBatchValidation.java": "c4ff49351539e1c91f3c804bf31b758b3230edd6964be1bdbb101a704719d5cb",
+    "src/main/java/farm/query/vgicalcite/VgiCatalogMetadata.java": "346de1f1be8d17705456773cf6ea672e91b38b3353350be53d9d43dd5165a91d",
+    "src/main/java/farm/query/vgicalcite/VgiConfig.java": "e61fc0f904f165f59937507b169da159e1697dfbf3c9f198f0edcffa9904419b",
+    "src/main/java/farm/query/vgicalcite/VgiEnumerator.java": "10d8ecae027b504f8acc3767542e1c4bf897a7183ed9c9806885444154abe907",
+    "src/main/java/farm/query/vgicalcite/VgiFilters.java": "a25d00ae96aeef2e778ef2682287e8fb2a890a8eb2c3c5a66d1e09437781584f",
+    "src/main/java/farm/query/vgicalcite/VgiFunctionScan.java": "d3d9f599868dac423e40bbe03cf61ff60546ac722f02d2d8e2049ee1ea1fe25a",
+    "src/main/java/farm/query/vgicalcite/VgiSchema.java": "f91db8bf1b95888b4f92b3378a521ab801dc9b82bed6e0e3662c9f4a73c39dc6",
+    "src/main/java/farm/query/vgicalcite/VgiSchemaFactory.java": "2a07122a7464f4d0463aff99a55bb18cdd237e4b38a85ace41b811cb57f50ba0",
+    "src/main/java/farm/query/vgicalcite/VgiSession.java": "d2580facec7186e3fa924da79dd3988365cc17771b7af43896b5abfff23d8ccd",
+    "src/main/java/farm/query/vgicalcite/VgiTable.java": "36fb9db0724501a53cafc2c469b87e64a8d0c2a0c41810cc214c3ade8e76c186",
+    "src/main/java/farm/query/vgicalcite/VgiTableMacro.java": "6c2dad603e7ae3e7a6b9e1aae760d099240e0aa36fc43a2dfc28f7940b67d62c",
+    "src/main/java/farm/query/vgicalcite/VgiTypeSystem.java": "d72ce583f500b562b6df0cd8e448971245592dc22fdf5d268a5a224c09313029",
+    "src/test/java/farm/query/vgicalcite/ArrowTypesTest.java": "fbd76b9bdd058a31cdcf045179b9f61ee1b1077a69719bb15d84e3a7a59f4877",
+    "src/test/java/farm/query/vgicalcite/CalciteIntegrationTest.java": "968fc015c6571e637493beeef1d22c1434abc17b66acaed1a555655637fd480a",
+    "src/test/java/farm/query/vgicalcite/FixtureWorker.java": "7c2af076c021231ffe1cd594b9d5e961e51a6562c961102c4a07c8f9f8a1c611",
+    "src/test/java/farm/query/vgicalcite/SqlLogicBridge.java": "80e212ad27e3b237953b36df97992a9c8b7baf3368abf7c50ea55fc40ffcae0d",
+    "src/test/java/farm/query/vgicalcite/TransportIntegrationTest.java": "6bea11f87d64d6e7160195827c696c300ed2b82553332129c453a7a654b203f2",
+    "src/test/java/farm/query/vgicalcite/VgiBatchValidationTest.java": "f64e893e5020295d3404866b8100cb7b9938506ff401278c827907804498eac6",
+    "src/test/java/farm/query/vgicalcite/VgiCatalogMetadataTest.java": "5404fb56115885ddf6ea8f25e1a81d0b703e31a9df65d684195047540cef99ed"
+  },
   "suite_revision": "86036b699c533ab87d9ddf44c2b477d7c9675951",
   "transport": "tcp",
   "worker_packages": {
@@ -19,8 +47,8 @@
   "inventory_records": 7211,
   "selected_records": 1480,
   "selected_counts": {
-    "pass": 609,
-    "fail": 836,
+    "pass": 623,
+    "fail": 822,
     "unsupported": 3,
     "not_run": 32
   },
@@ -154,8 +182,8 @@
     "integration/table/filter_pushdown.test": {
       "sha256": "849b2e2ba4dbf7c034f76b6eab08c7ac6e4a03de67ef9b896c4a55cf295e487d",
       "counts": {
-        "pass": 36,
-        "fail": 24
+        "pass": 37,
+        "fail": 23
       }
     },
     "integration/table/filter_pushdown_through_view.test": {
@@ -267,8 +295,8 @@
     "integration/table/partition_columns.test": {
       "sha256": "31c7aecbafd47e1d45f42fbaececa3d323f4d0815c7dc252ac982671ae602776",
       "counts": {
-        "pass": 17,
-        "fail": 15
+        "pass": 18,
+        "fail": 14
       }
     },
     "integration/table/partition_columns_contract.test": {
@@ -294,15 +322,14 @@
     "integration/table/projected_data.test": {
       "sha256": "46d8476d2fa45baf3265df37f9899083c67c482d5790e0468005672a95302a83",
       "counts": {
-        "pass": 25,
-        "fail": 10
+        "pass": 34,
+        "fail": 1
       }
     },
     "integration/table/projection_info.test": {
       "sha256": "5785b1de9ab229837f6ca591e7ff868181391cd652c020ca9e3c884ae8a7c8d2",
       "counts": {
-        "pass": 8,
-        "fail": 3
+        "pass": 11
       }
     },
     "integration/table/required_filters_above_get.test": {

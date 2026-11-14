@@ -22,7 +22,7 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 55 tests. The Python interoperability gate runs 100
+The Java suite now has 56 tests. The Python interoperability gate runs 100
 upstream records, 14 adapter-specific records and 8 malformed-worker checks
 over TCP and HTTP. The
 adapter checks include worker-echoed filters, retained local expressions and
@@ -48,14 +48,14 @@ dependencies. The CI suite revision is separately pinned to the public commit
 `e75482339d07244105e4a040f998a7092b7402a5`; its selected test files match the
 development suite above.
 
-The subsequent **full table-directory survey** ran against connector commit
-`ae3aab666a78c7ecd88fef03f8ee492befa70909` and the same development suite and
+The latest **full table-directory survey** ran against source matching connector
+commit `2bf3463cdf644acd98ceb2622e696c827f9185e3` and the same development suite and
 released Python worker. Its 62 selected files contain 1,480 static records:
 
 | Status | Records |
 | --- | ---: |
-| Passed | 609 |
-| Failed | 836 |
+| Passed | 623 |
+| Failed | 822 |
 | Unsupported by the harness | 3 |
 | Not run after an unavailable setup | 32 |
 
@@ -64,7 +64,10 @@ counts include DuckDB-specific expectations and harness limitations as well as
 connector failures; they are not a count of independent connector bugs. They
 also do not support a claim that the connector passes most table tests. The
 [recorded baseline](../conformance/baselines/table-survey.json) includes per-file
-counts and source hashes for comparison with future runs.
+counts and source hashes for comparison with future runs. This improves on the
+previous survey's 609 passes and 836 failures; none of its passing records
+regressed. The run began before its source was committed, so the baseline also
+records the worktree's base revision and the verified source hashes.
 
 ## Function projection and batch validation
 
@@ -73,10 +76,22 @@ filters. Regression tests inspect the worker's requested columns, including
 prepared parameters, reordered and repeated outputs, and columns needed only
 by residual conditions. Queries with no referenced columns preserve row counts.
 
-Every batch is validated before row decoding, including count-only queries.
-The upstream malformed-batch fixture verifies rejection of corrupt offsets,
-invalid UTF-8 and out-of-range dictionary indices over TCP and HTTP. Valid
-nested lists and structs are also exercised through the Python worker.
+The adapter validates decoded batches before reading rows, including count-only
+queries. The upstream malformed-batch fixture tests corrupt offsets, invalid
+UTF-8 and out-of-range dictionary indices over TCP and HTTP. CI exposed a gap:
+the RPC dependency's Arrow loader expands a malformed list's child vector
+before adapter validation can see its original length. The list rejection test
+currently fails with published RPC versions through 0.33.3.
+[SDK PR #3](https://github.com/Query-farm/vgi-rpc-java/pull/3) fixes the reader.
+With a locally built copy of that patch, all 122 selected SQL records pass on
+both TCP and HTTP. The public CI gate remains failing until a patched SDK is
+published and the connector pins it. These local runs record the patched
+runtime JAR's hash; they are not results for the published dependency.
+Valid nested lists and structs are also exercised through the Python worker.
+
+Map fields use Arrow's buffer validation without its separate type visitor,
+which incorrectly rejects valid maps in Arrow 19. A regression test verifies
+both a valid map and rejection of an invalid map offset.
 
 A four-file projection survey passed 134 of 135 records after the harness
 quoted reserved column names. Its one remaining failure is

@@ -35,7 +35,7 @@ These tables and functions are available in the included demo below.
 - **Browse worker catalogs.** Discover tables and public table functions,
   including those in nested schemas.
 - **Call table functions from SQL.** Pass literal scalar values, use named
-  arguments, and omit optional arguments to use the worker's defaults.
+  arguments, and omit trailing optional arguments to use the worker's defaults.
 - **Use familiar SQL operations.** Filter, join, aggregate, sort, and limit
   results through Calcite.
 - **Filter at the source.** Push supported predicates into compatible workers
@@ -164,7 +164,8 @@ another project, [install it locally and add the Maven dependency](docs/usage.md
 - No writes or transactions. VGI scalar functions, aggregate functions, and
   table-in/out transforms are not exposed; Calcite's own SQL aggregates work.
 - Table-function arguments must be literals. Dynamic prepared parameters
-  (`?`) in table-function calls are not supported.
+  (`?`) in table-function calls are not supported. Named calls cannot omit an
+  earlier optional argument while supplying a later one.
 - Predicate pushdown covers a defined subset of expressions and types; see
   [supported filters](docs/usage.md#predicate-pushdown). Worker-side join,
   aggregate, sort, and limit pushdown, distributed splits, and native-file scans

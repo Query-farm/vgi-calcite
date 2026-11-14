@@ -12,7 +12,7 @@ import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
-import org.apache.arrow.vector.util.ValueVectorUtility;
+import org.apache.arrow.vector.validate.ValidateVectorBufferVisitor;
 import org.apache.arrow.vector.validate.ValidateVectorDataVisitor;
 
 import java.util.HashSet;
@@ -30,7 +30,13 @@ final class VgiBatchValidation {
                 throw new IllegalArgumentException("column count differs from binding");
             }
             // Validate buffers before reading offsets, indices, text or nested values.
-            ValueVectorUtility.validate(root);
+            if (root.getRowCount() < 0) throw new IllegalArgumentException("Negative batch row count");
+            for (FieldVector vector : root.getFieldVectors()) {
+                if (vector.getValueCount() != root.getRowCount()) {
+                    throw new IllegalArgumentException("Batch and column row counts differ");
+                }
+                vector.accept(BUFFER_VALIDATOR, null);
+            }
             Set<Long> checkedDictionaries = new HashSet<>();
             for (int i = 0; i < expected.size(); i++) {
                 FieldVector vector = root.getVector(i);
@@ -45,7 +51,7 @@ final class VgiBatchValidation {
                     if (dictionary == null) throw new IllegalArgumentException("Missing Arrow dictionary " + encoding.getId());
                     FieldVector values = dictionary.getVector();
                     if (checkedDictionaries.add(encoding.getId())) {
-                        ValueVectorUtility.validate(values);
+                        values.accept(BUFFER_VALIDATOR, null);
                         values.accept(DATA_VALIDATOR, null);
                     }
                     for (int row = 0; row < vector.getValueCount(); row++) {
@@ -90,6 +96,12 @@ final class VgiBatchValidation {
         long offset = wide ? vector.getOffsetBuffer().getLong(0) : vector.getOffsetBuffer().getInt(0);
         if (offset < 0) throw new IllegalArgumentException("Negative first Arrow offset");
     }
+
+    // The reader creates vectors from the wire schema; sameType checks that
+    // schema against the binding. Arrow 19's additional type visitor rejects
+    // valid MapVector instances by treating them as ListVector, so validate
+    // their buffers directly instead.
+    private static final ValidateVectorBufferVisitor BUFFER_VALIDATOR = new ValidateVectorBufferVisitor();
 
     private static final ValidateVectorDataVisitor DATA_VALIDATOR = new ValidateVectorDataVisitor() {
         @Override public Void visit(BaseVariableWidthVector vector, Void unused) {

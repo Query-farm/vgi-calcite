@@ -82,7 +82,7 @@ Each static statement/query record has its source path, line and status:
   prevented its execution.
 
 Every file remains in the inventory, including files outside `--include`.
-Reports contain source hashes, Git revisions, worker package versions and
+Reports contain source and runtime JAR hashes, Git revisions, worker package versions and
 module path, Calcite connection properties, translated SQL, and failure
 details. `worker.log` and `calcite.log` sit beside each report. A timeout or
 connection failure is a failure; it is never treated as a passing query.

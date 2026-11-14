@@ -6,17 +6,17 @@ ATTACH 'malformed' AS m (TYPE vgi, LOCATION '${VGI_TEST_WORKER}');
 statement error
 SELECT * FROM m.main.malformed_string_offsets();
 ----
-VGI worker sent a malformed Arrow batch (full validation)
+<REGEX>:(?i)malformed Arrow (?:IPC )?batch
 
 statement error
 SELECT * FROM m.main.malformed_list_offsets();
 ----
-VGI worker sent a malformed Arrow batch (full validation)
+<REGEX>:(?i)malformed Arrow (?:IPC )?batch
 
 statement error
 SELECT * FROM m.main.malformed_bad_utf8();
 ----
-VGI worker sent a malformed Arrow batch (full validation)
+<REGEX>:(?i)malformed Arrow (?:IPC )?batch
 
 statement error
 SELECT * FROM m.main.malformed_dict_index();
@@ -27,7 +27,7 @@ Dictionary indices invalid
 statement error
 SELECT COUNT(*) FROM m.main.malformed_bad_utf8();
 ----
-VGI worker sent a malformed Arrow batch (full validation)
+<REGEX>:(?i)malformed Arrow (?:IPC )?batch
 
 # The failed worker stream does not invalidate Calcite's JDBC connection.
 query I

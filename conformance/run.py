@@ -213,7 +213,7 @@ def compare(record: Record, response: dict) -> tuple[bool, str]:
                     continue
             except decimal.InvalidOperation:
                 pass
-        return False, f"Value {index}: expected {want!r}, got {got!r}"
+        return False, f"Value {index}: expected {want[:256]!r}, got {got[:256]!r} (up to 256 characters shown)"
     return True, ""
 
 
@@ -268,6 +268,8 @@ def main():
               "suite_root": str(args.suite), "suite_revision": git_revision(args.suite),
               "connector_revision": git_revision(repo), "transport": args.transport,
               "connector_source_sha256": source_hashes(repo),
+              "runtime_artifacts_sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                                           for p in sorted((repo / "target/dependency").glob("*.jar"))},
               "calcite_properties": {"caseSensitive": False, "timeZone": "UTC", "conformance": "BABEL",
                                      "typeSystem": "farm.query.vgicalcite.VgiTypeSystem"},
               "selected_files": selected, "sqlglot_version": sqlglot.__version__,
@@ -347,7 +349,9 @@ def main():
                             matched, detail = compare(record, response)
                             entry.update(status="pass" if matched else "fail", elapsed_ms=response["elapsed_ms"])
                             if not matched:
-                                entry.update(reason=detail, error=response.get("error"), actual=response.get("rows", [])[:20],
+                                preview = [[cell if len(cell) <= 512 else cell[:512] + "... (truncated)" for cell in row]
+                                           for row in response.get("rows", [])[:20]]
+                                entry.update(reason=detail, error=response.get("error"), actual=preview,
                                              expected=record.expected[:20])
                                 if attach:
                                     fatal = "Required ATTACH did not meet its expectation"

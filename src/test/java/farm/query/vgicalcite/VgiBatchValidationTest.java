@@ -4,6 +4,8 @@ import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.*;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.MapVector;
+import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.dictionary.Dictionary;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.types.pojo.*;
@@ -73,6 +75,26 @@ class VgiBatchValidationTest {
             data.setSafe(0, 3); data.setSafe(1, 7); root.setRowCount(1);
             assertDoesNotThrow(() -> VgiBatchValidation.validate(root, null, root.getSchema().getFields()));
             assertEquals(List.of(3L, 7L), ArrowTypes.read(vector, 0));
+        }
+    }
+
+    @Test void validatesMapsAsCollectionsOfKeyValueEntries() {
+        var entry = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), List.of(
+                new Field("key", FieldType.notNullable(new ArrowType.Int(64, true)), List.of()),
+                field("value", new ArrowType.Int(64, true))));
+        var mapField = new Field("m", FieldType.nullable(new ArrowType.Map(false)), List.of(entry));
+        try (var allocator = new RootAllocator(); var root = VectorSchemaRoot.create(new Schema(List.of(mapField)), allocator)) {
+            root.allocateNew();
+            var map = (MapVector) root.getVector(0);
+            var entries = (StructVector) map.getDataVector();
+            map.startNewValue(0);
+            entries.setIndexDefined(0);
+            ((BigIntVector) entries.getChild("key")).setSafe(0, 1);
+            ((BigIntVector) entries.getChild("value")).setSafe(0, 7);
+            map.endValue(0, 1); root.setRowCount(1);
+            assertDoesNotThrow(() -> VgiBatchValidation.validate(root, null, root.getSchema().getFields()));
+            map.getOffsetBuffer().setInt(4, 1 << 20);
+            assertThrows(IllegalStateException.class, () -> VgiBatchValidation.validate(root, null, root.getSchema().getFields()));
         }
     }
 
