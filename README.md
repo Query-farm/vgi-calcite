@@ -46,6 +46,8 @@ These tables and functions are available in the included demo below.
 - **Transfer only needed columns.** Push column selection into compatible
   catalog scans and table functions, retaining columns needed by local filters
   and expressions.
+- **Accumulate integer totals in decimal.** The VGI JDBC driver widens `SUM`
+  and `AVG` inputs automatically, preventing BIGINT accumulator wraparound.
 - **Validate Arrow batches.** Check schemas, buffers, text, and dictionary
   indices before Calcite reads worker results.
 - **Detect stale catalog metadata.** Reject changed known catalog versions

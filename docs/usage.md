@@ -88,7 +88,7 @@ Add the dependency to your application:
 </dependency>
 ```
 
-Load a model through Calcite's JDBC driver:
+Load a model through the VGI Calcite JDBC driver:
 
 ```java
 import java.sql.Connection;
@@ -102,9 +102,8 @@ Properties properties = new Properties();
 properties.setProperty("model", "/absolute/path/to/model.json");
 properties.setProperty("caseSensitive", "false");
 properties.setProperty("timeZone", "UTC");
-properties.setProperty("typeSystem", "farm.query.vgicalcite.VgiTypeSystem");
 
-try (Connection connection = DriverManager.getConnection("jdbc:calcite:", properties);
+try (Connection connection = DriverManager.getConnection("jdbc:vgi-calcite:", properties);
      Statement statement = connection.createStatement();
      ResultSet rows = statement.executeQuery("SELECT COUNT(*) FROM vgi.data.numbers")) {
   rows.next();
@@ -121,7 +120,9 @@ Use these JVM flags in the embedding application:
 ```
 
 The packaged query runner sets case-insensitive identifier lookup, UTC, and
-`VgiTypeSystem` automatically.
+`VgiTypeSystem` automatically. The `jdbc:vgi-calcite:` driver also promotes integer
+aggregate inputs before Calcite plans the query; it is registered through JDBC
+service discovery when the adapter JAR is on the classpath.
 
 For programmatic setup, create a schema with
 `VgiSchema.connect(VgiConfig.from(operandMap))` and add it to a
@@ -215,17 +216,28 @@ Unsigned integers are widened to a suitable Calcite type; `uint64` maps to
 19 to 38 digits. Use it for `uint64` and decimal128 columns above 19 digits.
 Decimal256 is not supported.
 
-The configured `VgiTypeSystem` also defines numeric aggregate results:
-`SUM` of an integer returns `BIGINT`, and `AVG` of an integer or decimal returns
-`DOUBLE`. Averages use floating-point precision. These rules apply to the
-entire Calcite connection, including queries over other adapters.
+With `jdbc:vgi-calcite:`, `SUM` of any integer type returns `DECIMAL(38,0)`
+(`java.math.BigDecimal` from JDBC `getObject`). `AVG` of an integer or decimal
+returns `DOUBLE`; averages retain floating-point precision. Integer inputs to
+both aggregates are promoted to decimal **before accumulation**, so BIGINT
+intermediate sums do not wrap. No decimal cast is needed in the query:
 
-Calcite's integer accumulator can still wrap when an intermediate sum exceeds
-the `BIGINT` range, including inside `AVG`. For potentially larger totals, cast
-the **input** to decimal: `SUM(CAST(n AS DECIMAL(38,0)))` or
-`AVG(CAST(n AS DECIMAL(38,0)))`. Casting the aggregate result is too late.
-The conformance overflow survey preserves uncast failures as an open numeric
-limitation; production workloads must account for these bounds.
+```sql
+SELECT SUM(n), AVG(n) FROM vgi.data.numbers;
+```
+
+The policy covers grouped, distinct, filtered and windowed aggregates, nested
+queries and model views. Decimal inputs keep their scale; floating-point
+aggregates retain Calcite's behavior. These rules apply to the entire connection,
+including queries over other adapters. They do not widen arithmetic inside the
+input expression, such as an overflowing `n * n`, and do not provide unlimited
+SQL decimal precision.
+
+**Migration:** replace `jdbc:calcite:` with `jdbc:vgi-calcite:` in embedding
+applications. Setting `typeSystem` alone on Calcite's stock driver retains the
+previous BIGINT accumulator behavior. Consumers that previously expected a
+`Long` from integer `SUM` must accept `BigDecimal` or use `getBigDecimal`.
+The packaged query runner and conformance bridge already use the new driver.
 
 Time and timestamp values use **millisecond precision**. Microsecond and
 nanosecond values are floored to milliseconds, including values before the Unix

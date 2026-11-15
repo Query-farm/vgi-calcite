@@ -17,8 +17,7 @@ public final class Main {
         properties.setProperty("model", Path.of(args[0]).toAbsolutePath().toString());
         properties.setProperty("caseSensitive", "false");
         properties.setProperty("timeZone", "UTC");
-        properties.setProperty("typeSystem", VgiTypeSystem.class.getName());
-        try (var connection = DriverManager.getConnection("jdbc:calcite:", properties);
+        try (var connection = DriverManager.getConnection("jdbc:vgi-calcite:", properties);
              var statement = connection.createStatement();
              var result = statement.executeQuery(args[1])) {
             int count = result.getMetaData().getColumnCount();

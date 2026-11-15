@@ -137,23 +137,23 @@ Empty values are rendered as `(empty)` and embedded NUL characters as `\0`,
 following DuckDB's SQLLogicTest result format. This conversion happens before
 sorting and hashing; NULL remains distinct from an empty string.
 
-## Numeric overflow survey
+## Numeric aggregate regressions
 
-The passing gate includes fractional averages and exact sums with explicit
-decimal inputs. The separate overflow survey retains correct expected values
-for known failures of Calcite's uncast `BIGINT` accumulator:
+The passing CI gate includes `sql/numeric_aggregates.test` and
+`sql/numeric_overflow.test`. The latter preserves the three original BIGINT
+failure expectations and adds grouped, distinct, nullable, filtered and windowed
+cases. The overflow regressions run through `jdbc:vgi-calcite:` without decimal
+input casts.
 
 ```sh
 .conformance/venv/bin/python conformance/run.py \
-  --suite conformance/surveys --include numeric_overflow.test \
+  --suite conformance/sql --include numeric_overflow.test \
   --report target/conformance/numeric-overflow/report.json
 ```
 
-This command is expected to fail until the accumulator limitation is fixed.
-These cases remain outside the passing CI gate and count as unresolved failures,
-not unsupported or successful records. Cast inputs to `DECIMAL(38,0)` before
-`SUM` or `AVG` when totals can exceed the `BIGINT` range; see
-[numeric types](../docs/usage.md#arrow-types).
+This command must pass. Historical overflow failures remain in the earlier
+baseline JSON; see [numeric types](../docs/usage.md#arrow-types) for current
+result types and migration instructions.
 
 See [production readiness](../docs/production-readiness.md) for the broader
 qualification status.

@@ -6,7 +6,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 
-/** Opt-in decimal128 precision, BIGINT sums and fractional numeric averages. */
+/** Decimal128 precision and fractional averages; use {@link VgiDriver} for automatic aggregate widening. */
 public final class VgiTypeSystem extends RelDataTypeSystemImpl {
     public static final VgiTypeSystem INSTANCE = new VgiTypeSystem();
     @Override public int getMaxScale(SqlTypeName typeName) {
@@ -19,7 +19,7 @@ public final class VgiTypeSystem extends RelDataTypeSystemImpl {
     @Override public RelDataType deriveSumType(RelDataTypeFactory factory, RelDataType argument) {
         // Calcite otherwise keeps a small integer's accumulator at its input
         // width. BIGINT can hold every sum of two int32 values. Larger totals
-        // still require an explicit DECIMAL cast before SUM or AVG.
+        // need DECIMAL inputs, inserted automatically by VgiDriver's validator.
         if (SqlTypeUtil.isIntType(argument)) {
             return factory.createTypeWithNullability(factory.createSqlType(SqlTypeName.BIGINT),
                     argument.isNullable());

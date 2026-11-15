@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -65,8 +66,7 @@ class CalciteIntegrationTest {
         properties.setProperty("model", "inline:" + model);
         properties.setProperty("caseSensitive", "false");
         properties.setProperty("timeZone", "UTC");
-        properties.setProperty("typeSystem", VgiTypeSystem.class.getName());
-        return DriverManager.getConnection("jdbc:calcite:", properties);
+        return DriverManager.getConnection("jdbc:vgi-calcite:", properties);
     }
 
     List<List<Object>> query(String sql) throws Exception {
@@ -97,7 +97,7 @@ class CalciteIntegrationTest {
     }
 
     @Test void aggregatesWithoutProjectedColumns() throws Exception {
-        assertEquals(List.of(List.of(10L, 45L, 6L)), query("select count(*), sum(id), count(label) from vgi.data.numbers"));
+        assertEquals(List.of(List.of(10L, BigDecimal.valueOf(45), 6L)), query("select count(*), sum(id), count(label) from vgi.data.numbers"));
         assertEquals(List.of(List.of(10L)), query("select count(*) from vgi.data.numbers"));
         assertEquals(List.of(List.of(0L)), query("select count(*) from vgi.data.\"empty\""));
     }
@@ -119,28 +119,36 @@ class CalciteIntegrationTest {
     }
 
     @Test void integerSumsUseWideAccumulators() throws Exception {
-        assertEquals(List.of(List.of(21474836470L)), query(
+        assertEquals(List.of(List.of(BigDecimal.valueOf(21474836470L))), query(
                 "select sum(cast(2147483647 as integer)) from vgi.data.numbers"));
-        assertEquals(List.of(List.of(-21474836480L)), query(
+        assertEquals(List.of(List.of(BigDecimal.valueOf(-21474836480L))), query(
                 "select sum(cast('-2147483648' as integer)) from vgi.data.numbers"));
-        assertEquals(List.of(List.of(45L, 45L)), query(
+        assertEquals(List.of(List.of(BigDecimal.valueOf(45), BigDecimal.valueOf(45))), query(
                 "select sum(distinct id), sum(case when id = 0 then null else id end) from vgi.data.numbers"));
         try (var statement = connection.createStatement();
              var rows = statement.executeQuery("select sum(id) from vgi.data.\"empty\"")) {
-            assertEquals(java.sql.Types.BIGINT, rows.getMetaData().getColumnType(1));
+            assertEquals(java.sql.Types.DECIMAL, rows.getMetaData().getColumnType(1));
             assertTrue(rows.next()); assertNull(rows.getObject(1)); assertFalse(rows.next());
         }
     }
 
     @Test void explicitDecimalInputsAvoidBigintAggregateOverflow() throws Exception {
-        // Calcite's BIGINT accumulator can still wrap. A cast must precede the
-        // aggregate, not just convert its already-overflowed result.
+        // Explicit decimal inputs retain their existing result type and precision.
         assertEquals(List.of(List.of(new java.math.BigDecimal("92233720368547758070"))), query(
                 "select sum(cast(9223372036854775807 as decimal(38,0))) from vgi.data.numbers"));
         assertEquals(List.of(List.of(new java.math.BigDecimal("-92233720368547758080"))), query(
                 "select sum(cast('-9223372036854775808' as decimal(38,0))) from vgi.data.numbers"));
         assertEquals(List.of(List.of((double) Long.MAX_VALUE)), query(
                 "select avg(cast(9223372036854775807 as decimal(38,0))) from vgi.data.numbers"));
+    }
+
+    @Test void bigintAggregatesWidenAutomaticallyAcrossWorkerBatches() throws Exception {
+        assertEquals(List.of(List.of(new BigDecimal("92233720368547758070"), (double) Long.MAX_VALUE)), query(
+                "select sum(cast(9223372036854775807 as bigint)), avg(cast(9223372036854775807 as bigint)) "
+                        + "from table(vgi.main.sequence(10, 3))"));
+        assertEquals(List.of(List.of(new BigDecimal("-92233720368547758080"), (double) Long.MIN_VALUE)), query(
+                "select sum(cast('-9223372036854775808' as bigint)), avg(cast('-9223372036854775808' as bigint)) "
+                        + "from vgi.data.numbers"));
     }
 
     @Test void groupedDistinctAndWindowAveragesRetainFractions() throws Exception {
@@ -182,15 +190,15 @@ class CalciteIntegrationTest {
     }
 
     @Test void tableFunctionDefaultAndNamedArguments() throws Exception {
-        assertEquals(List.of(List.of(17L, 136L)), query("select count(*), sum(id) from table(vgi.main.sequence(17))"));
+        assertEquals(List.of(List.of(17L, BigDecimal.valueOf(136))), query("select count(*), sum(id) from table(vgi.main.sequence(17))"));
         assertEquals(List.of(List.of(7L)), query("select count(*) from table(vgi.main.sequence(\"count\" => 7, \"batch_size\" => 2))"));
     }
 
     @Test void repeatedScansReleaseArrowBuffers() throws Exception {
         String sql = "select sum(id) from table(vgi.main.sequence(100))";
-        for (int i = 0; i < 3; i++) assertEquals(List.of(List.of(4950L)), query(sql));
+        for (int i = 0; i < 3; i++) assertEquals(List.of(List.of(BigDecimal.valueOf(4950))), query(sql));
         long before = farm.query.vgirpc.wire.Allocators.root().getAllocatedMemory();
-        for (int i = 0; i < 10; i++) assertEquals(List.of(List.of(4950L)), query(sql));
+        for (int i = 0; i < 10; i++) assertEquals(List.of(List.of(BigDecimal.valueOf(4950))), query(sql));
         assertEquals(before, farm.query.vgirpc.wire.Allocators.root().getAllocatedMemory(),
                 "Completed scans must release the client's Arrow buffers");
     }
@@ -243,7 +251,7 @@ class CalciteIntegrationTest {
     }
 
     @Test void readsAllScanBranches() throws Exception {
-        assertEquals(List.of(List.of(5L, 4L)), query("select count(*), sum(id) from vgi.data.combined"));
+        assertEquals(List.of(List.of(5L, BigDecimal.valueOf(4))), query("select count(*), sum(id) from vgi.data.combined"));
     }
 
     @Test void unsupportedBranchPredicatesAndMissingRequiredFiltersFailExplicitly() {
@@ -258,7 +266,7 @@ class CalciteIntegrationTest {
     }
 
     @Test void differentFunctionArgumentsStayDistinctDuringOptimization() throws Exception {
-        assertEquals(List.of(List.of(8L, 13L)), query("select count(*), sum(id) from ("
+        assertEquals(List.of(List.of(8L, BigDecimal.valueOf(13))), query("select count(*), sum(id) from ("
                 + "select id from table(vgi.main.sequence(3)) union all select id from table(vgi.main.sequence(5)))"));
         assertEquals(List.of(List.of(15L)), query("select count(*) from table(vgi.main.sequence(3)) a "
                 + "cross join table(vgi.main.sequence(5)) b"));
@@ -281,7 +289,7 @@ class CalciteIntegrationTest {
         assertEquals(List.of(List.of(4.0), List.of(3.0)), query(
                 "select * from table(vgi.main.single_floating(5)) where floating >= 1 "
                         + "and floating <= 4 order by floating desc fetch next 2 rows only"));
-        assertEquals(List.of(List.of(5L, 10L)), query(
+        assertEquals(List.of(List.of(5L, BigDecimal.valueOf(10))), query(
                 "select count(*), sum(id) from table(vgi.main.single_sequence(5))"));
     }
 
@@ -496,7 +504,7 @@ class CalciteIntegrationTest {
         assertEquals(List.of(List.of(4L)), query("select id from table(vgi.main.filtered_sequence(10)) where id = 4"));
         assertStats(1, 1, 0);
         resetStats();
-        assertEquals(List.of(List.of(2L, 12L)), query("select count(*), sum(id) from ("
+        assertEquals(List.of(List.of(2L, BigDecimal.valueOf(12))), query("select count(*), sum(id) from ("
                 + "select id from table(vgi.main.filtered_sequence(10)) where id = 4 union all "
                 + "select id from table(vgi.main.filtered_sequence(10)) where id = 8)"));
         assertStats(2, 2, 0);
@@ -562,7 +570,7 @@ class CalciteIntegrationTest {
 
     @Test void everyScanBranchReceivesFilters() throws Exception {
         resetStats();
-        assertEquals(List.of(List.of(4L, 11L)), query("select count(*), sum(id) from vgi.data.filtered_combined where id >= 2"));
+        assertEquals(List.of(List.of(4L, BigDecimal.valueOf(11))), query("select count(*), sum(id) from vgi.data.filtered_combined where id >= 2"));
         assertStats(2, 4, 0);
     }
 }

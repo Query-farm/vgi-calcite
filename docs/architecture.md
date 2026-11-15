@@ -22,7 +22,8 @@ flowchart LR
 | [VgiFilters](../src/main/java/farm/query/vgicalcite/VgiFilters.java) | Translate compatible Calcite predicates into typed VGI filters while retaining all originals in Calcite. |
 | [VgiTableMacro](../src/main/java/farm/query/vgicalcite/VgiTableMacro.java) and [VgiFunctionScan](../src/main/java/farm/query/vgicalcite/VgiFunctionScan.java) | Bind literal function arguments, discover the result schema, and retain each invocation in the prepared query. |
 | [VgiSession](../src/main/java/farm/query/vgicalcite/VgiSession.java) and [VgiEnumerator](../src/main/java/farm/query/vgicalcite/VgiEnumerator.java) | Own each scan's connection and batches, convert rows, and clean up resources. |
-| [ArrowTypes](../src/main/java/farm/query/vgicalcite/ArrowTypes.java) and [VgiTypeSystem](../src/main/java/farm/query/vgicalcite/VgiTypeSystem.java) | Map Arrow values to Calcite types; support 38-digit decimals, BIGINT integer sums and DOUBLE exact-numeric averages. |
+| [VgiDriver](../src/main/java/farm/query/vgicalcite/VgiDriver.java), validator and catalog reader | Configure a connection-local validator that casts integer SUM/AVG inputs to decimal before planning and derives consistent model-view result types. |
+| [ArrowTypes](../src/main/java/farm/query/vgicalcite/ArrowTypes.java) and [VgiTypeSystem](../src/main/java/farm/query/vgicalcite/VgiTypeSystem.java) | Map Arrow values to Calcite types; support 38-digit decimals and DOUBLE exact-numeric averages. |
 
 Schema objects hold metadata only. Each scan uses an independent connection;
 there is no global connection registry or pool. Normal completion detaches.

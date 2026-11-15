@@ -10,7 +10,7 @@ FROM example.sequence(10, batch_size := 3);
 ----
 4.5	-4.5	4.5
 
-# Small integer sums widen to BIGINT. Larger sums require a decimal input.
+# Integer sums widen automatically; explicit decimal inputs remain supported.
 query II
 SELECT SUM(CAST(2147483647 AS INTEGER)), SUM(CAST(9223372036854775807 AS DECIMAL(38,0)))
 FROM example.sequence(10, batch_size := 3);
@@ -22,7 +22,7 @@ SELECT SUM(CAST('-9223372036854775808' AS DECIMAL(38,0))) FROM example.sequence(
 ----
 -92233720368547758080
 
-# AVG is reduced to SUM / COUNT; cast its input to avoid a BIGINT overflow.
+# Explicit decimal AVG inputs retain their fractional result policy.
 query R
 SELECT AVG(CAST(9223372036854775807 AS DECIMAL(38,0))) FROM example.sequence(10);
 ----
