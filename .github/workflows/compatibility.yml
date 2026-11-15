@@ -51,8 +51,10 @@ jobs:
           import json, os, pathlib, subprocess, sys
           transport = os.environ['SURVEY_TRANSPORT']
           suites = [('table', ['--suite', '.conformance/upstream/test/sql', '--include', 'integration/table/*.test'])]
-          if pathlib.Path('conformance/surveys/numeric_overflow.test').exists():
-              suites.append(('overflow', ['--suite', 'conformance/surveys', '--include', 'numeric_overflow.test']))
+          for directory in ['conformance/sql', 'conformance/surveys']:
+              if (pathlib.Path(directory) / 'numeric_overflow.test').exists():
+                  suites.append(('overflow', ['--suite', directory, '--include', 'numeric_overflow.test']))
+                  break
           for name, options in suites:
               directory = pathlib.Path('target/conformance') / name
               directory.mkdir(parents=True, exist_ok=True)

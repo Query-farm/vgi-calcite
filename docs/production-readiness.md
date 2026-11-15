@@ -22,8 +22,8 @@ Python worker then exposed three defects that those tests missed:
    backing scan function declares it nullable. The adapter now accepts that
    combination and rejects returned NULLs that violate the catalog declaration.
 
-The Java suite now has 74 tests. The Python interoperability gate runs 211
-upstream records, 26 adapter-specific records and 8 malformed-worker checks
+The Java suite now has 85 tests. The Python interoperability gate runs 211
+upstream records, 36 adapter-specific records and 8 malformed-worker checks
 over TCP and HTTP. The adapter checks include worker-echoed filters, retained local expressions and
 catalog-table reads. See the [conformance instructions](../conformance/README.md)
 and [CI workflow](../.github/workflows/ci.yml) for reproducible commands and
@@ -86,7 +86,8 @@ passing gate separately verifies 245 records per transport: 211 upstream,
 26 adapter and eight malformed-worker records. The
 [comparison record](../conformance/baselines/compatibility-numeric-results.json)
 contains exact sources, runtime and report hashes, per-file results and the
-three unresolved numeric overflow cases described below.
+three then-unresolved numeric overflow cases. The automatic-widening change
+described below addresses those cases; the historical baseline is unchanged.
 
 Both revisions were compared on GitHub runners with the same 30-second harness
 deadline. An earlier local candidate attempt hit startup/catalog-attachment
@@ -161,21 +162,26 @@ the correct result. This file is not part of the all-passing CI gate.
 
 ## Numeric aggregate compatibility
 
-The upstream sequence tests exposed integer averages losing their fractional
-part. Additional SQL regressions found narrow integer accumulator wraparound:
-summing ten copies of `2,147,483,647` returned `-10`. The adapter's configured
-type system now widens integer sums to `BIGINT` and returns `DOUBLE` for integer
-and decimal averages. Tests cover batches, negative values, NULLs, empty inputs,
-grouping, DISTINCT and windows. These rules affect the whole Calcite connection.
+The `jdbc:vgi-calcite:` driver automatically converts integer inputs to
+`DECIMAL(38,0)` before `SUM` and `AVG` are planned. Integer `SUM` now returns
+`BigDecimal`; integer and decimal `AVG` still return `DOUBLE`. Averages retain
+floating-point precision. This avoids signed 64-bit accumulator wraparound,
+including the intermediate sum used by AVG.
 
-**BIGINT overflow remains unresolved.** A representable average can still have
-an intermediate sum outside that range. Three failures are preserved in the
-[numeric overflow survey](../conformance/surveys/numeric_overflow.test).
-Explicitly casting the input to `DECIMAL(38,0)` before `SUM` or `AVG` is tested
-as a workaround; casting the result is too late. Automatically declaring a
-decimal accumulator exposed a Calcite 1.42 code-generation limitation, so that
-change was not adopted. See [numeric types](usage.md#arrow-types) for the
-configured result types and bounds.
+The three original uncast BIGINT failures retain their mathematical expectations
+in the required [numeric regression gate](../conformance/sql/numeric_overflow.test).
+Additional checks cover grouped, distinct, filtered, nullable and windowed
+aggregates across worker batches. Java checks also cover prepared parameters,
+empty inputs, nested queries, model views, JDBC result metadata, decimal scale
+and isolation from stock Calcite connections. Six new regression tests failed
+against the old driver before the fix.
+
+Embedding applications must switch from `jdbc:calcite:` to `jdbc:vgi-calcite:`;
+setting the old type-system property alone does not enable operand promotion.
+The CLI and conformance bridge use the new driver. See
+[numeric types](usage.md#arrow-types) for the result-type change and remaining
+precision bounds. Arithmetic inside an aggregate input expression is still
+evaluated using that expression's declared type.
 
 The SQLLogicTest runner also now formats empty strings as `(empty)` and embedded
 NUL characters as `\0` before sorting and hashing. This fixes false mismatches
@@ -241,8 +247,9 @@ records the subsequent checks against Maven Central artifacts.
   Remaining failures include named arguments that omit an
   earlier default, engine-specific SQL and settings,
   and equivalent predicate strings printed differently by the workers.
-- **Numeric bounds.** Resolve or explicitly bound `BIGINT` aggregate overflow;
-  the passing gate's decimal-cast cases do not make uncast large sums safe.
+- **Numeric bounds.** Broaden checks of decimal precision, rounding and overflow
+  in input expressions. Automatic promotion addresses integer aggregate
+  accumulation, while AVG results still use floating-point precision.
 - **Function coverage.** Scalar, aggregate and table-in/table-out functions
   remain unsupported. They account for substantial parts of the upstream
   suite. Producer functions accept literal scalar arguments only.

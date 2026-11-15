@@ -27,8 +27,7 @@ public final class SqlLogicBridge {
         // Accept upstream syntax such as % and GROUP BY aliases using Calcite's
         // own conformance mode; execution still uses Calcite operators.
         properties.setProperty("conformance", "BABEL");
-        properties.setProperty("typeSystem", VgiTypeSystem.class.getName());
-        try (Connection connection = DriverManager.getConnection("jdbc:calcite:", properties);
+        try (Connection connection = DriverManager.getConnection("jdbc:vgi-calcite:", properties);
              var input = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
             SchemaPlus root = connection.unwrap(CalciteConnection.class).getRootSchema();
             String line;
