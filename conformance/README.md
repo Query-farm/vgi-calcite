@@ -142,7 +142,8 @@ sorting and hashing; NULL remains distinct from an empty string.
 The passing CI gate includes `sql/numeric_aggregates.test` and
 `sql/numeric_overflow.test`. The latter preserves the three original BIGINT
 failure expectations and adds grouped, distinct, nullable, filtered and windowed
-cases. All run through `jdbc:vgi-calcite:` without decimal input casts.
+cases. The overflow regressions run through `jdbc:vgi-calcite:` without decimal
+input casts.
 
 ```sh
 .conformance/venv/bin/python conformance/run.py \

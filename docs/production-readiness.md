@@ -82,7 +82,7 @@ SQLLogicTest formatting changes. TCP and HTTP produced identical counts:
 
 Three integer-average results and one empty-string comparison account for the
 four improved records. No previously passing record regressed. The expanded
-passing gate separately verifies 245 records per transport: 211 upstream,
+passing gate separately verified 245 records per transport: 211 upstream,
 26 adapter and eight malformed-worker records. The
 [comparison record](../conformance/baselines/compatibility-numeric-results.json)
 contains exact sources, runtime and report hashes, per-file results and the
@@ -94,6 +94,17 @@ deadline. An earlier local candidate attempt hit startup/catalog-attachment
 deadlines under heavy host CPU load and was interrupted; its partial results
 remain recorded. Successful survey collection does not mean the cases passed.
 The complete 448-file upstream inventory was not rerun in this comparison.
+
+The automatic integer-widening change was checked against the same 64-file,
+1,527-record table suite over TCP and HTTP. Both transports retained **629
+passes, 854 failures, three unsupported records and 41 not-run records**; no
+previous pass regressed. The three original BIGINT overflow failures now pass
+with unchanged expected values. The required gate has grown to **255 records
+per transport**: 211 upstream, 36 adapter and eight malformed-worker records.
+The [widening comparison record](../conformance/baselines/wide-integer-aggregates.json)
+records the exact revisions, source and dependency hashes, fixed overflow
+queries and CI artifacts. This addresses the accumulator defect without
+changing the broader compatibility qualification above.
 
 The **full inventory survey** subsequently attempted all 417 files against
 connector commit `2b5e5e93d392205f4bbdb7eb30dad76331338335`, using the same
