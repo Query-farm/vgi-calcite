@@ -122,7 +122,7 @@ class VgiDriverTest {
     @Test void viewsExposeTheSameWideResultAsDirectQueries() throws Exception {
         Properties properties = new Properties();
         properties.setProperty("model", "inline:{version:'1.0', defaultSchema:'test', schemas:[{name:'test', tables:["
-                + "{name:'totals', type:'view', sql:'select sum(n) as total from (values "
+                + "{name:'totals', type:'view', sql:'select sum(n) as total, avg(n) as mean from (values "
                 + "(cast(9223372036854775807 as bigint)), (cast(9223372036854775807 as bigint))) t(n)'},"
                 + "{name:'nested', type:'view', sql:'select total as renamed from \"totals\"'}]}]}");
         try (var connection = DriverManager.getConnection("jdbc:vgi-calcite:", properties);
@@ -131,6 +131,8 @@ class VgiDriverTest {
             assertTrue(result.next());
             assertEquals(new BigDecimal("18446744073709551614"), result.getObject(1));
             assertEquals(Types.DECIMAL, result.getMetaData().getColumnType(1));
+            assertEquals(9.223372036854776E18, result.getObject(2));
+            assertEquals(Types.DOUBLE, result.getMetaData().getColumnType(2));
         }
         try (var connection = DriverManager.getConnection("jdbc:vgi-calcite:", properties);
              var statement = connection.prepareStatement("select x from \"nested\" as v(x)")) {
